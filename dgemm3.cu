@@ -278,7 +278,7 @@ dgemm_kernel2_1(int m, int n, int k, double * A, int lda, double * B, int ldb, d
   }
   *(C + 0 * ldc + idx) = temp1;
   *(C + 1 * ldc + idx) = temp2;
-  *(c + 2 * ldc + idx) = temp3;
+  *(C + 2 * ldc + idx) = temp3;
 }
 
 __global__ void
