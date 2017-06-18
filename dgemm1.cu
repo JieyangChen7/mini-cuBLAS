@@ -350,7 +350,7 @@ void test_kernel4(int m, int n, int k,
  
     cudaEventSynchronize(stop);
     t = clock() - t;
-    cudaDeviceSychronize();
+    cudaDeviceSynchronize();
     float real_time = ((float)t)/CLOCKS_PER_SEC;
     cudaEventElapsedTime(&real_time, start, stop);
 
