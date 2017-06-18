@@ -145,12 +145,12 @@ void test(int m, int k){
 				   dA, lda, 
 				   dB, ldb, 
 				   dC, ldc);
-*/
+
 	test_kernel3(m, n, k, 
 				 dA, lda, 
 				 dB, ldb, 
 				 dC, ldc);
-/*
+*/
 	test_kernel4(m, n, k, 
 				 dA, lda, 
 				 dB, ldb, 
@@ -162,7 +162,7 @@ void test(int m, int k){
 				   dB, ldb, 
 				   dC, ldc);
 
-	*/
+
    
     cudaMemcpy(C, dC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
     
