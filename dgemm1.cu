@@ -4,6 +4,7 @@
 #include <time.h>
 #include <stdio.h>
 #define TEST_RUN 10 
+#define ESP 10e-10
 using namespace std;
 
 
@@ -37,6 +38,7 @@ dgemm_kernel4_1(int m, int n, int k, int T,
 				double * B, int ldb, 
 				double * C, int ldc);
 
+void check_C(double * dC, int m, double * checkC);
 
 void test_cublas_mv(int m, int n, int k, 
 				    double * dA, int lda, 
@@ -91,7 +93,8 @@ void test(int m, int k){
     //int k = 20480;
     double * A = new double[m * k];
     double * B = new double[n * k];
-    double * C = new double[m * n];    
+    double * C = new double[m * n];  
+    double * checkC = new double[m * n];   
 
     for (int i = 0;i < m * k; i++){
     	A[i] = i;
@@ -120,16 +123,19 @@ void test(int m, int k){
     cudaMalloc(&dC, m * n * sizeof(double));
     int ldc = m;
 
+    double * dcheckC;
+    cudaMalloc(&dcheckC, m * n * sizeof(double));
+
     cudaMemcpy(dA, A, m * k * sizeof(double), cudaMemcpyHostToDevice);
     cudaMemcpy(dB, B, n * k * sizeof(double), cudaMemcpyHostToDevice);
     
    
-/*
+
     test_cublas_mm(m, n, k, 
 				   dA, lda, 
 				   dB, ldb, 
-				   dC, ldc);
-
+				   dcheckC, ldc);
+/*
 	test_cublas_mv(m, n, k, 
 				   dA, lda, 
 				   dB, ldb, 
@@ -164,6 +170,9 @@ void test(int m, int k){
 */
    
     cudaMemcpy(C, dC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+
+	check_C(C, m, checkC);    
     
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
@@ -354,6 +363,15 @@ void test_kernel4_1(int m, int n, int k,
 
 }
 
+void check_C(double * dC, int m, double * checkC) {
+	for (int i = 0; i < m; i++){
+		if (abs(dC[i] - checkC[i]) < ESP){
+			cout << "error:" << abs(dC[i] - checkC[i]) << endl;
+			break;
+		}
+	}
+	cout << "correct" << endl;
+}
 
 
 __global__ void
