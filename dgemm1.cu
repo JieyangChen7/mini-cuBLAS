@@ -39,10 +39,15 @@ dgemm_kernel4_1(int m, int n, int k, int T,
 				double * C, int ldc);
 
 
-void test_cublas(int m, int n, int k, 
-				 double * dA, int lda, 
-				 double * dB, int ldb, 
-				 double * dC, int ldc);
+void test_cublas_mv(int m, int n, int k, 
+				    double * dA, int lda, 
+				    double * dB, int ldb, 
+				    double * dC, int ldc);
+
+void test_cublas_mm(int m, int n, int k, 
+				    double * dA, int lda, 
+				    double * dB, int ldb, 
+				    double * dC, int ldc);
 
 void test_kernel2(int m, int n, int k, 
 				  double * dA, int lda, 
@@ -73,7 +78,7 @@ void test(int m, int k);
 
 int main(){
 	for (int i = 128; i <= 32768; i *= 2){
-		i = 20480;
+		//i = 20480;
 		cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 1 << ")" << endl;
 		test(i, i);
 	}
@@ -121,10 +126,15 @@ void test(int m, int k){
     
    
 
-    test_cublas(m, n, k, 
-				dA, lda, 
-				dB, ldb, 
-				dC, ldc);
+    test_cublas_mm(m, n, k, 
+				   dA, lda, 
+				   dB, ldb, 
+				   dC, ldc);
+
+	test_cublas_mv(m, n, k, 
+				   dA, lda, 
+				   dB, ldb, 
+				   dC, ldc);
 
     test_kernel2(m, n, k, 
 				 dA, lda, 
@@ -171,7 +181,7 @@ void test(int m, int k){
 }
 
 
-void test_cublas(int m, int n, int k, 
+void test_cublas_mv(int m, int n, int k, 
 				 double * dA, int lda, 
 				 double * dB, int ldb, 
 				 double * dC, int ldc){
@@ -190,8 +200,6 @@ void test_cublas(int m, int n, int k,
     for (int i = 0; i < TEST_RUN; i++)
       cublasDgemv(handle, CUBLAS_OP_N, m, k,
       			  &one, dA, lda, dB, incb, &zero, dC, incb);
-      //cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k,
-	  //	  &one, dA, lda, dB, ldb, &zero, dC, ldc);
 
     cudaEventRecord(stop);
 
@@ -199,6 +207,37 @@ void test_cublas(int m, int n, int k,
     float real_time = 0;
     cudaEventElapsedTime(&real_time, start, stop);
     cout <<"Runing time of culasdgemv:" << real_time <<"ms." << endl;
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
+}
+
+
+void test_cublas_mm(int m, int n, int k, 
+				 double * dA, int lda, 
+				 double * dB, int ldb, 
+				 double * dC, int ldc){
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+
+
+    double one = 1;
+    double zero = 0;
+    cublasHandle_t handle;
+    cublasCreate(&handle);
+
+    cudaEventRecord(start);
+    int incb = 1;
+    for (int i = 0; i < TEST_RUN; i++)
+      cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k,
+	  	  &one, dA, lda, dB, ldb, &zero, dC, ldc);
+
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    float real_time = 0;
+    cudaEventElapsedTime(&real_time, start, stop);
+    cout <<"Runing time of culasdgemm:" << real_time <<"ms." << endl;
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
 }
