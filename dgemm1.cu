@@ -82,6 +82,11 @@ void test_kernel4_1(int m, int n, int k,
 				  double * dB, int ldb, 
 				  double * dC, int ldc);
 
+void test_kernel4_2(int m, int n, int k, 
+				  double * dA, int lda, 
+				  double * dB, int ldb, 
+				  double * dC, int ldc);
+
 void test(int m, int k);
 
 int main(){
