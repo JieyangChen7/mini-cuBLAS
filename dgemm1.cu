@@ -34,7 +34,7 @@ dgemm_kernel4(int m, int n, int k, int T,
 			  double * C, int ldc);
 
 __global__ void
-dgemm_kernel4_1(int m, int n, int k, int T, 
+dgemm_kernel4_1(int m, int n, int k, int T, int t,
 				double * A, int lda, 
 				double * B, int ldb, 
 				double * C, int ldc);
@@ -134,11 +134,11 @@ void test(int m, int k){
 
     test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
 	//test_cublas_mv(m, n, k, dA, lda, dB, ldb,  dC, ldc);
-    test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    //test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
 	//test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
 	//test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
 	//test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	//test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+	test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
 
 
    
@@ -319,12 +319,13 @@ void test_kernel4_1(int m, int n, int k,
 
     
     int T = 32;
+    int tt = 4;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
     clock_t t = clock();
     for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel4_1<<<blocksPerGrid, threadsPerBlock, ((T) + (T * (T/4))) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+      dgemm_kernel4_1<<<blocksPerGrid, threadsPerBlock, ((T) + (T * tt)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
     
 
     cudaDeviceSynchronize();
@@ -489,73 +490,53 @@ dgemm_kernel4(int m, int n, int k, int T, double * A, int lda, double * B, int l
 
 
 __global__ void
-dgemm_kernel4_1(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
+dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
-  // store B (T * 2)                                                                                                                                                                                                                                                                       
   extern __shared__ double cache[];
  
   double * cacheA = cache;
-  double * cacheB = cache + T * (T / 4); //32 threads * 8 elements
+  double * cacheB = cache + T * t; 
 
-  //determine the row to process                                                                                                                                                                                                                                                           
+  //determine the row to process                                              
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
-  double temp1 = 0;
-  //double temp2 = 0;
-  double a = 0;
-  //double b1 = 0；                                                                                                                                                                                                                                                                        
-  //double b2 = 0;                                                                                                                                                                                                                                                                         
-
+  double temp = 0;
+                                                                                                                                                                                                                                                                        
   //prefectch A 
-  int t = T / 4;
   for (int i = 0; i < t; i++){
     cacheA[threadIdx.x + i * T] = *(A + i * lda);
   }
-  //printf("%d: %f, %f\n", threadIdx.x, cacheA[threadIdx.x + 0 * T], cacheA[threadIdx.x + 1 * T]);
+  A += t * lda;
   __syncthreads();
 
-  double r0, r1, r2,r3;//,r4,r5,r6,r7;
-  double * orgB = B;
-  double * orgA = A;
+  double r0, r1, r2,r3;//, r4,r5,r6,r7;
+
   for (int j = 0; j < k; j += T){ 
-    B = orgB + j;
     __syncthreads();
     cacheB[threadIdx.x] = *(B + threadIdx.x);
-    //cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
     __syncthreads();
-    //printf("[iter=%d]%d: %f, %f\n", j, threadIdx.x, cacheB[threadIdx.x * 2], cacheB[threadIdx.x * 2 + 1]); 
-
-    A = orgA + j * lda;
-    for (int l = 0; l < 4; l++){
+    B += T;
+    
+    for (int l = j; l < j + T; l += t){
+      if (l + t < k) {
+	      r0 = *(A + 0 *lda);
+	      r1 = *(A + 1 *lda);
+	      r2 = *(A + 2 *lda);
+	      r3 = *(A + 3 *lda); 
+	  }
       
-      r0 = *(A + (0 + (l+1) * t) *lda);
-      r1 = *(A + (1 + (l+1) * t) *lda);
-      r2 = *(A + (2 + (l+1) * t) *lda);
-      r3 = *(A + (3 + (l+1) * t) *lda);
-      /*r4 = *(A + (4 + (l+1) * t) *lda);
-      r5 = *(A + (5 + (l+1) * t) *lda);
-      r6 = *(A + (6 + (l+1) * t) *lda);
-      r7 = *(A + (7 + (l+1) * t) *lda);
-      */
-      //__syncthreads();
-      //printf("[iter=%d]%d: %f, %f\n", j+l*t, threadIdx.x, cacheA[threadIdx.x + 0 * T], cacheA[threadIdx.x + 1 * T]);
       for (int i = 0; i < t; i++) {
-	       temp1 += cacheA[threadIdx.x +i * T] * cacheB[t * l + i ];
-	       //temp2 += cacheA[threadIdx.x +i * T] * cacheB[t * l + i * 2 + 1];
+	       temp += cacheA[threadIdx.x + i * T] * cacheB[l - j + i ];
       }
-      
-      cacheA[threadIdx.x + 0 * T] = r0;
-      cacheA[threadIdx.x + 1 * T] = r1;
-      cacheA[threadIdx.x + 2 * T] = r2;
-      cacheA[threadIdx.x + 3 * T] = r3;
-      /*cacheA[threadIdx.x + 4 * T] = r4;
-      cacheA[threadIdx.x + 5 * T] = r5;
-      cacheA[threadIdx.x + 6 * T] = r6;
-      cacheA[threadIdx.x + 7 * T] = r7;
-      */
+      if (l + t < k) {
+      	cacheA[threadIdx.x + 0 * T] = r0;
+      	cacheA[threadIdx.x + 1 * T] = r1;
+      	cacheA[threadIdx.x + 2 * T] = r2;
+      	cacheA[threadIdx.x + 3 * T] = r3;
+      }
+      A += t * lda;
     }
   }
-  *(C + 0 * ldc + idx) = temp1;
-  //*(C + 1 * ldc + idx) = temp2;
+  *(C + idx) = temp;
     
 }
