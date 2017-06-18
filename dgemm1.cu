@@ -318,7 +318,7 @@ void test_kernel4_1(int m, int n, int k,
 
 
     
-    int T = 32;
+    int T = 64;
     int tt = 4;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
