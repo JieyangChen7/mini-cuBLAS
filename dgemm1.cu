@@ -507,8 +507,6 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
     cacheA[threadIdx.x + i * T] = *(A + i * lda);
   }
   A += t * lda;
-  __syncthreads();
-
   double r0, r1, r2,r3;//, r4,r5,r6,r7;
 
   for (int j = 0; j < k; j += T){ 
@@ -540,3 +538,48 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
   *(C + idx) = temp;
     
 }
+
+
+
+__global__ void
+dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
+{
+	extern __shared__ double cache[];
+
+	double * cacheA = cache;
+
+	//determine the row to process                                              
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	A = A + idx;
+	double temp = 0;
+	                                                                                                                                                                                                                                                                    
+	//prefectch A 
+	for (int i = 0; i < t; i++){
+	cacheA[threadIdx.x + i * T] = *(A + i * lda);
+	}
+	A += t * lda;
+	double r0, r1, r2,r3;//, r4,r5,r6,r7;
+    
+	for (int l = j; l < j + T; l += t){
+	  if (l + t < k) {
+	      r0 = *(A + 0 *lda);
+	      r1 = *(A + 1 *lda);
+	      r2 = *(A + 2 *lda);
+	      r3 = *(A + 3 *lda); 
+	  }
+	  
+	  for (int i = 0; i < t; i++) {
+	       temp += cacheA[threadIdx.x + i * T] * B[l + i];
+	  }
+	  if (l + t < k) {
+	  	cacheA[threadIdx.x + 0 * T] = r0;
+	  	cacheA[threadIdx.x + 1 * T] = r1;
+	  	cacheA[threadIdx.x + 2 * T] = r2;
+	  	cacheA[threadIdx.x + 3 * T] = r3;
+	  }
+	  A += t * lda;
+	}
+  	*(C + idx) = temp;
+    
+}
+
