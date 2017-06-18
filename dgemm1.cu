@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <iostream>
 #include "cublas_v2.h"
-#include "papi.h"
 #include <time.h>
 #include <stdio.h>
 #define TEST_RUN 10 
