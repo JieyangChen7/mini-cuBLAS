@@ -304,8 +304,8 @@ void test_kernel4(int m, int n, int k,
 
     cout <<"Runing time of dgemm_kernel4: " << real_time << "ms." << endl;
 
-    cudaEventDestroy(&start);
-    cudaEventDestroy(&stop);		    
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);		    
 }
 
 void test_kernel4_1(int m, int n, int k, 
