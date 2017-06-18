@@ -372,24 +372,14 @@ dgemm_kernel2_1(int m, int n, int k, double * A, int lda, double * B, int ldb, d
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
   double temp1 = 0;
-  //double temp2 = 0;
   double a = 0;
-  double b1 = 0;
-  //double b2 = 0;
+  double b = 0;
   for (int i = 0; i < k; i++){
-    A += lda;
-    a = *A;
-
-    B += 1;
-    b1 = *B;
-    //b2 = *(B + ldb);
-
-    temp1 = temp1 + a * b1;
-    //temp2 = temp2 + a * b2;
+    a = *(A + i * lda);
+    b = *(B + i);
+    temp1 += a * b;
   }
-  *(C + 0 * ldc + idx) = temp1;
-  //*(C + 1 * ldc + idx) = temp2;
-  
+  *(C + idx) = temp1;
 }
 
 __global__ void
