@@ -186,9 +186,13 @@ void test_cublas(int m, int n, int k,
     cublasCreate(&handle);
 
     cudaEventRecord(start);
+    int incb = 1;
     for (int i = 0; i < TEST_RUN; i++)
-      cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k,
-		  &one, dA, lda, dB, ldb, &zero, dC, ldc);
+      cublasDgemv(handle, CUBLAS_OP_N, m, k,
+      			  &one, dA, lda, dB, incb, &zero, dC, incb);
+      //cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k,
+	  //	  &one, dA, lda, dB, ldb, &zero, dC, ldc);
+
     cudaEventRecord(stop);
 
     cudaEventSynchronize(stop);
