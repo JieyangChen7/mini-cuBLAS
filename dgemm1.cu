@@ -133,11 +133,11 @@ void test(int m, int k){
    
 
     test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
-	//test_cublas_mv(m, n, k, dA, lda, dB, ldb,  dC, ldc);
-    //test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	//test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	//test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	//test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
+	test_cublas_mv(m, n, k, dA, lda, dB, ldb,  dC, ldc);
+    test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+	test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+	test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
+	test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
 	test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
 
 
@@ -145,7 +145,7 @@ void test(int m, int k){
     cudaMemcpy(C, dC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
     cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
 
-	check_C(C, m, checkC);    
+	//check_C(C, m, checkC);    
     
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
