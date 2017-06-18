@@ -553,8 +553,8 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
       if (l + t < k) {
 	      r0 = *(A + 0 *lda);
 	      r1 = *(A + 1 *lda);
-	      //r2 = *(A + 2 *lda);
-	      //r3 = *(A + 3 *lda); 
+	      r2 = *(A + 2 *lda);
+	      r3 = *(A + 3 *lda); 
 	  }
       
       for (int i = 0; i < t; i++) {
@@ -563,8 +563,8 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
       if (l + t < k) {
       	cacheA[threadIdx.x + 0 * T] = r0;
       	cacheA[threadIdx.x + 1 * T] = r1;
-      	//cacheA[threadIdx.x + 2 * T] = r2;
-      	//cacheA[threadIdx.x + 3 * T] = r3;
+      	cacheA[threadIdx.x + 2 * T] = r2;
+      	cacheA[threadIdx.x + 3 * T] = r3;
       }
       A += t * lda;
     }
