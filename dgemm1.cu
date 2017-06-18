@@ -156,13 +156,13 @@ void test(int m, int k){
 				 dB, ldb, 
 				 dC, ldc);
 
-
+/*
 	test_kernel4_1(m, n, k, 
 				   dA, lda, 
 				   dB, ldb, 
 				   dC, ldc);
 
-
+*/
    
     cudaMemcpy(C, dC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
     
