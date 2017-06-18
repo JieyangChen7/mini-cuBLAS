@@ -328,8 +328,8 @@ void test_kernel4_1(int m, int n, int k,
 				    double * dA, int lda, 
 				    double * dB, int ldb, 
 				    double * dC, int ldc){    
-    int T = 128;
-    int tt = 2;
+    int T = 32;
+    int tt = 4;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
