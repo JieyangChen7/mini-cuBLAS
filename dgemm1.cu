@@ -3,6 +3,7 @@
 #include "cublas_v2.h"
 #include <time.h>
 #include <stdio.h>
+#include <cmath>
 #define TEST_RUN 10 
 #define ESP 10e-10
 using namespace std;
@@ -365,9 +366,9 @@ void test_kernel4_1(int m, int n, int k,
 
 void check_C(double * dC, int m, double * checkC) {
 	for (int i = 0; i < m; i++){
-		if (abs(dC[i] - checkC[i]) < ESP){
-			cout << "error:" << abs(dC[i] - checkC[i]) << endl;
-			break;
+		if (fabs(dC[i] - checkC[i]) > ESP){
+			cout << "error:" << fabs(dC[i] - checkC[i]) << endl;
+			return;
 		}
 	}
 	cout << "correct" << endl;
