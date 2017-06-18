@@ -333,31 +333,19 @@ void test_kernel4(int m, int n, int k,
 				    double * dA, int lda, 
 				    double * dB, int ldb, 
 				    double * dC, int ldc){
-	cudaEvent_t start, stop;
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
 
     int T = 16;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
     clock_t t = clock();
-    cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++) {
       dgemm_kernel4<<<blocksPerGrid, threadsPerBlock, ((T) + (T * T)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
     }
-    cudaEventRecord(stop);
- 
-    cudaEventSynchronize(stop);
-    t = clock() - t;
     cudaDeviceSynchronize();
+    t = clock() - t;
     float real_time = ((float)t)/CLOCKS_PER_SEC;
-    //cudaEventElapsedTime(&real_time, start, stop);
-
-    cout <<"Runing time of dgemm_kernel4: " << real_time << " ms." << endl;
-
-    cudaEventDestroy(start);
-    cudaEventDestroy(stop);		    
+    cout <<"Runing time of dgemm_kernel4: " << real_time << " ms." << endl;    
 }
 
 void test_kernel4_1(int m, int n, int k, 
