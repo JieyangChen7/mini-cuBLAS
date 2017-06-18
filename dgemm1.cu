@@ -145,7 +145,7 @@ void test(int m, int k){
     cudaMemcpy(C, dC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
     cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
 
-	//check_C(C, m, checkC);    
+	check_C(C, m, checkC);    
     
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
