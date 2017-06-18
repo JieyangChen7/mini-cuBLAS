@@ -73,8 +73,8 @@ void test(int m, int k);
 
 int main(){
 	for (int i = 128; i <= 32768; i *= 2){
-		i = 512;
-		cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << i << ")" << endl;
+		//i = 512;
+		cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 1 << ")" << endl;
 		test(i, i);
 	}
 }
@@ -163,6 +163,9 @@ void test(int m, int k){
     cudaFree(dB);
     cudaFree(dC);
 
+    delete[] A;
+    delete[] B;
+    delete[] C;
     
 
 }
