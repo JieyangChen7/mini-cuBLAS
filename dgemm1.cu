@@ -39,6 +39,12 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t,
 				double * B, int ldb, 
 				double * C, int ldc);
 
+__global__ void
+dgemm_kernel4_2(int m, int n, int k, int T, int t, 
+				double * A, int lda, 
+				double * B, int ldb, 
+				double * C, int ldc);
+
 void check_C(double * dC, int m, double * checkC);
 
 void test_cublas_mv(int m, int n, int k, 
@@ -139,6 +145,8 @@ void test(int m, int k){
 	test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
 	test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
 	test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+	test_kernel4_2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+
 
 
    
@@ -314,10 +322,7 @@ void test_kernel4(int m, int n, int k,
 void test_kernel4_1(int m, int n, int k, 
 				    double * dA, int lda, 
 				    double * dB, int ldb, 
-				    double * dC, int ldc){
-
-
-    
+				    double * dC, int ldc){    
     int T = 64;
     int tt = 4;
     int blocksPerGrid = m / T;
@@ -333,7 +338,31 @@ void test_kernel4_1(int m, int n, int k,
     float real_time = ((float)t)/CLOCKS_PER_SEC;
 
 
-    cout <<"Runing time of dgemm_kernel4: " << real_time << " ms." << endl;	  
+    cout <<"Runing time of dgemm_kernel4_1: " << real_time << " ms." << endl;	  
+
+}
+
+
+void test_kernel4_2(int m, int n, int k, 
+				    double * dA, int lda, 
+				    double * dB, int ldb, 
+				    double * dC, int ldc){    
+    int T = 64;
+    int tt = 4;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
+
+    clock_t t = clock();
+    for (int i = 0; i < TEST_RUN; i++)
+      dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, (T * tt) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+    
+
+    cudaDeviceSynchronize();
+    t = clock() - t;
+    float real_time = ((float)t)/CLOCKS_PER_SEC;
+
+
+    cout <<"Runing time of dgemm_kernel4_2: " << real_time << " ms." << endl;	  
 
 }
 
