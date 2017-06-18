@@ -541,7 +541,7 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
     cacheA[threadIdx.x + i * T] = *(A + i * lda);
   }
   A += t * lda;
-  double r0, r1;//, r2,r3;//, r4,r5,r6,r7;
+  double r0, r1, r2,r3;//, r4,r5,r6,r7;
 
   for (int j = 0; j < k; j += T){ 
     __syncthreads();
