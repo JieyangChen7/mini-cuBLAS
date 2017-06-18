@@ -402,29 +402,20 @@ dgemm_kernel3(int m, int n, int k, int T, double * A, int lda, double * B, int l
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
   double temp1 = 0;
-  //double temp2 = 0;
+  
   double a = 0;
-  //double b1 = 0;
-  //double b2 = 0;
   for (int j = 0; j < k; j += T){
-    B += T;
     cache[threadIdx.x] = *(B + threadIdx.x);
-    //cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
+    B += T;
     __syncthreads();
     for (int i = 0; i < T; i++) {
-      //i+j
       a = *(A + (i + j) * lda);
-      //b1 = cache[i * 2]
-      //b2 = cache[i * 2 + 1]
       temp1 += a * cache[i];
-      //temp2 += a * cache[i * 2 + 1];
     }
     __syncthreads();
 
   }
-  *(C + 0 * ldc + idx) = temp1;
-  //*(C + 1 * ldc + idx) = temp2;
-
+  *(C + idx) = temp1;
 }
 
 __global__ void
