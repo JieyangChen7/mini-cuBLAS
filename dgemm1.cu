@@ -491,6 +491,7 @@ dgemm_kernel4(int m, int n, int k, int T, double * A, int lda, double * B, int l
   double r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15;
 
   for (int j = 0; j < k; j += T){
+  	printf("%d", j);
     __syncthreads();
     cacheB[threadIdx.x] = *(B + threadIdx.x);
     __syncthreads();
