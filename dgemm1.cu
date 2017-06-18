@@ -342,8 +342,9 @@ void test_kernel4(int m, int n, int k,
     int threadsPerBlock = T;
 
     cudaEventRecord(start);
-    for (int i = 0; i < TEST_RUN; i++)
+    for (int i = 0; i < TEST_RUN; i++) {
       dgemm_kernel4<<<blocksPerGrid, threadsPerBlock, ((T) + (T * T)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+    }
     cudaEventRecord(stop);
 
     cudaEventSynchronize(stop);
@@ -472,7 +473,6 @@ dgemm_kernel3(int m, int n, int k, int T, double * A, int lda, double * B, int l
 __global__ void
 dgemm_kernel4(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
-  // store B (T * 2)
   extern __shared__ double cache[];
   
   double * cacheA = cache;
@@ -482,16 +482,11 @@ dgemm_kernel4(int m, int n, int k, int T, double * A, int lda, double * B, int l
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
   double temp1 = 0;
-  //double temp2 = 0;
-  double a = 0;
-  //double b1 = 0；      
-  //double b2 = 0;                                                                                                                                                                                       
-  
+                                                                                                                                                                                      
   //prefectch A
   for (int i = 0; i < T; i++){
     cacheA[threadIdx.x + i * T] = *(A + threadIdx.x + i * lda);
   }
-  __syncthreads();
   
   double r0, r1, r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15;
 
@@ -499,7 +494,6 @@ dgemm_kernel4(int m, int n, int k, int T, double * A, int lda, double * B, int l
     B += T;
     __syncthreads();
     cacheB[threadIdx.x] = *(B + threadIdx.x);
-    //cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
     __syncthreads();
     
     A = A + T * lda;
@@ -523,37 +517,29 @@ dgemm_kernel4(int m, int n, int k, int T, double * A, int lda, double * B, int l
     r15 = *(A + threadIdx.x + 15 *lda);
  
     for (int i = 0; i < T; i++) {
-      //i+j
-      //a = *(A + (i + j) * lda);
-      //b1 = cache[i * 2]        
-      //b2 = cache[i * 2 + 1]     
-      
-      temp1 += cacheA[threadIdx.x +i * T] * cacheB[i];
-     //temp2 += cacheA[threadIdx.x +i * T] * cacheB[i * 2 + 1];
+      temp1 += cacheA[threadIdx.x + i * T] * cacheB[i];
     }
 
-    cacheA[0] = r0;
-    cacheA[1] = r1;
-    cacheA[2] = r2;
-    cacheA[3] = r3;
-    cacheA[4] = r4;
-    cacheA[5] = r5;
-    cacheA[6] = r6;
-    cacheA[7] = r7;
+    cacheA[threadIdx.x + 0 * T] = r0;
+    cacheA[threadIdx.x + 1 * T] = r1;
+    cacheA[threadIdx.x + 2 * T] = r2;
+    cacheA[threadIdx.x + 3 * T] = r3;
+    cacheA[threadIdx.x + 4 * T] = r4;
+    cacheA[threadIdx.x + 5 * T] = r5;
+    cacheA[threadIdx.x + 6 * T] = r6;
+    cacheA[threadIdx.x + 7 * T] = r7;
 
-    cacheA[8] = r8;
-    cacheA[9] = r9;
-    cacheA[10] = r10;
-    cacheA[11] = r11;
-    cacheA[12] = r12;
-    cacheA[13] = r13;
-    cacheA[14] = r14;
-    cacheA[15] = r15;
+    cacheA[threadIdx.x + 8 * T] = r8;
+    cacheA[threadIdx.x + 9 * T] = r9;
+    cacheA[threadIdx.x + 10 * T] = r10;
+    cacheA[threadIdx.x + 11 * T] = r11;
+    cacheA[threadIdx.x + 12 * T] = r12;
+    cacheA[threadIdx.x + 13 * T] = r13;
+    cacheA[threadIdx.x + 14 * T] = r14;
+    cacheA[threadIdx.x + 15 * T] = r15;
 
   }
-  *(C + 0 * ldc + idx) = temp1;
-  //*(C + 1 * ldc + idx) = temp2;
-
+  *(C + idx) = temp1;
 }
 
 
