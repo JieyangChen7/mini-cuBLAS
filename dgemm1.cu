@@ -594,7 +594,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
 	A += t * lda;
 	double r0, r1, r2,r3;//, r4,r5,r6,r7;
     
-	for (int l = j; l < j + T; l += t){
+	for (int l = 0; l < k; l += t){
 	  if (l + t < k) {
 	      r0 = *(A + 0 *lda);
 	      r1 = *(A + 1 *lda);
