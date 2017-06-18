@@ -77,7 +77,7 @@ void test_kernel4_1(int m, int n, int k,
 void test(int m, int k);
 
 int main(){
-	for (int i = 128; i <= 32768; i *= 2){
+	for (int i = 8192; i <= 32768; i *= 2){
 		//i = 20480;
 		cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 1 << ")" << endl;
 		test(i, i);
