@@ -569,6 +569,7 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
 
   //determine the row to process                                              
   A = A + blockIdx.x * blockDim.x + threadIdx.x;
+  C = C + blockIdx.x * blockDim.x + threadIdx.x;
   double temp = 0;
                                                                                                                                                                                                                                                                         
   //prefectch A 
@@ -604,7 +605,7 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
       A += t * lda;
     }
   }
-  *(C + idx) = temp;
+  *C= temp;
     
 }
 
@@ -663,6 +664,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
   //determine the row to process                                              
   A = A + blockIdx.x * blockDim.x + threadIdx.x;
+  C = C + blockIdx.x * blockDim.x + threadIdx.x;
   double temp = 0;
                                                                                                                                                                                                                                                                         
   //prefectch A 
@@ -702,7 +704,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
 
   }
-  *(C + idx) = temp;
+  *C = temp;
     
 }
 
