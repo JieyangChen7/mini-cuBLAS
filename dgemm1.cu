@@ -135,7 +135,7 @@ void test(int m, int k){
 				   dA, lda, 
 				   dB, ldb, 
 				   dC, ldc);
-*/
+
     test_kernel2(m, n, k, 
 				 dA, lda, 
 				 dB, ldb, 
@@ -145,12 +145,12 @@ void test(int m, int k){
 				   dA, lda, 
 				   dB, ldb, 
 				   dC, ldc);
-/*
+*/
 	test_kernel3(m, n, k, 
 				 dA, lda, 
 				 dB, ldb, 
 				 dC, ldc);
-
+/*
 	test_kernel4(m, n, k, 
 				 dA, lda, 
 				 dB, ldb, 
@@ -208,7 +208,7 @@ void test_cublas_mv(int m, int n, int k,
     cudaEventSynchronize(stop);
     float real_time = 0;
     cudaEventElapsedTime(&real_time, start, stop);
-    cout <<"Runing time of culasdgemv:" << real_time <<"ms." << endl;
+    cout <<"Runing time of culasdgemv:" << real_time <<" ms." << endl;
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
 }
@@ -239,7 +239,7 @@ void test_cublas_mm(int m, int n, int k,
     cudaEventSynchronize(stop);
     float real_time = 0;
     cudaEventElapsedTime(&real_time, start, stop);
-    cout <<"Runing time of culasdgemm:" << real_time <<"ms." << endl;
+    cout <<"Runing time of culasdgemm:" << real_time <<" ms." << endl;
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
 }
@@ -266,7 +266,7 @@ void test_kernel2(int m, int n, int k,
     float real_time = 0;
     cudaEventElapsedTime(&real_time, start, stop);
 
-    cout <<"Runing time of dgemm_kernel2: " << real_time << "ms." << endl;    
+    cout <<"Runing time of dgemm_kernel2: " << real_time << " ms." << endl;    
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
 } 
@@ -295,7 +295,7 @@ void test_kernel2_1(int m, int n, int k,
     float real_time = 0;
     cudaEventElapsedTime(&real_time, start, stop);
 
-    cout <<"Runing time of dgemm_kernel2_1: " << real_time << "ms." << endl;
+    cout <<"Runing time of dgemm_kernel2_1: " << real_time << " ms." << endl;
 
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
@@ -323,7 +323,7 @@ void test_kernel3(int m, int n, int k,
     float real_time = 0;
     cudaEventElapsedTime(&real_time, start, stop);
 
-    cout <<"Runing time of dgemm_kernel3: " << real_time << "ms." << endl;
+    cout <<"Runing time of dgemm_kernel3: " << real_time << " ms." << endl;
 
     cudaEventDestroy(start);
     cudaEventDestroy(stop);		    
@@ -351,7 +351,7 @@ void test_kernel4(int m, int n, int k,
     float real_time = 0;
     cudaEventElapsedTime(&real_time, start, stop);
 
-    cout <<"Runing time of dgemm_kernel4: " << real_time << "ms." << endl;
+    cout <<"Runing time of dgemm_kernel4: " << real_time << " ms." << endl;
 
     cudaEventDestroy(start);
     cudaEventDestroy(stop);		    
@@ -381,7 +381,7 @@ void test_kernel4_1(int m, int n, int k,
     float real_time = 0;
     cudaEventElapsedTime(&real_time, start, stop);
 
-    cout <<"Runing time of dgemm_kernel4: " << real_time << "ms." << endl;
+    cout <<"Runing time of dgemm_kernel4: " << real_time << " ms." << endl;
 
     cudaEventDestroy(start);
     cudaEventDestroy(stop);			  
