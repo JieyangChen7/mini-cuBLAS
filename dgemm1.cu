@@ -134,8 +134,8 @@ void test(int m, int k){
 
     test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
 	//test_cublas_mv(m, n, k, dA, lda, dB, ldb,  dC, ldc);
-    //test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+	//test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
 	//test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
 	//test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
 	//test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
@@ -353,16 +353,16 @@ dgemm_kernel2(int m, int n, int k, double * A, int lda, double * B, int ldb, dou
 	//determine the row to process
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	A = A + idx;
-
-	for (int j = 0; j < n; j++){
-	  double temp = 0;
-	  for (int i = 0;i < k; i++){
-	    double a = *(A + i * lda);
-	    double b = *(B + j * ldb + i);
+	double a;
+	double b;
+	double temp = 0;
+	for (int i = 0;i < k; i++){
+		a = *(A + i * lda);
+	    b = *(B + i);
 	    temp = temp + a * b;
-	  }
-	  *(C + j * ldc + idx) = temp;
-	}
+	 }
+	 *(C + idx) = temp;
+	
 }
 
 __global__ void
@@ -371,15 +371,15 @@ dgemm_kernel2_1(int m, int n, int k, double * A, int lda, double * B, int ldb, d
   //determine the row to process                                                        
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
-  double temp1 = 0;
+  double temp = 0;
   double a = 0;
   double b = 0;
   for (int i = 0; i < k; i++){
     a = *(A + i * lda);
     b = *(B + i);
-    temp1 += a * b;
+    temp += a * b;
   }
-  *(C + idx) = temp1;
+  *(C + idx) = temp;
 }
 
 __global__ void
