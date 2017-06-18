@@ -151,7 +151,7 @@ void test(int m, int k){
 				   dB, ldb, 
 				   dC, ldc);
    
-    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    cudaMemcpy(C, dC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
     
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
@@ -326,7 +326,8 @@ void test_kernel4_1(int m, int n, int k,
     cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
       dgemm_kernel4_1<<<blocksPerGrid, threadsPerBlock, ((T) + (T * (T/4))) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-
+    cudaEventRecord(stop);
+    
     cudaEventSynchronize(stop);
     float real_time = 0;
     cudaEventElapsedTime(&real_time, start, stop);
