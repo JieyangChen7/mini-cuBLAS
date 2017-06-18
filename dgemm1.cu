@@ -40,34 +40,34 @@ dgemm_kernel4_1(int m, int n, int k, int T,
 
 
 void test_cublas(int m, int n, int k, 
-				 double * A, int lda, 
-				 double * B, int ldb, 
-				 double * C, int ldc);
+				 double * dA, int lda, 
+				 double * dB, int ldb, 
+				 double * dC, int ldc);
 
 void test_kernel2(int m, int n, int k, 
-				  double * A, int lda, 
-				  double * B, int ldb, 
-				  double * C, int ldc);
+				  double * dA, int lda, 
+				  double * dB, int ldb, 
+				  double * dC, int ldc);
 
 void test_kernel2_1(int m, int n, int k, 
-				    double * A, int lda, 
-				    double * B, int ldb, 
-				    double * C, int ldc);
+				    double * dA, int lda, 
+				    double * dB, int ldb, 
+				    double * dC, int ldc);
 
 void test_kernel3(int m, int n, int k, 
-				  double * A, int lda, 
-				  double * B, int ldb, 
-				  double * C, int ldc);
+				  double * dA, int lda, 
+				  double * dB, int ldb, 
+				  double * dC, int ldc);
 
 void test_kernel4(int m, int n, int k, 
-				  double * A, int lda, 
-				  double * B, int ldb, 
-				  double * C, int ldc);
+				  double * dA, int lda, 
+				  double * dB, int ldb, 
+				  double * dC, int ldc);
 
 void test_kernel4_1(int m, int n, int k, 
-				  double * A, int lda, 
-				  double * B, int ldb, 
-				  double * C, int ldc);
+				  double * dA, int lda, 
+				  double * dB, int ldb, 
+				  double * dC, int ldc);
 
 void test(int m, int k);
 
@@ -168,9 +168,9 @@ void test(int m, int k){
 
 
 void test_cublas(int m, int n, int k, 
-				 double * A, int lda, 
-				 double * B, int ldb, 
-				 double * C, int ldc){
+				 double * dA, int lda, 
+				 double * dB, int ldb, 
+				 double * dC, int ldc){
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
@@ -196,9 +196,9 @@ void test_cublas(int m, int n, int k,
 }
 
 void test_kernel2(int m, int n, int k, 
-				  double * A, int lda, 
-				  double * B, int ldb, 
-				  double * C, int ldc){
+				  double * dA, int lda, 
+				  double * dB, int ldb, 
+				  double * dC, int ldc){
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
@@ -224,9 +224,9 @@ void test_kernel2(int m, int n, int k,
 
 
 void test_kernel2_1(int m, int n, int k, 
-				    double * A, int lda, 
-				    double * B, int ldb, 
-				    double * C, int ldc){
+				    double * dA, int lda, 
+				    double * dB, int ldb, 
+				    double * dC, int ldc){
 	
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
@@ -253,9 +253,9 @@ void test_kernel2_1(int m, int n, int k,
 }
 
 void test_kernel3(int m, int n, int k, 
-				  double * A, int lda, 
-				  double * B, int ldb, 
-				  double * C, int ldc){
+				  double * dA, int lda, 
+				  double * dB, int ldb, 
+				  double * dC, int ldc){
 
     cudaEvent_t start, stop;
 	cudaEventCreate(&start);
@@ -282,9 +282,9 @@ void test_kernel3(int m, int n, int k,
 
 
 void test_kernel4(int m, int n, int k, 
-				    double * A, int lda, 
-				    double * B, int ldb, 
-				    double * C, int ldc){
+				    double * dA, int lda, 
+				    double * dB, int ldb, 
+				    double * dC, int ldc){
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
@@ -309,9 +309,9 @@ void test_kernel4(int m, int n, int k,
 }
 
 void test_kernel4_1(int m, int n, int k, 
-				    double * A, int lda, 
-				    double * B, int ldb, 
-				    double * C, int ldc){
+				    double * dA, int lda, 
+				    double * dB, int ldb, 
+				    double * dC, int ldc){
 
 	
     cudaEvent_t start, stop;
