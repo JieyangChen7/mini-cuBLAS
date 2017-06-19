@@ -307,7 +307,7 @@ void test_kernel4_2(int m, int n, int k,
             double * dA, int lda, 
             double * dB, int ldb, 
             double * dC, int ldc){    
-    int T = 128;
+    int T = 256;
     int tt = 4;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
@@ -322,7 +322,7 @@ void test_kernel4_2(int m, int n, int k,
     float real_time = ((float)t)/CLOCKS_PER_SEC;
 
 
-    cout <<"Runing time of dgemm_kernel4_1: " << real_time << " ms." << endl;   
+    cout <<"Runing time of dgemm_kernel4_2: " << real_time << " ms." << endl;   
 
 }
 
@@ -568,6 +568,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   //determine the row to process                                                                                                                                                                                                                                                           
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
+  C = C + idx;
   double temp1 = 0;
   double temp2 = 0;
 
@@ -618,7 +619,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       A += t * lda;
     }
   }
-  *(C + 0 * ldc + idx) = temp1;
-  *(C + 1 * ldc + idx) = temp2;
+  *C = temp1;
+  *(C + ldc) = temp2;
     
 }
