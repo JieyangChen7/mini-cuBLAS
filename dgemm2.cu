@@ -125,11 +125,11 @@ void test(int m, int k){
     cudaMemcpy(dB, B, n * k * sizeof(double), cudaMemcpyHostToDevice);
     
     test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
-    //test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    // test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
-     //test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    // test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
-     test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
     
     
    
@@ -163,9 +163,6 @@ void test_cublas_mm(int m, int n, int k,
     double zero = 0;
     cublasHandle_t handle;
     cublasCreate(&handle);
-
- 
-    int incb = 1;
 
     clock_t t = clock();
     for (int i = 0; i < TEST_RUN; i++)
