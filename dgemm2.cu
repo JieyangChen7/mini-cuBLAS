@@ -494,7 +494,7 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
   //double b2 = 0;                                                                                                                                                                                                                                                                         
 
   //prefectch A 
-  int t = T / 4;
+  //int t = T / 4;
   for (int i = 0; i < t; i++){
     cacheA[threadIdx.x + i * T] = *(A + i * lda);
   }
