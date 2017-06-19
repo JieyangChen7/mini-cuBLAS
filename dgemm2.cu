@@ -476,7 +476,7 @@ dgemm_kernel4(int m, int n, int k, int T, double * A, int lda, double * B, int l
 
 
 __global__ void
-dgemm_kernel4_1(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
+dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
   // store B (T * 2)                                                                                                                                                                                                                                                                       
   extern __shared__ double cache[];
