@@ -38,7 +38,7 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t,
                 double * B, int ldb, 
                 double * C, int ldc);
 
-void check_C(double * dC, int m, double * checkC);
+void check_C(double * dC, int m, int n, double * checkC);
 
 void test_cublas_mm(int m, int n, int k, 
             double * dA, int lda, 
@@ -138,7 +138,8 @@ void test(int m, int k){
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
     //}
-    
+    check_C(dC, m, n, checkC);
+
     //free device memory
     cudaFree(dA);
     cudaFree(dB);
