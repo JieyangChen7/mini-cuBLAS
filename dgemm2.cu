@@ -138,7 +138,7 @@ void test(int m, int k){
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
     //}
-    check_C(dC, m, n, checkC);
+    //check_C(dC, m, n, checkC);
 
     //free device memory
     cudaFree(dA);
