@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <iostream>
 #include "cublas_v2.h"
-#include "papi.h"
+#include <cmath>
 #include <time.h>
 #include <stdio.h>
+#define TEST_RUN 10 
+#define ESP 10e-10
 using namespace std;
 
 __global__ void
@@ -289,6 +291,17 @@ void test_kernel4_1(int m, int n, int k,
 
     cout <<"Runing time of dgemm_kernel4_1: " << real_time << " ms." << endl;   
 
+}
+
+
+void check_C(double * dC, int m, int n, double * checkC) {
+  for (int i = 0; i < m * n; i++){
+    if (fabs(dC[i] - checkC[i]) > ESP){
+      cout << "error:" << fabs(dC[i] - checkC[i]) << endl;
+      return;
+    }
+  }
+  cout << "correct" << endl;
 }
 
 
