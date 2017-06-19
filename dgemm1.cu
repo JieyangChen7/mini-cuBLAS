@@ -184,7 +184,7 @@ void test(int m, int k){
     delete[] A;
     delete[] B;
     delete[] C;
-    
+    delete[] checkC;
 
 }
 
