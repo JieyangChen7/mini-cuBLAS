@@ -1,2 +1,2 @@
 
-nvcc --ptxas-options=-v dgemm2.cu -lcublas 
+nvcc --ptxas-options=-v –X ptxas –dlcm=cg dgemm2.cu -lcublas 
