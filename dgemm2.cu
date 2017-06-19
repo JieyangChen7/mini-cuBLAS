@@ -149,7 +149,7 @@ void test(int m, int k){
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
     //}
-    //check_C(C, m, n, checkC);
+    check_C(C, m, n, checkC);
 
     //free device memory
     cudaFree(dA);
@@ -314,7 +314,7 @@ void test_kernel4_2(int m, int n, int k,
 
     clock_t t = clock();
     for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel4_1<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+      dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
     
 
     cudaDeviceSynchronize();
