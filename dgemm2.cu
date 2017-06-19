@@ -272,7 +272,7 @@ void test_kernel4_1(int m, int n, int k,
             double * dA, int lda, 
             double * dB, int ldb, 
             double * dC, int ldc){    
-    int T = 128;
+    int T = 64;
     int tt = 4;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
@@ -500,7 +500,8 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
         r2 = *(A + 2 *lda);
         r3 = *(A + 3 *lda); 
       }
-
+      
+      #pragma unroll
       for (int i = 0; i < t; i++) {
       	temp1 += cacheA[threadIdx.x +i * T] * cacheB[l - j + i ];
       	temp2 += cacheA[threadIdx.x +i * T] * cacheB[l - j + i + 1];
