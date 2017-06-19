@@ -559,6 +559,7 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
 //Single registers: m, n, k, T, t, lda, ldb, ldc, j, l (12)
 //Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (30)
 //Shared mem.: T*2 (double)
+
 __global__ void
 dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
@@ -579,18 +580,18 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   cr1 = *(A + 1 * lda);
   cr2 = *(A + 2 * lda);
   cr3 = *(A + 3 * lda);
-  A += t * lda;
+  A += 4 * lda;
 
-  for (int j = 0; j < k; j += T){ 
+  for (int j = 0; j < k; j += 64){ 
     __syncthreads();
     cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
     cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
     __syncthreads();
-    B += T;
+    B += 64;
 
 
-    for (int l = j; l < j + T; l += t){
-      if (l + t < k) {
+    for (int l = j; l < j + 64; l += 4){
+      if (l + 4 < k) {
         nr0 = *(A + 0 *lda);
         nr1 = *(A + 1 *lda);
         nr2 = *(A + 2 *lda);
@@ -609,13 +610,13 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       temp1 += cr3 * cacheB[l - j + 3 ];
       temp2 += cr3 * cacheB[l - j + 3 + 1];
 
-      if (l + t < k) {
+      if (l + 4 < k) {
         cr0 = nr0;
         cr1 = nr1;
         cr2 = nr2;
         cr3 = nr3;
       }
-      A += t * lda;
+      A += 4 * lda;
     }
   }
   *C = temp1;
