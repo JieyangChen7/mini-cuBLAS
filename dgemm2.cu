@@ -125,8 +125,8 @@ void test(int m, int k){
     cudaMemcpy(dB, B, n * k * sizeof(double), cudaMemcpyHostToDevice);
     
     test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
-    test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    // test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    //test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+     test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
     // test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
     // test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
     // test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
@@ -337,15 +337,12 @@ dgemm_kernel2_1(int m, int n, int k, double * A, int lda, double * B, int ldb, d
   double b1 = 0;
   double b2 = 0;
   for (int i = 0; i < k; i++){
-    A += lda;
-    a = *A;
-
-    B += 1;
+    a = *(A + i * lda);
     b1 = *B;
     b2 = *(B + ldb);
 
-    temp1 = temp1 + a * b1;
-    temp2 = temp2 + a * b2;
+    temp1 = temp1 + a * *(B + i);
+    temp2 = temp2 + a * *(B + i + ldb);
   }
   *(C + 0 * ldc + idx) = temp1;
   *(C + 1 * ldc + idx) = temp2;
