@@ -33,7 +33,7 @@ dgemm_kernel4(int m, int n, int k, int T,
               double * C, int ldc);
 
 __global__ void
-dgemm_kernel4_1(int m, int n, int k, int T, 
+dgemm_kernel4_1(int m, int n, int k, int T, int t,
                 double * A, int lda, 
                 double * B, int ldb, 
                 double * C, int ldc);
