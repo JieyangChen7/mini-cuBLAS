@@ -414,23 +414,23 @@ dgemm_kernel4(int m, int n, int k, int T, double * A, int lda, double * B, int l
     if (j + T < k) {  
       A = A + T * lda;
       
-      r0 = *(A + threadIdx.x + 0 *lda);
-      r1 = *(A + threadIdx.x + 1 *lda);
-      r2 = *(A + threadIdx.x + 2 *lda);
-      r3 = *(A + threadIdx.x + 3 *lda);   
-      r4 = *(A + threadIdx.x + 4 *lda);
-      r5 = *(A + threadIdx.x + 5 *lda);
-      r6 = *(A + threadIdx.x + 6 *lda);
-      r7 = *(A + threadIdx.x + 7 *lda);
+      r0 = *(A + 0 *lda);
+      r1 = *(A + 1 *lda);
+      r2 = *(A + 2 *lda);
+      r3 = *(A + 3 *lda);   
+      r4 = *(A + 4 *lda);
+      r5 = *(A+ 5 *lda);
+      r6 = *(A + 6 *lda);
+      r7 = *(A + 7 *lda);
 
-      r8 = *(A + threadIdx.x + 8 *lda);
-      r9 = *(A + threadIdx.x + 9 *lda);
-      r10 = *(A + threadIdx.x + 10 *lda);
-      r11 = *(A + threadIdx.x + 11 *lda);
-      r12 = *(A + threadIdx.x + 12 *lda);
-      r13 = *(A + threadIdx.x + 13 *lda);
-      r14 = *(A + threadIdx.x + 14 *lda);
-      r15 = *(A + threadIdx.x + 15 *lda);
+      r8 = *(A + 8 *lda);
+      r9 = *(A + 9 *lda);
+      r10 = *(A + 10 *lda);
+      r11 = *(A + 11 *lda);
+      r12 = *(A + 12 *lda);
+      r13 = *(A + 13 *lda);
+      r14 = *(A + 14 *lda);
+      r15 = *(A + 15 *lda);
     }
 
     for (int i = 0; i < T; i++) {      
