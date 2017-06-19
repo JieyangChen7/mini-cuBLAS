@@ -91,7 +91,7 @@ void test(int m, int k){
     double * C = new double[m * n];
     double * checkC = new double[m * n];     
 
-    for (int i = 0;i < m * k; i++){
+    for (int i = 0; i < m * k; i++){
     	A[i] = i;
     }
 
@@ -138,7 +138,7 @@ void test(int m, int k){
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
     //}
-    //check_C(dC, m, n, checkC);
+    check_C(dC, m, n, checkC);
 
     //free device memory
     cudaFree(dA);
@@ -297,6 +297,7 @@ void test_kernel4_1(int m, int n, int k,
 
 void check_C(double * dC, int m, int n, double * checkC) {
   for (int i = 0; i < m * n; i++){
+    cout << i << endl;
     if (fabs(dC[i] - checkC[i]) > ESP){
       cout << "error:" << fabs(dC[i] - checkC[i]) << endl;
       return;
