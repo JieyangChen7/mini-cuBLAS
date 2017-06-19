@@ -556,9 +556,9 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
 }
 
 
-//Single registers: m, n, k, T, t, lda, ldb, ldc, idx, i, j, l (12)
-//Double registers: cache, cacheA, cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (30)
-//Shared mem.: T*2 + T*T (double)
+//Single registers: m, n, k, T, t, lda, ldb, ldc, j, l (12)
+//Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (30)
+//Shared mem.: T*2 (double)
 __global__ void
 dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
@@ -566,8 +566,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   extern __shared__ double cacheB[];
 
   //determine the row to process                                                                                                                                                                                                                                                           
-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  A = A + idx;
+  A = A + blockIdx.x * blockDim.x + threadIdx.x;
+  C = C + blockIdx.x * blockDim.x + threadIdx.x;
   double temp1 = 0;
   double temp2 = 0;
 
@@ -618,7 +618,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       A += t * lda;
     }
   }
-  *(C + 0 * ldc + idx) = temp1;
-  *(C + 1 * ldc + idx) = temp2;
+  *C = temp1;
+  *(C + ldc) = temp2;
     
 }
