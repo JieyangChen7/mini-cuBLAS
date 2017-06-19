@@ -4,7 +4,7 @@
 #include <cmath>
 #include <time.h>
 #include <stdio.h>
-#define TEST_RUN 10 
+#define TEST_RUN 50 
 #define ESP 10e-10
 using namespace std;
 
