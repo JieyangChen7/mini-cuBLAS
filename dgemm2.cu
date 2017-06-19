@@ -282,7 +282,7 @@ void test_kernel4_1(int m, int n, int k,
 
     clock_t t = clock();
     for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel4_1<<<blocksPerGrid, threadsPerBlock, ((T) + (T * tt)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+      dgemm_kernel4_1<<<blocksPerGrid, threadsPerBlock, ((T * 2) + (T * tt)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
     
 
     cudaDeviceSynchronize();
@@ -485,7 +485,7 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
     cacheA[threadIdx.x + i * T] = *(A + i * lda);
   }
   A += t * lda;
-  
+
   double r0, r1, r2, r3;//,r4,r5,r6,r7;
 
   for (int j = 0; j < k; j += T){ 
