@@ -307,8 +307,8 @@ void test_kernel4_2(int m, int n, int k,
             double * dA, int lda, 
             double * dB, int ldb, 
             double * dC, int ldc){    
-    int T = 256;
-    int tt = 4;
+    int T = 128;
+    int tt = 2;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
@@ -556,8 +556,8 @@ dgemm_kernel4_1(int m, int n, int k, int T, int t, double * A, int lda, double *
 }
 
 
-//Single registers: m, n, k, T, t, lda, ldb, ldc, idx, i, j, l (12)
-//Double registers: cache, cacheA, cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (30)
+//Single registers: m, n, k, T, t, lda, ldb, ldc, idx, j, l (11)
+//Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (28)
 //Shared mem.: T*2 + T*T (double)
 __global__ void
 dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
@@ -572,14 +572,14 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   double temp1 = 0;
   double temp2 = 0;
 
-  double nr0, nr1, nr2, nr3;
-  double cr0, cr1, cr2, cr3;
+  double nr0, nr1;//, nr2, nr3;
+  double cr0, cr1;//, cr2, cr3;
 
   //prefectch A 
   cr0 = *(A + 0 * lda);
   cr1 = *(A + 1 * lda);
-  cr2 = *(A + 2 * lda);
-  cr3 = *(A + 3 * lda);
+ // cr2 = *(A + 2 * lda);
+ // cr3 = *(A + 3 * lda);
   A += t * lda;
 
   for (int j = 0; j < k; j += T){ 
@@ -594,8 +594,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       if (l + t < k) {
         nr0 = *(A + 0 *lda);
         nr1 = *(A + 1 *lda);
-        nr2 = *(A + 2 *lda);
-        nr3 = *(A + 3 *lda); 
+    //    nr2 = *(A + 2 *lda);
+    //    nr3 = *(A + 3 *lda); 
       }
 
       temp1 += cr0 * cacheB[l - j + 0 ];
@@ -604,17 +604,17 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       temp1 += cr1 * cacheB[l - j + 1 ];
       temp2 += cr1 * cacheB[l - j + 1 + 1];
 
-      temp1 += cr2 * cacheB[l - j + 2 ];
-      temp2 += cr2 * cacheB[l - j + 2 + 1];
+    //  temp1 += cr2 * cacheB[l - j + 2 ];
+    //  temp2 += cr2 * cacheB[l - j + 2 + 1];
 
-      temp1 += cr3 * cacheB[l - j + 3 ];
-      temp2 += cr3 * cacheB[l - j + 3 + 1];
+     // temp1 += cr3 * cacheB[l - j + 3 ];
+     // temp2 += cr3 * cacheB[l - j + 3 + 1];
 
       if (l + t < k) {
         cr0 = nr0;
         cr1 = nr1;
-        cr2 = nr2;
-        cr3 = nr3;
+       // cr2 = nr2;
+       // cr3 = nr3;
       }
       A += t * lda;
     }
