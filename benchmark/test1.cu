@@ -4,7 +4,7 @@ using namespace std;
 
 __global__ void array_generator(int n, double * A) {
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  A[idx] = A + idx + blockDim.x;
+  A[idx] = double(A + idx + blockDim.x);
 }
 
 
