@@ -10,6 +10,17 @@ __global__ void array_generator(int n, double * A) {
   printf("%d\n", end-start);
 }
 
+__global__ void global_memory(int n, double * A, int space) {
+  int idx = blockIdx.x * space + threadIdx.x;
+  A = A[idx];
+  clock_t start = clock();
+  for (int i = 0; i < iteration; i++) {
+  	A = *(double *)A
+  }
+  clock_t end = clock();
+  printf("%d\n", end-start);
+}
+
 
 int main(){
   int n = 128;
