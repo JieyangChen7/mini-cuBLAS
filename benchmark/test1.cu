@@ -4,7 +4,10 @@ using namespace std;
 
 __global__ void array_generator(int n, double * A) {
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  clock_t start = clock();
   A[idx] = (unsigned long long int)(A + idx + blockDim.x);
+  clock_t end = clock();
+  printf("%d\n", end-start);
 }
 
 
