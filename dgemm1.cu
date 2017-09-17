@@ -428,10 +428,10 @@ dgemm_kernel2(int m, int n, int k, double * A, int lda, double * B, int ldb, dou
 	double b;
 	double temp = 0;
 	for (int i = 0;i < k; i++){
-		a = *(A + i * lda);
-	    b = *(B + i);
-	    temp = temp + a * b;
-	 }
+	  a = *(A + i * lda);
+	  b = *(B + i);
+	  temp = temp + a * b;
+	}
 	 *(C + idx) = temp;
 	
 }
