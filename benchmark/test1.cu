@@ -13,11 +13,11 @@ __global__ void array_generator(int n, double * A) {
 __global__ void global_memory(int n, double * A, int space, int iteration, unsigned long long int * T1, unsigned long long int * T2) {
   int idx = blockIdx.x * space + threadIdx.x;
   A = A + idx;
-  clock_t start = clock();
+  volatile clock_t start = clock();
   for (int i = 0; i < iteration; i++) {
   	A = (double *)(unsigned long long int) *A;
   }
-  clock_t end = clock();
+  volatile clock_t end = clock();
   T1[idx] = start;
   T2[idx] = end;
   //printf("%d ", end-start);
