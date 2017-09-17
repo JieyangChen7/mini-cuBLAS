@@ -15,7 +15,7 @@ __global__ void global_memory(int n, double * A, int space, int iteration, unsig
   A = A + idx;
   clock_t start = 0;
   clock_t end = 0;
-  unsigned long long sum_time = 0;
+  volatile unsigned long long sum_time = 0;
 
   for (int i = 0; i < iteration; i++) {
     start = clock();
