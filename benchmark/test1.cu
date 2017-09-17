@@ -13,8 +13,8 @@ __global__ void array_generator(int n, double * A) {
 __global__ void global_memory(int n, double * A, int space, int iteration, unsigned long long int * T) {
   int idx = blockIdx.x * space + threadIdx.x;
   A = A + idx;
-  clock_t start = 0;
-  clock_t end = 0;
+  volatile clock_t start = 0;
+  volatile clock_t end = 0;
   volatile unsigned long long sum_time = 0;
 
   for (int i = 0; i < iteration; i++) {
