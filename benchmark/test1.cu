@@ -30,6 +30,26 @@ __global__ void global_memory(int n, double * A, int space, int iteration, unsig
 
 }
 
+__global__ void tid_time(int iteration, unsigned long long int * T) {
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  volatile clock_t start = 0;
+  volatile clock_t end = 0;
+  volatile unsigned long long sum_time = 0;
+  int idx;
+  for (int i = 0; i < iteration; i++) {
+    start = clock();
+    idx += blockIdx.x * blockDim.x + threadIdx.x;
+    end = clock();
+    sum_time += (end - start);
+  }
+  T[idx] = sum_time;
+
+  //printf("%d ", end-start);
+  //printf("SE: %d %d", start, end);
+
+}
+
+
 
 int main(){
   int n = 128;
@@ -42,8 +62,9 @@ int main(){
   cudaMalloc(&dA, (n + B) * sizeof(double));
   cudaMalloc((void**)&dT, n * sizeof(unsigned long long int));
 
-  array_generator<<<n/B, B>>>(n, dA);
-  global_memory<<<n/B, B>>>(n, dA, B, 1, dT);
+  //array_generator<<<n/B, B>>>(n, dA);
+  //global_memory<<<n/B, B>>>(n, dA, B, 1, dT);
+  tid_time<<<n/B, B>>>(1, dT);
   cudaMemcpy(A, dA, (n + B) * sizeof(double), cudaMemcpyDeviceToHost);
   cudaMemcpy(T, dT, n * sizeof(unsigned long long int), cudaMemcpyDeviceToHost);
  
