@@ -52,14 +52,14 @@ __global__ void tid_time(int iteration, unsigned long long int * T) {
                   "mad.lo.s32 %1, %3, %4, %5;\n\t"
                   "mov.u32 %2, %%clock;\n\t"
                   "}"
-                  :  "=r"(start), "=r"(idx2), "=r"(end): "r"(a), "r"(b), "r"(c)
+                  :  "=r"(start), "=r"(idx2), "=r"(end): "r"(a), "r"(b), "r"(c) : "memory"
                   );
 
     
     //end = clock();
     sum_time += (end - start);
   }
-  printf("%d", idx2);
+  //printf("%d", idx2);
   T[idx] = sum_time;
 
   //printf("%d ", end-start);
