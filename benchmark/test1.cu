@@ -32,8 +32,8 @@ __global__ void global_memory(int n, double * A, int space, int iteration, unsig
 
 __global__ void tid_time(int iteration, unsigned long long int * T) {
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  clock_t start = 0;
-  clock_t end = 0;
+  volatile clock_t start = 0;
+  volatile clock_t end = 0;
   unsigned long long sum_time = 0;
   int idx2 = 0;
   int a = blockIdx.x;
