@@ -35,13 +35,14 @@ __global__ void tid_time(int iteration, unsigned long long int * T) {
   volatile clock_t start = 0;
   volatile clock_t end = 0;
   unsigned long long sum_time = 0;
-  volatile register int idx2 = 0;
-   register int a = blockIdx.x;
-   register int b = blockDim.x;
-   register int c = threadIdx.x;
+  register int idx2 = 0;
+  register int a = blockIdx.x;
+  register int b = blockDim.x;
+  register int c = threadIdx.x;
   for (int i = 0; i < iteration; i++) {
     start = clock();
-    idx2 = a * b + c;
+    //idx2 = a * b + c;
+    asm("mad.s32 %0, %1, %2, %3;" : "=r"(idx2) : "r"(a), "r"(b), "r"(c));
     end = clock();
     sum_time += (end - start);
   }
