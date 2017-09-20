@@ -43,9 +43,9 @@ __global__ void tid_time(int iteration, unsigned long long int * T) {
     //start = clock();
     //idx2 = a * b + c;
     asm volatile (
-      "mov.u32 %0 %%clock;" : "=r(start)\n\t"
-      "mad.lo.s32 %1, %2, %3, %4;" : "=r"(idx2) : "r"(a), "r"(b), "r"(c) :"memory"\n\t
-      "mov.u32 %5 %%clock;" : "=r(end)\n\t"
+      "mov.u32 %0 %%clock;\n\t" : "=r(start)
+      "mad.lo.s32 %1, %2, %3, %4;\n\t" : "=r"(idx2) : "r"(a), "r"(b), "r"(c) :"memory"
+      "mov.u32 %5 %%clock;\n\t" : "=r"(end)
       );
     
     //end = clock();
