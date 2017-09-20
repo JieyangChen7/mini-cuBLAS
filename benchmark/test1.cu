@@ -32,18 +32,23 @@ __global__ void global_memory(int n, double * A, int space, int iteration, unsig
 
 __global__ void tid_time(int iteration, unsigned long long int * T) {
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  volatile clock_t start = 0;
-  volatile clock_t end = 0;
+  volatile register clock_t start = 0;
+  volatile register clock_t end = 0;
   unsigned long long sum_time = 0;
-  volatile register int idx2 = 0;
-  volatile register int a = 1;
-  volatile register int b = 2;
-  volatile register int c = 3;
+   register int idx2 = 0;
+   register int a = 1;
+   register int b = 2;
+   register int c = 3;
   for (int i = 0; i < iteration; i++) {
-    start = clock();
+    //start = clock();
     //idx2 = a * b + c;
-    asm volatile ("mad.lo.s32 %0, %1, %2, %3;" : "=r"(idx2) : "r"(a), "r"(b), "r"(c) :"memory");
-    end = clock();
+    asm volatile (
+      "mov.u32 %0 %%clock;" : "=r(start)\n\t"
+      "mad.lo.s32 %1, %2, %3, %4;" : "=r"(idx2) : "r"(a), "r"(b), "r"(c) :"memory"\n\t
+      "mov.u32 %5 %%clock;" : "=r(end)\n\t"
+      );
+    
+    //end = clock();
     sum_time += (end - start);
   }
   T[idx] = sum_time;
