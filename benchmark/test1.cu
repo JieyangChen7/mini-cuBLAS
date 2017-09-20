@@ -59,6 +59,7 @@ __global__ void tid_time(int iteration, unsigned long long int * T) {
     //end = clock();
     sum_time += (end - start);
   }
+  printf("%d", idx2);
   T[idx] = sum_time;
 
   //printf("%d ", end-start);
