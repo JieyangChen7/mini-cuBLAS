@@ -42,7 +42,7 @@ __global__ void tid_time(int iteration, unsigned long long int * T) {
   for (int i = 0; i < iteration; i++) {
     start = clock();
     //idx2 = a * b + c;
-    asm volatile ("mad.lo.s32 %0, %1, %2, %3;" : "=r"(idx2) ::"memory" "r"(a), "r"(b), "r"(c));
+    asm volatile ("mad.lo.s32 %0, %1, %2, %3;" : "=r"(idx2) : "r"(a), "r"(b), "r"(c) :"memory");
     end = clock();
     sum_time += (end - start);
   }
