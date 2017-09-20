@@ -49,7 +49,7 @@ __global__ void tid_time(int iteration, unsigned long long int * T) {
 
     asm volatile (
                   "mov.u32 %0, %%clock;" : "=r"(start)
-                  "mad.lo.s32 %0, %1, %2, %3;" : "=r"(idx2) : "r"(a), "r"(b), "r"(c))
+                  "mad.lo.s32 %0, %1, %2, %3;" : "=r"(idx2) : "r"(a), "r"(b), "r"(c)
                   "mov.u32 %0, %%clock;" : "=r"(end)
                   );
 
