@@ -42,11 +42,11 @@ __global__ void tid_time(int iteration, unsigned long long int * T) {
   for (int i = 0; i < iteration; i++) {
     //start = clock();
     //idx2 = a * b + c;
-    asm volatile (
-      "mov.u32 %0 %%clock;\n\t" : "=r"(start)
-      "mad.lo.s32 %1, %2, %3, %4;\n\t" : "=r"(idx2) : "r"(a), "r"(b), "r"(c) :"memory"
-      "mov.u32 %5 %%clock;\n\t" : "=r"(end)
-      );
+    asm volatile ( "mov.u32 %0 %%clock;" : "=r"(start));
+
+    asm volatile ("mad.lo.s32 %0, %1, %2, %3;\n\t" : "=r"(idx2) : "r"(a), "r"(b), "r"(c));
+    asm volatile ("mov.u32 %0 %%clock;\n\t" : "=r"(end));
+    
     
     //end = clock();
     sum_time += (end - start);
