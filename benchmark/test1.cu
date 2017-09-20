@@ -36,9 +36,9 @@ __global__ void tid_time(int iteration, unsigned long long int * T) {
   volatile clock_t end = 0;
   unsigned long long sum_time = 0;
   volatile int idx2 = 0;
-  int a = blockIdx.x;
-  int b = blockDim.x;
-  int c = threadIdx.x;
+  volatile int a = blockIdx.x;
+  volatile int b = blockDim.x;
+  volatile int c = threadIdx.x;
   for (int i = 0; i < iteration; i++) {
     start = clock();
     idx2 += a * b + c;
