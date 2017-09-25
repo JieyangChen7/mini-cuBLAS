@@ -155,22 +155,22 @@ void test(int m, int k){
    
 
     test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
-	test_cublas_mv(m, n, k, dA, lda, dB, ldb,  dC, ldc);
+    //test_cublas_mv(m, n, k, dA, lda, dB, ldb,  dC, ldc);
     test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	test_kernel4_2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-	test_kernel4_3(m, n, k, dA, lda, dB, ldb, dC, ldc);
-
+    //test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    //test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    //test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    //test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    //test_kernel4_2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    //test_kernel4_3(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    
 
 
    
     cudaMemcpy(C, dC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
     cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
 
-	//check_C(C, m, checkC);    
+    check_C(C, m, checkC);    
     
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
@@ -435,6 +435,32 @@ dgemm_kernel2(int m, int n, int k, double * A, int lda, double * B, int ldb, dou
 	 *(C + idx) = temp;
 	
 }
+
+__global__ void
+dgemm_kernel2_sass(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
+{
+  //determine the row to process                                                                                                   
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+  register double a;
+  register double b;
+  register double temp = 0;
+  lda = lda * 8;
+  for (int i = 0;i < k; i++){
+    asm volatile ("{\n\t"
+		  "ld.global %1, [%2]\n\t"
+		  "ld.global %3, [%4]\n\t"
+		  "fma.f64 %5,%1,%3,%6\n\t"
+		  "add.u32 %2, &2, %7\n\t"
+		  "add.u32 %4, %4, 0x8"
+		  "}"
+		  : "=r"(a), "=r"(A), "=r"(b), "=r"(B), "=r"(temp)
+       
+  }
+  *(C + idx) = temp;
+
+}
+
 
 __global__ void
 dgemm_kernel2_1(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
