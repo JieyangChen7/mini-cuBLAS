@@ -16,6 +16,12 @@ dgemm_kernel2(int m, int n, int k,
 			  double * C, int ldc);
 
 __global__ void
+dgemm_kernel2_sass(int m, int n, int k,
+	      double * A, int lda,
+	      double * B, int ldb,
+	      double * C, int ldc);
+
+__global__ void
 dgemm_kernel2_1(int m, int n, int k, 
 				double * A, int lda, 
 				double * B, int ldb, 
@@ -444,18 +450,21 @@ dgemm_kernel2_sass(int m, int n, int k, double * A, int lda, double * B, int ldb
   A = A + idx;
   register double a;
   register double b;
+  register double * AA =A;
+  register double * BB = B;
   register double temp = 0;
-  lda = lda * 8;
+  register long long int lda1 = lda * 8;
   for (int i = 0;i < k; i++){
     asm volatile ("{\n\t"
-		  "ld.global %1, [%2]\n\t"
-		  "ld.global %3, [%4]\n\t"
-		  "fma.f64 %5,%1,%3,%6\n\t"
-		  "add.u32 %2, &2, %7\n\t"
-		  "add.u32 %4, %4, 0x8"
+		  "ld.global.f64 %0, [%2];\n\t"
+		  "ld.global.f64 %1, [%3];\n\t"
+		  "fma.rz.f64 %4,%0,%1,%4;\n\t"
+		  "add.u64 %2, %2, %5;\n\t"
+		  "add.u64 %3, %3, 0x8;\n\t"
 		  "}"
-		  : "=r"(a), "=r"(A), "=r"(b), "=r"(B), "=r"(temp)
-       
+		  : "+d"(a), "+d"(b), "+l"(AA), "+l"(BB),
+		    "+d"(temp):"l"(lda1)
+		 );
   }
   *(C + idx) = temp;
 
