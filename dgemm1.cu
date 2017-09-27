@@ -163,6 +163,7 @@ void test(int m, int k){
     test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
     //test_cublas_mv(m, n, k, dA, lda, dB, ldb,  dC, ldc);
     test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    test_kernel2_sass(m, n, k, dA, lda, dB, ldb, dC, ldc);
     //test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
     //test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
     //test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
@@ -273,6 +274,31 @@ void test_kernel2(int m, int n, int k,
     float real_time = ((float)t)/CLOCKS_PER_SEC;
 
     cout <<"Runing time of dgemm_kernel2: " << real_time << " ms." << endl;    
+
+} 
+
+void test_kernel2_sass(int m, int n, int k, 
+          double * dA, int lda, 
+          double * dB, int ldb, 
+          double * dC, int ldc){
+
+
+    int T = 128;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
+    
+    clock_t t = clock();
+
+    for (int i = 0; i < TEST_RUN; i++)
+      dgemm_kernel2_sass<<<blocksPerGrid, threadsPerBlock>>>(m, n, k, 
+              dA, lda, dB, ldb, dC, ldc);
+
+
+    cudaDeviceSynchronize();
+    t = clock() - t;
+    float real_time = ((float)t)/CLOCKS_PER_SEC;
+
+    cout <<"Runing time of dgemm_kernel2_sass: " << real_time << " ms." << endl;    
 
 } 
 
