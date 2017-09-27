@@ -74,6 +74,11 @@ void test_kernel2(int m, int n, int k,
 				  double * dB, int ldb, 
 				  double * dC, int ldc);
 
+void test_kernel2_sass(int m, int n, int k, 
+          double * dA, int lda, 
+          double * dB, int ldb, 
+          double * dC, int ldc);
+
 void test_kernel2_1(int m, int n, int k, 
 				    double * dA, int lda, 
 				    double * dB, int ldb, 
