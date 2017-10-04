@@ -1,0 +1,91 @@
+# Kernel: dgemm_kernel2
+# Arch: sm_35
+# InsCnt: 
+# RegCnt: 17
+# SharedSize: 0
+# BarCnt: 0
+# Params(10):
+#	ord:addr:size:align
+#	0:0x140:4:0
+#	1:0x144:4:0
+#	2:0x148:4:0
+#	3:0x150:8:0
+#	4:0x158:4:0
+#	5:0x160:8:0
+#	6:0x168:4:0
+#	7:0x170:8:0
+#	8:0x178:4:0
+#	9:0x180:8:0
+#
+# Instructions:
+
+<CONSTANT_MAPPING>
+    blockDimX : c[0x0][0x28]
+    blockDimY : c[0x0][0x2c]
+    blockDimZ : c[0x0][0x30]
+    gridDimX : c[0x0][0x34]
+    gridDimY : c[0x0][0x38]
+    gridDimZ : c[0x0][0x3c]
+
+    param_0 : c[0x0][0x140]
+    param_1 : c[0x0][0x144]
+    param_2 : c[0x0][0x148]
+    param_3[0] : c[0x0][0x150]
+    param_3[1] : c[0x0][0x154]
+    param_4 : c[0x0][0x158]
+    param_5[0] : c[0x0][0x160]
+    param_5[1] : c[0x0][0x164]
+    param_6 : c[0x0][0x168]
+    param_7[0] : c[0x0][0x170]
+    param_7[1] : c[0x0][0x174]
+    param_8 : c[0x0][0x178]
+    param_9[0] : c[0x0][0x180]
+    param_9[1] : c[0x0][0x184]
+</CONSTANT_MAPPING>
+
+-:-:D:-:00      MOV R1, c[0x0][0x44];
+-:-:-:-:03      S2R R9, SR_CTAID.X;
+-:-:D:-:00      S2R R10, SR_TID.X;
+-:-:D:-:00      S2R R11, SR_CLOCKLO;
+-:-:D:-:04      MOV R0, param_2;
+-:-:-:-:08      MOV R2, RZ;
+-:-:-:-:12      ISETP.LT.AND P0, PT, R0, 0x1, PT;
+-:-:D:-:04      MOV R3, RZ;
+-:-:-:-:11  @P0 BRA TARGET1;
+-:-:D:-:04      IMAD R7, R9, blockDimX, R10;
+-:-:-:-:08      MOV32I R12, 0x8;
+-:-:D:-:04      MOV R0, param_4;
+-:-:-:-:08      IMAD R6.CC, R7, R12, param_3[0];
+-:-:-:-:00      SHF.L R0, RZ, 0x3, R0;
+-:-:D:-:04      MOV R4, param_5[0];
+-:-:-:-:03      MOV R5, param_5[1];
+-:-:D:-:04      MOV R2, RZ;
+-:-:-:-:00      IMAD.HI.X R7, R7, R12, param_3[1];
+-:-:D:-:04      MOV R3, RZ;
+-:-:-:-:02      MOV R8, RZ;
+-:-:D:-:00      ISET.LT.AND R16, R0, RZ, PT;
+-:-:D:-:04      LD.E.64 R12, [R4];
+-:G:-:-:03      IADD R8, R8, 0x1;
+-:G:-:-:10      LD.E.64 R14, [R6];
+-:-:-:-:12      IADD R4.CC, R4, 0x8;
+-:-:D:-:04      ISETP.LT.AND P0, PT, R8, param_2, PT;
+-:-:-:-:00      IADD.X R5, R5, RZ;
+-:-:-:-:00      IADD R6.CC, R6, R0;
+-:-:-:-:11      DFMA R2, R14, R12, R2;
+-:-:-:-:00      IADD.X R7, R7, R16;
+-:-:-:-:14  @P0 BRA TARGET2;
+TARGET1:
+-:-:-:-:00      IMAD R0, R9, blockDimX, R10;
+-:-:D:-:00      ISET.LT.AND R5, R11, RZ, PT;
+-:-:D:-:00      S2R R4, SR_CLOCKLO;
+-:-:-:-:08      MOV32I R9, 0x8;
+-:-:D:-:04      ISET.LT.AND R8, R4, RZ, PT;
+-:-:-:-:12      IMAD R6.CC, R0, R9, param_7[0];
+-:-:-:-:00      IMAD.HI.X R7, R0, R9, param_7[1];
+-:-:-:-:07      ISUB R10.CC, R4, R11;
+-:G:-:-:04      ST.E.64 [R6], R2;
+-:-:-:-:00      ISUB.X R11, R8, R5;
+-:-:-:-:12      IMAD R4.CC, R0, R9, param_9[0];
+-:-:-:-:08      IMAD.HI.X R5, R0, R9, param_9[1];
+-:-:D:-:04      ST.E.64 [R4], R10;
+-:G:-:-:14      EXIT;

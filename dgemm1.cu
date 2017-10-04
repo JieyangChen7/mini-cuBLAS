@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <cmath>
-#define TEST_RUN 10 
+#define TEST_RUN 100
 #define ESP 10e-10
 using namespace std;
 
@@ -166,15 +166,15 @@ void test(int m, int k){
    
 
     test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
-    //test_cublas_mv(m, n, k, dA, lda, dB, ldb,  dC, ldc);
-    test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    test_kernel2_sass(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    test_cublas_mv(m, n, k, dA, lda, dB, ldb,  dC, ldc);
+    //test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    //test_kernel2_sass(m, n, k, dA, lda, dB, ldb, dC, ldc);
     //test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
     //test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
     //test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
     //test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
     //test_kernel4_2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    //test_kernel4_3(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    test_kernel4_3(m, n, k, dA, lda, dB, ldb, dC, ldc);
     
 
 
@@ -277,9 +277,12 @@ void test_kernel2(int m, int n, int k,
     cudaDeviceSynchronize();
     t = clock() - t;
     float real_time = ((float)t)/CLOCKS_PER_SEC;
-
-    cout <<"Runing time of dgemm_kernel2: " << real_time << " ms." << endl;    
-
+    
+    
+    float mem_access = (2*m*n*sizeof(double)*TEST_RUN)/1e9;
+   
+    cout <<"Runing time of dgemm_kernel2: " << real_time << " ms." <<endl;    
+    
 } 
 
 void test_kernel2_sass(int m, int n, int k, 
@@ -458,6 +461,8 @@ void check_C(double * dC, int m, double * checkC) {
 __global__ void
 dgemm_kernel2(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
+
+        
 	//determine the row to process
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	A = A + idx;
