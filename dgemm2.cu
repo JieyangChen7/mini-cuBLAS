@@ -565,7 +565,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   // store B (T * 2)                                                                                                                                                                                                                                                                       
   extern __shared__ double cacheB[];
 
-  //determine the row to process                                                                                                                                                                                                                                                           
+  //determine the row to process                                                                                                                                                                                                                          
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
   C = C + idx;
