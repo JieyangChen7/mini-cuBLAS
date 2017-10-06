@@ -159,14 +159,7 @@ __global__ void register_latency(int iteration, unsigned long long int * T) {
   (unsigned long long int)a_curr8 +
   (unsigned long long int)a_curr9 +
   (unsigned long long int)a_curr10 +
-  (unsigned long long int)a_curr11 +
-  (unsigned long long int)a_curr12 +
-  (unsigned long long int)a_curr13 +
-  (unsigned long long int)a_curr14 +
-  (unsigned long long int)a_curr15 +
-  (unsigned long long int)a_curr16 ;
-}
-   register int start = 0;
+  (unsigned long long int)a_curr11 +   register int start = 0;
     register int end = 0;
    unsigned long long sum_time = 0;
 
