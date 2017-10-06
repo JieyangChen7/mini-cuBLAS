@@ -999,7 +999,7 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 
 void test_2048(int block_size){
   int iteration = 1000;
-  int access_per_iter = 1;
+  int access_per_iter = 7;
   int SM = 15;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
@@ -1023,7 +1023,7 @@ void test_2048(int block_size){
     printf("<array_gene>Error: %s\n", cudaGetErrorString(err));
 
   clock_t t = clock();
-  global_memory_2048<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  global_memory_2048_shared<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
   cudaDeviceSynchronize();
   t = clock() - t;
 
