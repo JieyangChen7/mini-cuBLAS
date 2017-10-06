@@ -93,15 +93,15 @@ __global__ void global_memory_2048_shared(double * A, int iteration, int access_
   # pragma unroll 1
   for (int i = 0; i < iteration; i++) {
     //start = clock();                                                                                                                      
-    cache[threadIdx.x * access_per_iter] = (double *)(unsigned long long int) *cache[threadIdx.x * access_per_iter];
-    cache[threadIdx.x * access_per_iter + 1] = (double *)(unsigned long long int) *cache[threadIdx.x * access_per_iter + 1];
+    cache[threadIdx.x * access_per_iter] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter];
+    cache[threadIdx.x * access_per_iter + 1] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 1];
     
-    cache[threadIdx.x * access_per_iter + 2] = (double *)(unsigned long long int) *cache[threadIdx.x * access_per_iter + 2];
-    cache[threadIdx.x * access_per_iter + 3] = (double *)(unsigned long long int) *cache[threadIdx.x * access_per_iter + 3];
+    cache[threadIdx.x * access_per_iter + 2] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 2];
+    cache[threadIdx.x * access_per_iter + 3] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 3];
     
-    cache[threadIdx.x * access_per_iter + 4] = (double *)(unsigned long long int) *cache[threadIdx.x * access_per_iter + 4];
-    cache[threadIdx.x * access_per_iter + 5] = (double *)(unsigned long long int) *cache[threadIdx.x * access_per_iter + 5];
-    cache[threadIdx.x * access_per_iter + 6] = (double *)(unsigned long long int) *cache[threadIdx.x * access_per_iter + 6];
+    cache[threadIdx.x * access_per_iter + 4] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 4];
+    cache[threadIdx.x * access_per_iter + 5] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 5];
+    cache[threadIdx.x * access_per_iter + 6] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 6];
 
     //end = clock(); 
   }
