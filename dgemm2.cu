@@ -144,6 +144,7 @@ float test_kernel_shared(int m, int n, int k,
 
       float real_time = milliseconds / 1000;
       long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) * TEST_RUN;
+      cout << total_bytes << endl;
       double total_gb = total_gb / 1e9;
       cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
            <<" ("  << base/real_time <<"x)."
