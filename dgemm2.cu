@@ -77,7 +77,7 @@ for (int T = min(1024, m); T <= min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * n + m * 2 * m) * sizeof(double);
+    long long total_bytes = (m * n + m * 2 * (m / 32)) * sizeof(double);
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
