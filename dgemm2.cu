@@ -21,29 +21,29 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   register double b1 = 0;
   register double b2 = 0;
 
-  register double a2 = 0;
-  register double b21 = 0;
-  register double b22 = 0;
+  // register double a2 = 0;
+  // register double b21 = 0;
+  // register double b22 = 0;
 
-  #pragma unroll 1
-  for (int i = 0; i < k; i+=2){
+  #pragma unroll 
+  for (int i = 0; i < k; i+=1){
     //load data
     a = *A;
     b1 = *B;
     b2 = *(B + ldb);
     A += lda;
     B += 1;
-    a2 = *A;
-    b21 = *B;
-    b22 = *(B + ldb);
-    A += lda;
-    B += 1;
+    // a2 = *A;
+    // b21 = *B;
+    // b22 = *(B + ldb);
+    // A += lda;
+    // B += 1;
 
     //compute
     temp1 = temp1 + a * b1;
     temp2 = temp2 + a * b2;
-    temp1 = temp1 + a2 * b21;
-    temp2 = temp2 + a2 * b22;
+    // temp1 = temp1 + a2 * b21;
+    // temp2 = temp2 + a2 * b22;
   }
 
   *(C + 0 * ldc + idx) = temp1;
