@@ -1009,8 +1009,8 @@ void test_2048(int block_size){
   double * A = new double[n];
   unsigned long long int * start = new unsigned long long int[n];
   unsigned long long int * end = new unsigned long long int[n];
-  //unsigned long long int * dStart;
-  //unsigned long long int * dEnd;
+  unsigned long long int * dStart;
+  unsigned long long int * dEnd;
   double * dA;
   cudaMalloc(&dA, (n) * sizeof(double));
   //cudaMalloc((void**)&dStart, n * sizeof(unsigned long long int));
