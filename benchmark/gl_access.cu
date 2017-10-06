@@ -3,7 +3,7 @@
 #include <climits>
 #include <algorithm>
 #include <cuda_profiler_api.h>
-#define LL 15 * 1024 
+#define LL 15 * 2048 
 using namespace std;
 
 __global__ void array_generator(double * A, int iteration, int access_per_iter) {
@@ -361,9 +361,9 @@ __global__ void global_memory_1024_3(double * A, int iteration, int access_per_i
 
 void test_2048(int block_size){
   int iteration = 1000;
-  int access_per_iter = 12;
+  int access_per_iter = 1;
   int SM = 15;
-  int block_per_sm = 1024/block_size;
+  int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
   //int block_size = 1024;
 
@@ -385,7 +385,7 @@ void test_2048(int block_size){
     printf("<array_gene>Error: %s\n", cudaGetErrorString(err));
 
   clock_t t = clock();
-  global_memory_1024<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  global_memory_1024_3<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
   cudaDeviceSynchronize();
   t = clock() - t;
 
@@ -407,7 +407,7 @@ void test_2048(int block_size){
 
 void test_1024(int block_size){
   int iteration = 1000;
-  int access_per_iter = 10;
+  int access_per_iter = 1;
   int SM = 15;
   int block_per_sm = 1024/block_size;
   int total_block = SM * block_per_sm;
@@ -459,8 +459,13 @@ void test_1024(int block_size){
 
 
 int main(){
-  //int i = 1024;
-  for (int i = 64; i <= 1024; i *= 2) {
+  // //int i = 1024;
+  // for (int i = 64; i <= 1024; i *= 2) {
+  //   cout << "block size: " << i << endl;
+  //   test_1024(i);
+  // }
+
+  for (int i = 128; i <= 1024; i *= 2) {
     cout << "block size: " << i << endl;
     test_1024(i);
   }
