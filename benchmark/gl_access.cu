@@ -342,7 +342,7 @@ __global__ void global_memory_1024_3(double * A, int iteration, int access_per_i
   for (int i = 0; i < iteration; i++) {
     //start = clock();                                                                                                                      
     A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
+   // B = (double *)(unsigned long long int) *B;
     // A = (double *)(unsigned long long int) *A;
     // B = (double *)(unsigned long long int) *B;
     // A = (double *)(unsigned long long int) *A;
@@ -364,7 +364,7 @@ __global__ void global_memory_1024_3(double * A, int iteration, int access_per_i
     //end = clock(); 
   }
   *A += (unsigned long long int) *A;
-  *A += (unsigned long long int) *B;
+ // *A += (unsigned long long int) *B;
 }
 
 
