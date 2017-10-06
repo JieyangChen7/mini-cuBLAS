@@ -215,7 +215,7 @@ float test_kernel2_1(int m, int n, int k,
 
     cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel2_1<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
+      dgemm_kernel_native<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
                   dA, lda, dB, ldb, dC, ldc);
     cudaEventRecord(stop);
 
