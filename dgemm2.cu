@@ -10,10 +10,34 @@ using namespace std;
 
 
 __global__ void
-dgemm_kernel_naive(int m, int n, int k, 
-                double * A, int lda, 
-                double * B, int ldb, 
-                double * C, int ldc);
+dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
+{
+  //determine the row to process                                                        
+  register int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+  register double temp1 = 0;
+  register double temp2 = 0;
+  register double a = 0;
+  register double b1 = 0;
+  register double b2 = 0;
+  
+  for (int i = 0; i < k; i++){
+    //load data
+    a = *(A + i * lda);
+    b1 = *B;
+    b2 = *(B + ldb);
+
+    //compute
+    temp1 = temp1 + a * *(B + i);
+    temp2 = temp2 + a * *(B + i + ldb);
+  }
+
+  *(C + 0 * ldc + idx) = temp1;
+  *(C + 1 * ldc + idx) = temp2;
+  
+}
+
+
 
 __global__ void
 dgemm_kernel3(int m, int n, int k, int T, 
@@ -354,33 +378,7 @@ void check_C(double * dC, int m, int n, double * checkC) {
 
 
 
-__global__ void
-dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
-{
-  //determine the row to process                                                        
-  register int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  A = A + idx;
-  register double temp1 = 0;
-  register double temp2 = 0;
-  register double a = 0;
-  register double b1 = 0;
-  register double b2 = 0;
-  
-  for (int i = 0; i < k; i++){
-    //load data
-    a = *(A + i * lda);
-    b1 = *B;
-    b2 = *(B + ldb);
 
-    //compute
-    temp1 = temp1 + a * *(B + i);
-    temp2 = temp2 + a * *(B + i + ldb);
-  }
-
-  *(C + 0 * ldc + idx) = temp1;
-  *(C + 1 * ldc + idx) = temp2;
-  
-}
 
 __global__ void
 dgemm_kernel3(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
