@@ -249,7 +249,7 @@ void test_kernel_prefetch(int m, int n, int k,
             double * dC, int ldc,
             float base){
 
-    for (int T = 16; T <= 64; T *= 2) {
+    for (int T = 16; T <= 16; T *= 2) {
     //int T = 16;
       int blocksPerGrid = m / T;
       int threadsPerBlock = T;
