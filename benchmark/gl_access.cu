@@ -34,15 +34,15 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   //volatile clock_t end = 0;
   //volatile unsigned long long sum_time = 0;
 
-   double * a_next1 = A;
-   double * a_next2 = A + LL;
-   double * a_next3 = A + LL * 2;
-   double * a_next4 = A + LL * 3;
-   double * a_next5 = A + LL * 4;
-   double * a_next6 = A + LL * 5;
-   double * a_next7 = A + LL * 6;
+   register double * a_next1 = A;
+   register double * a_next2 = A + LL;
+   register double * a_next3 = A + LL * 2;
+   register double * a_next4 = A + LL * 3;
+   register double * a_next5 = A + LL * 4;
+   register double * a_next6 = A + LL * 5;
+   register double * a_next7 = A + LL * 6;
 
-  # pragma unroll 
+  # pragma unroll 1 
   for (int i = 0; i < ITERATION; i++) {
     //start = clock();                                                                                                                      
     a_next1 = (double *)(unsigned long long int) *a_next1;
@@ -1227,7 +1227,7 @@ int main(){
       test_1024(i);
     }
   } else if (LL / 15 == 2048) {
-    for (int i = 128; i <= 1024; i *= 2) {
+    for (int i = 128; i <= 128; i *= 2) {
       cout << "block size: " << i << endl;
       test_2048(i);
     }
