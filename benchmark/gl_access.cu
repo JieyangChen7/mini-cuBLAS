@@ -583,7 +583,7 @@ void test_1024(int block_size){
 
 void test_512(int block_size){
   int iteration = 1000;
-  int access_per_iter = 34;
+  int access_per_iter = 55;
   int SM = 15;
   int block_per_sm = 512/block_size;
   int total_block = SM * block_per_sm;
@@ -646,7 +646,7 @@ int main(){
       test_2048(i);
     }
   } else if (LL / 15 == 512) {
-    for (int i = 32; i <= 1024; i *= 2) {
+    for (int i = 32; i <= 512; i *= 2) {
       cout << "block size: " << i << endl;
       test_512(i);
     }
