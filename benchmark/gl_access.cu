@@ -3,7 +3,8 @@
 #include <climits>
 #include <algorithm>
 #include <cuda_profiler_api.h>
-#define LL 24 * 2048 
+#define SM 24
+#define LL SM * 2048 
 #define ITERATION 1000
 using namespace std;
 
@@ -1000,7 +1001,7 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 void test_2048(int block_size){
   int iteration = 1000;
   int access_per_iter = 7;
-  int SM = 24;
+  //int SM = 24;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
   //int block_size = 1024;
@@ -1064,7 +1065,7 @@ void test_2048(int block_size){
 void test_1024(int block_size){
   int iteration = 1000;
   int access_per_iter = 23;
-  int SM = 15;
+  //int SM = 15;
   int block_per_sm = 1024/block_size;
   int total_block = SM * block_per_sm;
   //int block_size = 1024;
@@ -1170,7 +1171,7 @@ void test_512(int block_size){
 void test_256(int block_size){
   int iteration = 500;
   int access_per_iter = 120;
-  int SM = 15;
+  //int SM = 15;
   int block_per_sm = 256/block_size;
   int total_block = SM * block_per_sm;
   //int block_size = 1024;
@@ -1221,22 +1222,22 @@ void test_256(int block_size){
 
 int main(){
   cout << "start benchmark" << endl;
-  if (LL / 15 == 1024) { 
+  if (LL / SM == 1024) { 
     for (int i = 64; i <= 1024; i *= 2) {
       cout << "block size: " << i << endl;
       test_1024(i);
     }
-  } else if (LL / 15 == 2048) {
+  } else if (LL / SM == 2048) {
     for (int i = 128; i <= 1024; i *= 2) {
       cout << "block size: " << i << endl;
       test_2048(i);
     }
-  } else if (LL / 15 == 512) {
+  } else if (LL / SM == 512) {
     for (int i = 32; i <= 512; i *= 2) {
       cout << "block size: " << i << endl;
       test_512(i);
     }
-  } else if (LL / 15 == 256) {
+  } else if (LL / SM == 256) {
     for (int i = 16; i <= 256; i *= 2) {
       cout << "block size: " << i << endl;
       test_256(i);
