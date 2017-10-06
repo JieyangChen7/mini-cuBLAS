@@ -386,7 +386,7 @@ dgemm_kernel_prefetch2(int m, int n, int k, int T, int t, double * A, int lda, d
   }
   A += t * lda;
 
-  double r0, r1, r2, r3;//,r4,r5,r6,r7;
+  double r0, r1, r2, r3;
 
   for (int j = 0; j < k; j += T){ 
     __syncthreads();
@@ -400,8 +400,8 @@ dgemm_kernel_prefetch2(int m, int n, int k, int T, int t, double * A, int lda, d
       if (l + t < k) {
         r0 = *(A + 0 *lda);
         r1 = *(A + 1 *lda);
-        r2 = *(A + 2 *lda);
-        r3 = *(A + 3 *lda); 
+        //r2 = *(A + 2 *lda);
+        //r3 = *(A + 3 *lda); 
       }
 
       #pragma unroll
@@ -412,8 +412,8 @@ dgemm_kernel_prefetch2(int m, int n, int k, int T, int t, double * A, int lda, d
       if (l + t < k) {
       cacheA[threadIdx.x + 0 * T] = r0;
       cacheA[threadIdx.x + 1 * T] = r1;
-      cacheA[threadIdx.x + 2 * T] = r2;
-      cacheA[threadIdx.x + 3 * T] = r3;
+      //cacheA[threadIdx.x + 2 * T] = r2;
+      //cacheA[threadIdx.x + 3 * T] = r3;
       }
       A += t * lda;
     }
