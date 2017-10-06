@@ -46,37 +46,37 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t,
 
 void check_C(double * dC, int m, int n, double * checkC);
 
-void test_cublas_mm(int m, int n, int k, 
+float test_cublas_mm(int m, int n, int k, 
             double * dA, int lda, 
             double * dB, int ldb, 
             double * dC, int ldc);
 
-void test_kernel2(int m, int n, int k, 
+float test_kernel2(int m, int n, int k, 
           double * dA, int lda, 
           double * dB, int ldb, 
           double * dC, int ldc);
 
-void test_kernel2_1(int m, int n, int k, 
+float test_kernel2_1(int m, int n, int k, 
             double * dA, int lda, 
             double * dB, int ldb, 
             double * dC, int ldc);
 
-void test_kernel3(int m, int n, int k, 
+float test_kernel3(int m, int n, int k, 
           double * dA, int lda, 
           double * dB, int ldb, 
           double * dC, int ldc);
 
-void test_kernel4(int m, int n, int k, 
+float test_kernel4(int m, int n, int k, 
           double * dA, int lda, 
           double * dB, int ldb, 
           double * dC, int ldc);
 
-void test_kernel4_1(int m, int n, int k, 
+float test_kernel4_1(int m, int n, int k, 
           double * dA, int lda, 
           double * dB, int ldb, 
           double * dC, int ldc);
 
-void test_kernel4_2(int m, int n, int k, 
+float test_kernel4_2(int m, int n, int k, 
           double * dA, int lda, 
           double * dB, int ldb, 
           double * dC, int ldc);
