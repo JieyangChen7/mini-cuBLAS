@@ -158,9 +158,9 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
     a_next20 = (double *)(unsigned long long int) *(a_curr1 + LL * 19);
     a_next21 = (double *)(unsigned long long int) *(a_curr1 + LL * 20);
     a_next22 = (double *)(unsigned long long int) *(a_curr1 + LL * 21);
-    a_next21 = (double *)(unsigned long long int) *(a_curr1 + LL * 22);
-    a_next22 = (double *)(unsigned long long int) *(a_curr1 + LL * 23);
-    a_next23 = (double *)(unsigned long long int) *(a_curr1 + LL * 24);
+    a_next23 = (double *)(unsigned long long int) *(a_curr1 + LL * 22);
+    a_next24 = (double *)(unsigned long long int) *(a_curr1 + LL * 23);
+    a_next25 = (double *)(unsigned long long int) *(a_curr1 + LL * 24);
     
     __syncthreads();
     a_curr1 = a_next1;
@@ -251,7 +251,7 @@ void test_2048(int block_size){
 
 void test_1024(int block_size){
   int iteration = 1000;
-  int access_per_iter = 22;
+  int access_per_iter = 25;
   int SM = 15;
   int block_per_sm = 1024/block_size;
   int total_block = SM * block_per_sm;
