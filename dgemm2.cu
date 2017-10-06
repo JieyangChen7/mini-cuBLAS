@@ -99,7 +99,7 @@ dgemm_kernel_shared(int m, int n, int k, int T, double * A, int lda, double * B,
 
   for (int j = 0; j < k; j += T){
     cache[threadIdx.x * 2] = *(B + threadIdx.x);
-    //cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
+    cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
     __syncthreads();
     //B += T;
     for (int i = 0; i < T; i++) {
@@ -134,7 +134,7 @@ float test_kernel_shared(int m, int n, int k,
 
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++)
-        dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+        dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double) * 2>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
         check_cuda_error();
       cudaEventRecord(stop);
 
