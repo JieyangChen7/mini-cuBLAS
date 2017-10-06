@@ -15,6 +15,17 @@ void check_cuda_error(){
     printf("Error: %s\n", cudaGetErrorString(err));
 }
 
+void check_C(double * dC, int m, int n, double * checkC) {
+  for (int i = 0; i < m * n; i++){
+    //cout << i << endl;
+    if (fabs(dC[i] - checkC[i]) > ESP){
+      cout << "error:" << fabs(dC[i] - checkC[i]) << endl;
+      return;
+    }
+  }
+  cout << "correct" << endl;
+}
+
 /////////////////////////NAIVE/////////////////////////
 __global__ void
 dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
@@ -439,16 +450,15 @@ void test_kernel_prefetch2(int m, int n, int k,
 
     float real_time = milliseconds / 1000;
     long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
-        double total_gb = (double)total_bytes / 1e9;
-        total_gb *= TEST_RUN;
-        cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-             <<" ("  << base/real_time <<"x)."
-             <<" (" << total_gb <<"GB)"
-             <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    double total_gb = (double)total_bytes / 1e9;
+    total_gb *= TEST_RUN;
+    cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
+         <<" ("  << base/real_time <<"x)."
+         <<" (" << total_gb <<"GB)"
+         <<" (" << total_gb/real_time <<" GB/s)"<<endl;
 
 }
 
-void check_C(double * dC, int m, int n, double * checkC);
 
 float test_cublas_mm(int m, int n, int k, 
             double * dA, int lda, 
@@ -613,16 +623,7 @@ float test_cublas_mm(int m, int n, int k,
 
 // }
 
-// void check_C(double * dC, int m, int n, double * checkC) {
-//   for (int i = 0; i < m * n; i++){
-//     //cout << i << endl;
-//     if (fabs(dC[i] - checkC[i]) > ESP){
-//       cout << "error:" << fabs(dC[i] - checkC[i]) << endl;
-//       return;
-//     }
-//   }
-//   cout << "correct" << endl;
-// }
+
 
 
 
