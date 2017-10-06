@@ -339,28 +339,28 @@ __global__ void global_memory_1024_3(double * A, int iteration, int access_per_i
   double * B = A + LL;
   
   
-  for (int i = 0; i < iteration/10; i++) {
+  for (int i = 0; i < iteration; i++) {
     //start = clock();                                                                                                                      
     A = (double *)(unsigned long long int) *A;
     B = (double *)(unsigned long long int) *B;
-    A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
-    A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
-    A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
-    A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
-    A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
-    A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
-    A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
-    A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
-    A = (double *)(unsigned long long int) *A;
-    B = (double *)(unsigned long long int) *B;
+    // A = (double *)(unsigned long long int) *A;
+    // B = (double *)(unsigned long long int) *B;
+    // A = (double *)(unsigned long long int) *A;
+    // B = (double *)(unsigned long long int) *B;
+    // A = (double *)(unsigned long long int) *A;
+    // B = (double *)(unsigned long long int) *B;
+    // A = (double *)(unsigned long long int) *A;
+    // B = (double *)(unsigned long long int) *B;
+    // A = (double *)(unsigned long long int) *A;
+    // B = (double *)(unsigned long long int) *B;
+    // A = (double *)(unsigned long long int) *A;
+    // B = (double *)(unsigned long long int) *B;
+    // A = (double *)(unsigned long long int) *A;
+    // B = (double *)(unsigned long long int) *B;
+    // A = (double *)(unsigned long long int) *A;
+    // B = (double *)(unsigned long long int) *B;
+    // A = (double *)(unsigned long long int) *A;
+    // B = (double *)(unsigned long long int) *B;
     //end = clock(); 
   }
   *A += (unsigned long long int) *A;
