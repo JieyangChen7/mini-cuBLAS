@@ -162,7 +162,7 @@ float test_kernel_shared(int m, int n, int k,
 
 ///////////////////////A PREFETCH(cache<->register)
 __global__ void
-dgemm_kernel_prefetch(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
+dgemm_kernel_prefetch16(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
 
   extern __shared__ double cache[];
@@ -196,21 +196,21 @@ dgemm_kernel_prefetch(int m, int n, int k, int T, double * A, int lda, double * 
       
       r0 = *(A + 0 *lda);
       r1 = *(A + 1 *lda);
-      // r2 = *(A + 2 *lda);
-      // r3 = *(A + 3 *lda);   
-      // r4 = *(A + 4 *lda);
-      // r5 = *(A+ 5 *lda);
-      // r6 = *(A + 6 *lda);
-      // r7 = *(A + 7 *lda);
+      r2 = *(A + 2 *lda);
+      r3 = *(A + 3 *lda);   
+      r4 = *(A + 4 *lda);
+      r5 = *(A+ 5 *lda);
+      r6 = *(A + 6 *lda);
+      r7 = *(A + 7 *lda);
 
-      // r8 = *(A + 8 *lda);
-      // r9 = *(A + 9 *lda);
-      // r10 = *(A + 10 *lda);
-      // r11 = *(A + 11 *lda);
-      // r12 = *(A + 12 *lda);
-      // r13 = *(A + 13 *lda);
-      // r14 = *(A + 14 *lda);
-      // r15 = *(A + 15 *lda);
+      r8 = *(A + 8 *lda);
+      r9 = *(A + 9 *lda);
+      r10 = *(A + 10 *lda);
+      r11 = *(A + 11 *lda);
+      r12 = *(A + 12 *lda);
+      r13 = *(A + 13 *lda);
+      r14 = *(A + 14 *lda);
+      r15 = *(A + 15 *lda);
     }
 
     for (int i = 0; i < T; i++) {      
@@ -220,21 +220,86 @@ dgemm_kernel_prefetch(int m, int n, int k, int T, double * A, int lda, double * 
     if (j + T < k) {
       cacheA[threadIdx.x + 0 * T] = r0;
       cacheA[threadIdx.x + 1 * T] = r1;
-      // cacheA[threadIdx.x + 2 * T] = r2;
-      // cacheA[threadIdx.x + 3 * T] = r3;
-      // cacheA[threadIdx.x + 4 * T] = r4;
-      // cacheA[threadIdx.x + 5 * T] = r5;
-      // cacheA[threadIdx.x + 6 * T] = r6;
-      // cacheA[threadIdx.x + 7 * T] = r7;
+      cacheA[threadIdx.x + 2 * T] = r2;
+      cacheA[threadIdx.x + 3 * T] = r3;
+      cacheA[threadIdx.x + 4 * T] = r4;
+      cacheA[threadIdx.x + 5 * T] = r5;
+      cacheA[threadIdx.x + 6 * T] = r6;
+      cacheA[threadIdx.x + 7 * T] = r7;
 
-      // cacheA[threadIdx.x + 8 * T] = r8;
-      // cacheA[threadIdx.x + 9 * T] = r9;
-      // cacheA[threadIdx.x + 10 * T] = r10;
-      // cacheA[threadIdx.x + 11 * T] = r11;
-      // cacheA[threadIdx.x + 12 * T] = r12;
-      // cacheA[threadIdx.x + 13 * T] = r13;
-      // cacheA[threadIdx.x + 14 * T] = r14;
-      // cacheA[threadIdx.x + 15 * T] = r15;
+      cacheA[threadIdx.x + 8 * T] = r8;
+      cacheA[threadIdx.x + 9 * T] = r9;
+      cacheA[threadIdx.x + 10 * T] = r10;
+      cacheA[threadIdx.x + 11 * T] = r11;
+      cacheA[threadIdx.x + 12 * T] = r12;
+      cacheA[threadIdx.x + 13 * T] = r13;
+      cacheA[threadIdx.x + 14 * T] = r14;
+      cacheA[threadIdx.x + 15 * T] = r15;
+    }
+
+  }
+  *(C + 0 * ldc + idx) = temp1;
+  *(C + 1 * ldc + idx) = temp2;
+
+}
+
+
+__global__ void
+dgemm_kernel_prefetch8(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
+{
+
+  extern __shared__ double cache[];
+  
+  double * cacheA = cache;
+  double * cacheB = cache + T * T;
+  
+  //determine the row to process
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+  double temp1 = 0;
+  double temp2 = 0;
+
+//prefectch A
+  for (int i = 0; i < T; i++){
+    cacheA[threadIdx.x + i * T] = *(A + i * lda);
+  }
+  
+  double r0, r1, r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15;
+
+  for (int j = 0; j < k; j += T){
+    
+    __syncthreads();
+    cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
+    cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
+    __syncthreads();
+    B += T;
+
+    if (j + T < k) {  
+      A = A + T * lda;
+      
+      r0 = *(A + 0 *lda);
+      r1 = *(A + 1 *lda);
+      r2 = *(A + 2 *lda);
+      r3 = *(A + 3 *lda);   
+      r4 = *(A + 4 *lda);
+      r5 = *(A+ 5 *lda);
+      r6 = *(A + 6 *lda);
+      r7 = *(A + 7 *lda);
+    }
+
+    for (int i = 0; i < T; i++) {      
+      temp1 += cacheA[threadIdx.x +i * T] * cacheB[i * 2];
+      temp2 += cacheA[threadIdx.x +i * T] * cacheB[i * 2 + 1];
+    }
+    if (j + T < k) {
+      cacheA[threadIdx.x + 0 * T] = r0;
+      cacheA[threadIdx.x + 1 * T] = r1;
+      cacheA[threadIdx.x + 2 * T] = r2;
+      cacheA[threadIdx.x + 3 * T] = r3;
+      cacheA[threadIdx.x + 4 * T] = r4;
+      cacheA[threadIdx.x + 5 * T] = r5;
+      cacheA[threadIdx.x + 6 * T] = r6;
+      cacheA[threadIdx.x + 7 * T] = r7;
     }
 
   }
@@ -250,7 +315,7 @@ void test_kernel_prefetch(int m, int n, int k,
             double * dC, int ldc,
             float base){
 
-    for (int T = 32; T <= 32; T *= 2) {
+    for (int T = 8; T <= 16; T *= 2) {
     //int T = 16;
       int blocksPerGrid = m / T;
       int threadsPerBlock = T;
@@ -261,7 +326,10 @@ void test_kernel_prefetch(int m, int n, int k,
 
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel_prefetch<<<blocksPerGrid, threadsPerBlock, ((T * 2) + (T * T)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+        if (T == 16)
+          dgemm_kernel_prefetch16<<<blocksPerGrid, threadsPerBlock, ((T * 2) + (T * T)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+        else if (T == 8)
+          dgemm_kernel_prefetch8<<<blocksPerGrid, threadsPerBlock, ((T * 2) + (T * T)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
         check_cuda_error();
       }
       cudaEventRecord(stop);
