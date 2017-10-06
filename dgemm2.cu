@@ -380,6 +380,7 @@ dgemm_kernel_prefetch2(int m, int n, int k, int T, int t, double * A, int lda, d
   double temp1 = 0;
   double temp2 = 0;
 
+  #pragma unroll 1
   //prefectch A 
   for (int i = 0; i < t; i++){
     cacheA[threadIdx.x + i * T] = *(A + i * lda);
@@ -388,6 +389,7 @@ dgemm_kernel_prefetch2(int m, int n, int k, int T, int t, double * A, int lda, d
 
   double r0, r1, r2, r3;
 
+  #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
     __syncthreads();
     cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
@@ -395,7 +397,7 @@ dgemm_kernel_prefetch2(int m, int n, int k, int T, int t, double * A, int lda, d
     __syncthreads();
     B += T;
 
-
+    #pragma unroll 1
     for (int l = j; l < j + T; l += t){
       if (l + t < k) {
         r0 = *(A + 0 *lda);
@@ -404,7 +406,7 @@ dgemm_kernel_prefetch2(int m, int n, int k, int T, int t, double * A, int lda, d
         //r3 = *(A + 3 *lda); 
       }
 
-      #pragma unroll
+      #pragma unroll 1
       for (int i = 0; i < t; i++) {
         temp1 += cacheA[threadIdx.x +i * T] * cacheB[l - j + i ];
         temp2 += cacheA[threadIdx.x +i * T] * cacheB[l - j + i + 1];
