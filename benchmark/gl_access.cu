@@ -336,22 +336,31 @@ __global__ void global_memory_1024_3(double * A, int iteration, int access_per_i
   //volatile clock_t end = 0;
   //volatile unsigned long long sum_time = 0;
 
+  double * B = A + LL;
   
   
   for (int i = 0; i < iteration/10; i++) {
     //start = clock();                                                                                                                      
     A = (double *)(unsigned long long int) *A;
+    B = (double *)(unsigned long long int) *B;
     A = (double *)(unsigned long long int) *A;
+    B = (double *)(unsigned long long int) *B;
     A = (double *)(unsigned long long int) *A;
+    B = (double *)(unsigned long long int) *B;
     A = (double *)(unsigned long long int) *A;
+    B = (double *)(unsigned long long int) *B;
     A = (double *)(unsigned long long int) *A;
+    B = (double *)(unsigned long long int) *B;
     A = (double *)(unsigned long long int) *A;
+    B = (double *)(unsigned long long int) *B;
     A = (double *)(unsigned long long int) *A;
+    B = (double *)(unsigned long long int) *B;
     A = (double *)(unsigned long long int) *A;
+    B = (double *)(unsigned long long int) *B;
     A = (double *)(unsigned long long int) *A;
+    B = (double *)(unsigned long long int) *B;
     A = (double *)(unsigned long long int) *A;
-
-    
+    B = (double *)(unsigned long long int) *B;
     //end = clock(); 
   }
   *A = (unsigned long long int) *A;
@@ -361,7 +370,7 @@ __global__ void global_memory_1024_3(double * A, int iteration, int access_per_i
 
 void test_2048(int block_size){
   int iteration = 1000;
-  int access_per_iter = 1;
+  int access_per_iter = 2;
   int SM = 15;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
