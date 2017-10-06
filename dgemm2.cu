@@ -78,7 +78,6 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
 
     float real_time = milliseconds / 1000;
     long long total_bytes = (m * n + m * 2 * m) * sizeof(double);
-    cout << total_bytes << endl;
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
@@ -151,7 +150,6 @@ float test_kernel_shared(int m, int n, int k,
 
       float real_time = milliseconds / 1000;
       long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
-      cout << total_bytes << endl;
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
