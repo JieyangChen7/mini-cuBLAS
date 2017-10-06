@@ -56,7 +56,7 @@ void test_kernel_naive(int m, int n, int k,
             float base){
   
 
-for (int T = 16; T < min(1024, m); T *= 2) {
+for (int T = 16; T <= min(1024, m); T *= 2) {
    // int T = 128;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
@@ -254,7 +254,7 @@ void test(int m, int k){
 
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
   
-    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    //test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
   // time  = test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
   //   cout << "Speedup: " << base/time << "x." << endl;
