@@ -412,6 +412,13 @@ void test_2048(int block_size){
 
   cudaMemcpy(A, dA, n * sizeof(double), cudaMemcpyDeviceToHost);
 
+  cudaFree(dA);
+  cudaFree(dStart);
+  cudaFree(dEnd);
+  delete [] A;
+  delete [] start;
+  delete [] end;  
+
 }
 
 void test_1024(int block_size){
