@@ -294,7 +294,7 @@ __global__ void global_memory_1024_2(double * A, int iteration, int access_per_i
     a_curr12 = a_next12;
 
     a_curr13 = a_next13;
-    a_curr14 = a_next14
+    a_curr14 = a_next14;
     a_curr15 = a_next15;
     a_curr16 = a_next16;
 
@@ -322,16 +322,6 @@ __global__ void global_memory_1024_2(double * A, int iteration, int access_per_i
   *A +=  (unsigned long long int)a_next15;
   *A +=  (unsigned long long int)a_next16;
 
-  *A +=  (unsigned long long int)a_next17;
-  *A +=  (unsigned long long int)a_next18;
-  *A +=  (unsigned long long int)a_next19;
-  *A +=  (unsigned long long int)a_next20;
-
-  *A +=  (unsigned long long int)a_next21;
-  *A +=  (unsigned long long int)a_next22;
-  *A +=  (unsigned long long int)a_next23;
-  *A +=  (unsigned long long int)a_next24;
-  *A +=  (unsigned long long int)a_next25;
   
 }
 
