@@ -156,7 +156,7 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
     a_next21 = (double *)(unsigned long long int) *(a_curr1 + LL * 20);
     a_next22 = (double *)(unsigned long long int) *(a_curr1 + LL * 21);
     
-    __syncthreads();
+    //__syncthreads();
     a_curr1 = a_next1;
     
     //end = clock(); 
@@ -295,7 +295,7 @@ void test_1024(int block_size){
 
 int main(){
   //int i = 1024;
-  for (int i = 64; i < 1024; i *= 2) {
+  for (int i = 64; i <= 1024; i *= 2) {
     cout << "block size: " << i << endl;
     test_1024(i);
   }
