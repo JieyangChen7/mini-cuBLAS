@@ -56,7 +56,7 @@ void test_kernel_naive(int m, int n, int k,
             float base){
   
 
-for (int T = 16; T <= min(1024, m); T *= 2) {
+for (int T = min(1024, m); T <= min(1024, m); T *= 2) {
    // int T = 128;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
@@ -128,7 +128,7 @@ float test_kernel_shared(int m, int n, int k,
           double * dC, int ldc,
           float base){
 
-    for (int T = 16; T <= min(1024, m); T *= 2) {
+    for (int T = min(1024, m); T <= min(1024, m); T *= 2) {
 
       //int T = 16;
       int blocksPerGrid = m / T;
