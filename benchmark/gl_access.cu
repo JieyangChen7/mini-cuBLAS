@@ -301,6 +301,14 @@ __global__ void global_memory_512(double * A, int iteration, int access_per_iter
   double * a_next32 = A + LL * 32;
   double * a_next33 = A + LL * 33; 
   double * a_next34 = A + LL * 34;
+  double * a_next35 = A + LL * 35; 
+  double * a_next36 = A + LL * 36;
+
+  double * a_next37 = A + LL * 37; 
+  double * a_next38 = A + LL * 38;
+  double * a_next39 = A + LL * 39; 
+  double * a_next40 = A + LL * 40;
+
 
 # pragma unroll 1
   for (int i = 0; i < iteration; i++) {
@@ -347,6 +355,13 @@ __global__ void global_memory_512(double * A, int iteration, int access_per_iter
 
     a_next33 = (double *)(unsigned long long int) *a_next33;
     a_next34 = (double *)(unsigned long long int) *a_next34;
+    a_next35 = (double *)(unsigned long long int) *a_next35;
+    a_next36 = (double *)(unsigned long long int) *a_next36;
+
+    a_next37 = (double *)(unsigned long long int) *a_next37;
+    a_next38 = (double *)(unsigned long long int) *a_next38;
+    a_next39 = (double *)(unsigned long long int) *a_next39;
+    a_next40 = (double *)(unsigned long long int) *a_next40;
     
     //end = clock(); 
   }
@@ -393,6 +408,13 @@ __global__ void global_memory_512(double * A, int iteration, int access_per_iter
 
   *A +=  (unsigned long long int)a_next33;
   *A +=  (unsigned long long int)a_next34;
+  *A +=  (unsigned long long int)a_next35;
+  *A +=  (unsigned long long int)a_next36;
+
+  *A +=  (unsigned long long int)a_next37;
+  *A +=  (unsigned long long int)a_next38;
+  *A +=  (unsigned long long int)a_next39;
+  *A +=  (unsigned long long int)a_next40;
 
 }
 
