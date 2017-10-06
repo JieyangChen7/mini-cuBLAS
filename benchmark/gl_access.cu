@@ -1022,21 +1022,21 @@ void test_2048(int block_size){
   if (err != cudaSuccess)
     printf("<array_gene>Error: %s\n", cudaGetErrorString(err));
 
-  cudaEvent_t start, stop;
-  cudaEventCreate(&start);
-  cudaEventCreate(&stop);
+  cudaEvent_t t1, t2;
+  cudaEventCreate(&t1);
+  cudaEventCreate(&t2);
 
-  cudaEventRecord(start);
+  cudaEventRecord(t1);
   //clock_t t = clock();
   global_memory_2048<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
-  cudaEventRecord(stop);
+  cudaEventRecord(t2);
 
   cudaEventSynchronize(stop);
   //cudaDeviceSynchronize();
   //t = clock() - t;
 
   float milliseconds = 0;
-  cudaEventElapsedTime(&milliseconds, start, stop);
+  cudaEventElapsedTime(&milliseconds, t1, t2);
   double real_time = milliseconds/1000;
   //double real_time = ((double)t)/CLOCKS_PER_SEC;
   cout <<"Runing time: " << real_time << " s." << endl;
