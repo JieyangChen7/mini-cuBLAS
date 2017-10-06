@@ -8,14 +8,9 @@
 #define ESP 10e-10
 using namespace std;
 
-__global__ void
-dgemm_kernel2(int m, int n, int k, 
-              double * A, int lda, 
-              double * B, int ldb, 
-              double * C, int ldc);
 
 __global__ void
-dgemm_kernel2_1(int m, int n, int k, 
+dgemm_kernel_naive(int m, int n, int k, 
                 double * A, int lda, 
                 double * B, int ldb, 
                 double * C, int ldc);
