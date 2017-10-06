@@ -1027,10 +1027,10 @@ void test_2048(int block_size){
   cudaDeviceSynchronize();
   t = clock() - t;
 
-  float real_time = ((float)t)/CLOCKS_PER_SEC;
+  double real_time = ((double)t)/CLOCKS_PER_SEC;
   cout <<"Runing time: " << real_time << " s." << endl;
   long long total_byte = total_block * block_size * sizeof(double) * access_per_iter;
-  double total_gb = total_byte/1e9;
+  double total_gb = (double)total_byte/1e9;
   total_gb *= iteration;
   cout << "Total data requested:"<<total_gb << " GB."<< endl;
   double throughput = total_gb/real_time;
