@@ -309,6 +309,18 @@ __global__ void global_memory_512(double * A, int iteration, int access_per_iter
   double * a_next39 = A + LL * 39; 
   double * a_next40 = A + LL * 40;
 
+  double * a_next31 = A + LL * 41;
+  double * a_next32 = A + LL * 42;
+  double * a_next33 = A + LL * 43; 
+  double * a_next34 = A + LL * 44;
+  double * a_next35 = A + LL * 45; 
+  double * a_next36 = A + LL * 46;
+
+  double * a_next37 = A + LL * 47; 
+  double * a_next38 = A + LL * 48;
+  double * a_next39 = A + LL * 49; 
+  double * a_next40 = A + LL * 50;
+
 
 # pragma unroll 1
   for (int i = 0; i < iteration; i++) {
@@ -362,6 +374,19 @@ __global__ void global_memory_512(double * A, int iteration, int access_per_iter
     a_next38 = (double *)(unsigned long long int) *a_next38;
     a_next39 = (double *)(unsigned long long int) *a_next39;
     a_next40 = (double *)(unsigned long long int) *a_next40;
+
+    a_next41 = (double *)(unsigned long long int) *a_next41;
+    a_next42 = (double *)(unsigned long long int) *a_next42;
+    a_next43 = (double *)(unsigned long long int) *a_next43;
+    a_next44 = (double *)(unsigned long long int) *a_next44;
+    
+    a_next45 = (double *)(unsigned long long int) *a_next45;
+    a_next46 = (double *)(unsigned long long int) *a_next46;
+    a_next47 = (double *)(unsigned long long int) *a_next47;
+    a_next48 = (double *)(unsigned long long int) *a_next48;
+    
+    a_next49 = (double *)(unsigned long long int) *a_next49;
+    a_next50 = (double *)(unsigned long long int) *a_next50;
     
     //end = clock(); 
   }
@@ -415,6 +440,19 @@ __global__ void global_memory_512(double * A, int iteration, int access_per_iter
   *A +=  (unsigned long long int)a_next38;
   *A +=  (unsigned long long int)a_next39;
   *A +=  (unsigned long long int)a_next40;
+
+  *A +=  (unsigned long long int)a_next41;
+  *A +=  (unsigned long long int)a_next42;
+  *A +=  (unsigned long long int)a_next43;
+  *A +=  (unsigned long long int)a_next44;
+
+  *A +=  (unsigned long long int)a_next45;
+  *A +=  (unsigned long long int)a_next46;
+  *A +=  (unsigned long long int)a_next47;
+  *A +=  (unsigned long long int)a_next48;
+
+  *A +=  (unsigned long long int)a_next49;
+  *A +=  (unsigned long long int)a_next50;
 
 }
 
