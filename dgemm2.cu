@@ -98,8 +98,8 @@ dgemm_kernel_shared(int m, int n, int k, int T, double * A, int lda, double * B,
   register double a = 0;
 
   for (int j = 0; j < k; j += T){
-    //cache[threadIdx.x * 2] = *(B + threadIdx.x);
-    //cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
+    cache[threadIdx.x * 2] = *(B + threadIdx.x);
+    cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
     __syncthreads();
     B += T;
     for (int i = 0; i < T; i++) {
