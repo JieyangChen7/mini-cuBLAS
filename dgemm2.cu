@@ -23,13 +23,14 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   #pragma unroll 1
   for (int i = 0; i < k; i++){
     //load data
-    a = *(A + i * lda);
+    a = *A;
     b1 = *B;
     b2 = *(B + ldb);
-
+    A += lda;
+    B += 1;
     //compute
-    temp1 = temp1 + a * *(B + i);
-    temp2 = temp2 + a * *(B + i + ldb);
+    temp1 = temp1 + a * b1;
+    temp2 = temp2 + a * b2;
   }
 
   *(C + 0 * ldc + idx) = temp1;
@@ -136,7 +137,7 @@ float test_kernel4_2(int m, int n, int k,
 void test(int m, int k);
 
 int main(){
-  for (int i = 128; i <= 32768; i *= 2){
+  for (int i = 128; i < 32768; i *= 2){
     //i = 20480;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 1 << ")" << endl;
     test(i, i);
