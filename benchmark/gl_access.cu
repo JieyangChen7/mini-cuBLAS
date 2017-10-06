@@ -230,8 +230,8 @@ __global__ void global_memory_1024_2(double * A, int iteration, int access_per_i
   
   double * a_next13;
   double * a_next14;
-  double * a_next15;
-  double * a_next16;
+  //double * a_next15;
+  //double * a_next16;
 
   
   double * a_curr1 = A;
@@ -251,8 +251,8 @@ __global__ void global_memory_1024_2(double * A, int iteration, int access_per_i
 
   double * a_curr13 = A + LL * 12;
   double * a_curr14 = A + LL * 13;
-  double * a_curr15 = A + LL * 14;
-  double * a_curr16 = A + LL * 15;
+  //double * a_curr15 = A + LL * 14;
+  //double * a_curr16 = A + LL * 15;
   
   for (int i = 0; i < iteration; i++) {
     //start = clock();                                                                                                                      
@@ -274,8 +274,8 @@ __global__ void global_memory_1024_2(double * A, int iteration, int access_per_i
     
     a_next13 = (double *)(unsigned long long int) *a_curr13;
     a_next14 = (double *)(unsigned long long int) *a_curr14;
-    a_next15 = (double *)(unsigned long long int) *a_curr15;
-    a_next16 = (double *)(unsigned long long int) *a_curr16;
+    //a_next15 = (double *)(unsigned long long int) *a_curr15;
+    //a_next16 = (double *)(unsigned long long int) *a_curr16;
     
   
     a_curr1 = a_next1;
@@ -295,8 +295,8 @@ __global__ void global_memory_1024_2(double * A, int iteration, int access_per_i
 
     a_curr13 = a_next13;
     a_curr14 = a_next14;
-    a_curr15 = a_next15;
-    a_curr16 = a_next16;
+    //a_curr15 = a_next15;
+    //a_curr16 = a_next16;
 
     
     //end = clock(); 
@@ -319,8 +319,8 @@ __global__ void global_memory_1024_2(double * A, int iteration, int access_per_i
 
   *A +=  (unsigned long long int)a_next13;
   *A +=  (unsigned long long int)a_next14;
-  *A +=  (unsigned long long int)a_next15;
-  *A +=  (unsigned long long int)a_next16;
+  //*A +=  (unsigned long long int)a_next15;
+  //*A +=  (unsigned long long int)a_next16;
 
   
 }
