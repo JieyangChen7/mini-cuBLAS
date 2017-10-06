@@ -42,13 +42,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   
   double * a_next9 = A + LL * 8;
   double * a_next10 = A + LL * 9;
-  double * a_next11 = A + LL * 10;
-  double * a_next12 = A + LL * 11;
 
-  double * a_next13 = A + LL * 12;
-  double * a_next14 = A + LL * 12;
-  double * a_next15 = A + LL * 14;
-  double * a_next16 = A + LL * 15;
   
   # pragma unroll 1
   for (int i = 0; i < iteration; i++) {
@@ -66,13 +60,8 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
     
     a_next9 = (double *)(unsigned long long int) *a_next9;
     a_next10 = (double *)(unsigned long long int) *a_next10;
-    a_next11 = (double *)(unsigned long long int) *a_next11;
-    a_next12 = (double *)(unsigned long long int) *a_next12;
 
-    a_next13 = (double *)(unsigned long long int) *a_next13;
-    a_next14 = (double *)(unsigned long long int) *a_next14;
-    a_next15 = (double *)(unsigned long long int) *a_next15;
-    a_next16 = (double *)(unsigned long long int) *a_next16;
+
    
     //end = clock(); 
   }
@@ -89,13 +78,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   
   *A +=  (unsigned long long int)a_next9;
   *A +=  (unsigned long long int)a_next10;
-  *A +=  (unsigned long long int)a_next11;
-  *A +=  (unsigned long long int)a_next12;
 
-  *A +=  (unsigned long long int)a_next13;
-  *A +=  (unsigned long long int)a_next14;
-  *A +=  (unsigned long long int)a_next15;
-  *A +=  (unsigned long long int)a_next16;
   
 }
 
@@ -381,7 +364,7 @@ __global__ void global_memory_1024_3(double * A, int iteration, int access_per_i
 
 void test_2048(int block_size){
   int iteration = 1000;
-  int access_per_iter = 15;
+  int access_per_iter = 10;
   int SM = 15;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
