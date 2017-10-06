@@ -24,8 +24,7 @@ __global__ void array_generator(double * A, int iteration, int access_per_iter) 
 // Kernel for 2048 threads / sm
 // Max register use is: 32
 // this version disable unroll
-__global__ void global_memory_2048(double * A, int iteration, int access_per_iter,
-                              unsigned long long int * dStart, unsigned long long int * dEnd) {
+__global__ void global_memory_2048(double * A, int iteration, int access_per_iter) {
   extern __shared__ double cache[];
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
@@ -1010,8 +1009,8 @@ void test_2048(int block_size){
   double * A = new double[n];
   unsigned long long int * start = new unsigned long long int[n];
   unsigned long long int * end = new unsigned long long int[n];
-  unsigned long long int * dStart;
-  unsigned long long int * dEnd;
+  //unsigned long long int * dStart;
+  //unsigned long long int * dEnd;
   double * dA;
   cudaMalloc(&dA, (n) * sizeof(double));
   //cudaMalloc((void**)&dStart, n * sizeof(unsigned long long int));
@@ -1029,7 +1028,7 @@ void test_2048(int block_size){
 
   cudaEventRecord(t1);
   //clock_t t = clock();
-  global_memory_2048<<<total_block, block_size, 0>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  global_memory_2048<<<total_block, block_size, 98304/block_per_sm>>>(dA, iteration, access_per_iter);
   cudaEventRecord(t2);
 
   cudaEventSynchronize(t2);
