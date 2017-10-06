@@ -284,14 +284,20 @@ void test_1024(int block_size){
 
   cudaMemcpy(A, dA, n * sizeof(double), cudaMemcpyDeviceToHost);
 
+  cudaFree(dA);
+  cudaFree(dStart);
+  cudaFree(dEnd);
+  delete [] A;
+  delete [] start;
+  delete [] end;  
 }
 
 
 int main(){
-  int i = 1024;
-  //for (int i = 128; i < 2048; i *= 2) {
+  //int i = 1024;
+  for (int i = 64; i < 1024; i *= 2) {
     cout << "block size: " << i << endl;
     test_1024(i);
-    //}
+  }
 
 }
