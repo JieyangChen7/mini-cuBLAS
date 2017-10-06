@@ -1031,7 +1031,7 @@ void test_2048(int block_size){
   global_memory_2048<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
   cudaEventRecord(t2);
 
-  cudaEventSynchronize(stop);
+  cudaEventSynchronize(t2);
   //cudaDeviceSynchronize();
   //t = clock() - t;
 
