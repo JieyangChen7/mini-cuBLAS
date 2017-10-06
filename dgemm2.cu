@@ -70,6 +70,7 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     for (int i = 0; i < TEST_RUN; i++)
       dgemm_kernel_naive<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
                   dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
     cudaEventRecord(stop);
 
     cudaEventSynchronize(stop);
@@ -261,6 +262,7 @@ void test_kernel_prefetch(int m, int n, int k,
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++) {
         dgemm_kernel_prefetch<<<blocksPerGrid, threadsPerBlock, ((T * 2) + (T * T)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+        check_cuda_error();
       }
       cudaEventRecord(stop);
 
