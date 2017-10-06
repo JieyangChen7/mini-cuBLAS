@@ -365,7 +365,7 @@ void test_2048(int block_size){
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
   //int block_size = 1024;
-
+  cout << "Total concurrent threads/SM: " << block_per_sm * block_size << endl;
   int n = total_block * block_size * access_per_iter * (iteration + 1);
   double * A = new double[n];
   unsigned long long int * start = new unsigned long long int[n];
