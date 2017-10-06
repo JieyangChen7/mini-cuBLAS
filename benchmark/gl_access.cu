@@ -3,7 +3,7 @@
 #include <climits>
 #include <algorithm>
 #include <cuda_profiler_api.h>
-#define LL 15 * 2048 
+#define LL 24 * 2048 
 #define ITERATION 1000
 using namespace std;
 
@@ -1000,7 +1000,7 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 void test_2048(int block_size){
   int iteration = 1000;
   int access_per_iter = 7;
-  int SM = 15;
+  int SM = 24;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
   //int block_size = 1024;
