@@ -613,6 +613,31 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
   double * a_next99 = A + LL * 98;
   double * a_next100 = A + LL * 99;
 
+  double * a_next101 = A + LL * 100;
+  double * a_next102 = A + LL * 101;
+  double * a_next103 = A + LL * 102;
+  double * a_next104 = A + LL * 103;
+
+  double * a_next105 = A + LL * 104;
+  double * a_next106 = A + LL * 105;
+  double * a_next107 = A + LL * 106; 
+  double * a_next108 = A + LL * 107;
+
+  double * a_next109 = A + LL * 108; 
+  double * a_next110 = A + LL * 109;
+  double * a_next111 = A + LL * 110;
+  double * a_next112 = A + LL * 111;
+
+  double * a_next113 = A + LL * 112;
+  double * a_next114 = A + LL * 113;
+  double * a_next115 = A + LL * 114;
+  double * a_next116 = A + LL * 115;
+  
+  double * a_next117 = A + LL * 116;
+  double * a_next118 = A + LL * 117; 
+  double * a_next119 = A + LL * 118;
+  double * a_next120 = A + LL * 119;
+
 
 # pragma unroll 1
   for (int i = 0; i < iteration; i++) {
@@ -741,6 +766,31 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
     a_next98 = (double *)(unsigned long long int) *a_next98;
     a_next99 = (double *)(unsigned long long int) *a_next99;
     a_next100 = (double *)(unsigned long long int) *a_next100;
+
+    a_next101 = (double *)(unsigned long long int) *a_next101;
+    a_next102 = (double *)(unsigned long long int) *a_next102;
+    a_next103 = (double *)(unsigned long long int) *a_next103;
+    a_next104 = (double *)(unsigned long long int) *a_next104;
+
+    a_next105 = (double *)(unsigned long long int) *a_next105;
+    a_next106 = (double *)(unsigned long long int) *a_next106;
+    a_next107 = (double *)(unsigned long long int) *a_next107;
+    a_next108 = (double *)(unsigned long long int) *a_next108;
+  
+    a_next109 = (double *)(unsigned long long int) *a_next109;
+    a_next110 = (double *)(unsigned long long int) *a_next110;
+    a_next111 = (double *)(unsigned long long int) *a_next111;
+    a_next112 = (double *)(unsigned long long int) *a_next112;
+    
+    a_next113 = (double *)(unsigned long long int) *a_next113;
+    a_next114 = (double *)(unsigned long long int) *a_next114;
+    a_next115 = (double *)(unsigned long long int) *a_next115;
+    a_next116 = (double *)(unsigned long long int) *a_next116;
+
+    a_next117 = (double *)(unsigned long long int) *a_next117;
+    a_next118 = (double *)(unsigned long long int) *a_next118;
+    a_next119 = (double *)(unsigned long long int) *a_next119;
+    a_next120 = (double *)(unsigned long long int) *a_next120;
     //end = clock(); 
   }
   
@@ -868,6 +918,31 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
   *A +=  (unsigned long long int)a_next98;
   *A +=  (unsigned long long int)a_next99;
   *A +=  (unsigned long long int)a_next100;
+
+  *A +=  (unsigned long long int)a_next101;
+  *A +=  (unsigned long long int)a_next102;
+  *A +=  (unsigned long long int)a_next103;
+  *A +=  (unsigned long long int)a_next104;
+
+  *A +=  (unsigned long long int)a_next105;
+  *A +=  (unsigned long long int)a_next106;
+  *A +=  (unsigned long long int)a_next107;
+  *A +=  (unsigned long long int)a_next108;
+
+  *A +=  (unsigned long long int)a_next109;
+  *A +=  (unsigned long long int)a_next110;
+  *A +=  (unsigned long long int)a_next111;
+  *A +=  (unsigned long long int)a_next112;
+
+  *A +=  (unsigned long long int)a_next113;
+  *A +=  (unsigned long long int)a_next114;
+  *A +=  (unsigned long long int)a_next115;
+  *A +=  (unsigned long long int)a_next116;
+
+  *A +=  (unsigned long long int)a_next117;
+  *A +=  (unsigned long long int)a_next118;
+  *A +=  (unsigned long long int)a_next119;
+  *A +=  (unsigned long long int)a_next120;
 
 }
 
@@ -1033,7 +1108,7 @@ void test_512(int block_size){
 
 void test_256(int block_size){
   int iteration = 1000;
-  int access_per_iter = 80;
+  int access_per_iter = 120;
   int SM = 15;
   int block_per_sm = 256/block_size;
   int total_block = SM * block_per_sm;
