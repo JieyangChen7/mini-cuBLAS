@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cuda_profiler_api.h>
 #define LL 15 * 2048 
+#define ITERATION 1000
 using namespace std;
 
 __global__ void array_generator(double * A, int iteration, int access_per_iter) {
@@ -42,7 +43,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
    double * a_next7 = A + LL * 6;
 
   # pragma unroll 
-  for (int i = 0; i < iteration; i++) {
+  for (int i = 0; i < ITERATION; i++) {
     //start = clock();                                                                                                                      
     a_next1 = (double *)(unsigned long long int) *a_next1;
     a_next2 = (double *)(unsigned long long int) *a_next2;
