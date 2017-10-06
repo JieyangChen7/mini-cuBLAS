@@ -203,14 +203,14 @@ dgemm_kernel_prefetch(int m, int n, int k, int T, double * A, int lda, double * 
       r6 = *(A + 6 *lda);
       r7 = *(A + 7 *lda);
 
-      r8 = *(A + 8 *lda);
-      r9 = *(A + 9 *lda);
-      r10 = *(A + 10 *lda);
-      r11 = *(A + 11 *lda);
-      r12 = *(A + 12 *lda);
-      r13 = *(A + 13 *lda);
-      r14 = *(A + 14 *lda);
-      r15 = *(A + 15 *lda);
+      // r8 = *(A + 8 *lda);
+      // r9 = *(A + 9 *lda);
+      // r10 = *(A + 10 *lda);
+      // r11 = *(A + 11 *lda);
+      // r12 = *(A + 12 *lda);
+      // r13 = *(A + 13 *lda);
+      // r14 = *(A + 14 *lda);
+      // r15 = *(A + 15 *lda);
     }
 
     for (int i = 0; i < T; i++) {      
@@ -227,14 +227,14 @@ dgemm_kernel_prefetch(int m, int n, int k, int T, double * A, int lda, double * 
       cacheA[threadIdx.x + 6 * T] = r6;
       cacheA[threadIdx.x + 7 * T] = r7;
 
-      cacheA[threadIdx.x + 8 * T] = r8;
-      cacheA[threadIdx.x + 9 * T] = r9;
-      cacheA[threadIdx.x + 10 * T] = r10;
-      cacheA[threadIdx.x + 11 * T] = r11;
-      cacheA[threadIdx.x + 12 * T] = r12;
-      cacheA[threadIdx.x + 13 * T] = r13;
-      cacheA[threadIdx.x + 14 * T] = r14;
-      cacheA[threadIdx.x + 15 * T] = r15;
+      // cacheA[threadIdx.x + 8 * T] = r8;
+      // cacheA[threadIdx.x + 9 * T] = r9;
+      // cacheA[threadIdx.x + 10 * T] = r10;
+      // cacheA[threadIdx.x + 11 * T] = r11;
+      // cacheA[threadIdx.x + 12 * T] = r12;
+      // cacheA[threadIdx.x + 13 * T] = r13;
+      // cacheA[threadIdx.x + 14 * T] = r14;
+      // cacheA[threadIdx.x + 15 * T] = r15;
     }
 
   }
