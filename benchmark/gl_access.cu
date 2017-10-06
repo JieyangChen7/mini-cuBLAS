@@ -1007,7 +1007,7 @@ void test_1024(int block_size){
   int block_per_sm = 1024/block_size;
   int total_block = SM * block_per_sm;
   //int block_size = 1024;
-
+  cout << "Total concurrent threads/SM: " << block_per_sm * block_size << endl;
   int n = total_block * block_size * access_per_iter * (iteration + 1);
   double * A = new double[n];
   unsigned long long int * start = new unsigned long long int[n];
@@ -1060,7 +1060,7 @@ void test_512(int block_size){
   int block_per_sm = 512/block_size;
   int total_block = SM * block_per_sm;
   //int block_size = 1024;
-
+  cout << "Total concurrent threads/SM: " << block_per_sm * block_size << endl;
   int n = total_block * block_size * access_per_iter * (iteration + 1);
   double * A = new double[n];
   unsigned long long int * start = new unsigned long long int[n];
@@ -1113,7 +1113,7 @@ void test_256(int block_size){
   int block_per_sm = 256/block_size;
   int total_block = SM * block_per_sm;
   //int block_size = 1024;
-
+  cout << "Total concurrent threads/SM: " << block_per_sm * block_size << endl;
   int n = total_block * block_size * access_per_iter * (iteration + 1);
   double * A = new double[n];
   unsigned long long int * start = new unsigned long long int[n];
@@ -1132,7 +1132,7 @@ void test_256(int block_size){
     printf("<array_gene>Error: %s\n", cudaGetErrorString(err));
 
   clock_t t = clock();
-  global_memory_512<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  global_memory_256<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
   cudaDeviceSynchronize();
   t = clock() - t;
 
