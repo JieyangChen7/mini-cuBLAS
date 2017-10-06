@@ -428,7 +428,7 @@ void test_kernel_prefetch2(int m, int n, int k,
 
     cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++){
-      dgemm_kernel4_1<<<blocksPerGrid, threadsPerBlock, ((T * 2) + (T * tt)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+      dgemm_kernel_prefetch2<<<blocksPerGrid, threadsPerBlock, ((T * 2) + (T * tt)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
       check_cuda_error();
     }
     cudaEventRecord(stop);
