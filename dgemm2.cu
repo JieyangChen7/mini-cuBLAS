@@ -38,6 +38,39 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
 }
 
 
+void test_kernel_naive(int m, int n, int k, 
+            double * dA, int lda, 
+            double * dB, int ldb, 
+            double * dC, int ldc,
+            float base){
+  
+
+for (int T = 1; T < min(1024, m); i *= 2) {
+   // int T = 128;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
+
+
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++)
+      dgemm_kernel_naive<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
+                  dA, lda, dB, ldb, dC, ldc);
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
+    cout <<"Runing time of dgemm_kernel_naive: " << real_time << " s ("  << base/real_time <<"x)."<< endl;
+  }
+
+}
+
 
 __global__ void
 dgemm_kernel3(int m, int n, int k, int T, 
@@ -148,11 +181,11 @@ void test(int m, int k){
     cudaMemcpy(dB, B, n * k * sizeof(double), cudaMemcpyHostToDevice);
     
     float base;
-    float time;
+
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
   
-    time = test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    cout << "Speedup: " << base/time << "x." << endl;
+    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+
   // time  = test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
   //   cout << "Speedup: " << base/time << "x." << endl;
   //   time = test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
@@ -217,37 +250,7 @@ float test_cublas_mm(int m, int n, int k,
 
 
 
-float test_kernel2_1(int m, int n, int k, 
-            double * dA, int lda, 
-            double * dB, int ldb, 
-            double * dC, int ldc){
-  
 
-
-    int T = 128;
-    int blocksPerGrid = m / T;
-    int threadsPerBlock = T;
-
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-
-    cudaEventRecord(start);
-    for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel_naive<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
-                  dA, lda, dB, ldb, dC, ldc);
-    cudaEventRecord(stop);
-
-    cudaEventSynchronize(stop);
-    float milliseconds = 0;
-    cudaEventElapsedTime(&milliseconds, start, stop);
-
-    float real_time = milliseconds / 1000;
-
-    cout <<"Runing time of dgemm_kernel2_1: " << real_time << " ms." << endl;
-    return real_time;
-
-}
 
 float test_kernel3(int m, int n, int k, 
           double * dA, int lda, 
