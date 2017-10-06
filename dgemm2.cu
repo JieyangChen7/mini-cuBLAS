@@ -45,7 +45,7 @@ void test_kernel_naive(int m, int n, int k,
             float base){
   
 
-for (int T = 1; T < min(1024, m); i *= 2) {
+for (int T = 1; T < min(1024, m); T *= 2) {
    // int T = 128;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
