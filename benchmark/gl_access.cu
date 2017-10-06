@@ -123,6 +123,9 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
   double * a_next20;
   double * a_next21;
   double * a_next22;
+  double * a_next23;
+  double * a_next24;
+  double * a_next25;
   
   double * a_curr1 = A;
   
@@ -155,8 +158,11 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
     a_next20 = (double *)(unsigned long long int) *(a_curr1 + LL * 19);
     a_next21 = (double *)(unsigned long long int) *(a_curr1 + LL * 20);
     a_next22 = (double *)(unsigned long long int) *(a_curr1 + LL * 21);
+    a_next21 = (double *)(unsigned long long int) *(a_curr1 + LL * 22);
+    a_next22 = (double *)(unsigned long long int) *(a_curr1 + LL * 23);
+    a_next23 = (double *)(unsigned long long int) *(a_curr1 + LL * 24);
     
-    //__syncthreads();
+    __syncthreads();
     a_curr1 = a_next1;
     
     //end = clock(); 
@@ -189,6 +195,9 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
 
   *A +=  (unsigned long long int)a_next21;
   *A +=  (unsigned long long int)a_next22;
+  *A +=  (unsigned long long int)a_next23;
+  *A +=  (unsigned long long int)a_next24;
+  *A +=  (unsigned long long int)a_next25;
   
 }
 
