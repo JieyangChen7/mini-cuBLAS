@@ -34,37 +34,37 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   //volatile unsigned long long sum_time = 0;
 
   double * a_next1 = A;
-  double * a_next2 = A + LL;
-  double * a_next3 = A + LL * 2;
-  double * a_next4 = A + LL * 3;
-  double * a_next5 = A + LL * 4;
-  double * a_next6 = A + LL * 5;
-  double * a_next7 = A + LL * 6;
+  //double * a_next2 = A + LL;
+  //double * a_next3 = A + LL * 2;
+  //double * a_next4 = A + LL * 3;
+  //double * a_next5 = A + LL * 4;
+  //double * a_next6 = A + LL * 5;
+  //double * a_next7 = A + LL * 6;
 
   # pragma unroll 1
   for (int i = 0; i < iteration; i++) {
     //start = clock();                                                                                                                      
     a_next1 = (double *)(unsigned long long int) *a_next1;
-    a_next2 = (double *)(unsigned long long int) *a_next2;
+    //a_next2 = (double *)(unsigned long long int) *a_next2;
     
-    a_next3 = (double *)(unsigned long long int) *a_next3;
-    a_next4 = (double *)(unsigned long long int) *a_next4;
+    //a_next3 = (double *)(unsigned long long int) *a_next3;
+    //a_next4 = (double *)(unsigned long long int) *a_next4;
     
-    a_next5 = (double *)(unsigned long long int) *a_next5;
-    a_next6 = (double *)(unsigned long long int) *a_next6;
-    a_next7 = (double *)(unsigned long long int) *a_next7;
+    //a_next5 = (double *)(unsigned long long int) *a_next5;
+    //a_next6 = (double *)(unsigned long long int) *a_next6;
+    //a_next7 = (double *)(unsigned long long int) *a_next7;
 
     //end = clock(); 
   }
   
   *A += (unsigned long long int)a_next1;
-  *A +=  (unsigned long long int)a_next2;
-  *A +=  (unsigned long long int)a_next3;
-  *A +=  (unsigned long long int)a_next4;
+  //*A +=  (unsigned long long int)a_next2;
+  //*A +=  (unsigned long long int)a_next3;
+  //*A +=  (unsigned long long int)a_next4;
     
-  *A +=  (unsigned long long int)a_next5;
-  *A +=  (unsigned long long int)a_next6;
-  *A +=  (unsigned long long int)a_next7;
+  //*A +=  (unsigned long long int)a_next5;
+  //*A +=  (unsigned long long int)a_next6;
+  //*A +=  (unsigned long long int)a_next7;
 
 }
 
