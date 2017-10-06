@@ -194,7 +194,7 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
 
 
 
-void test(int block_size){
+void test_2048(int block_size){
   int iteration = 1000;
   int access_per_iter = 12;
   int SM = 15;
@@ -240,11 +240,58 @@ void test(int block_size){
 
 }
 
+void test_1024(int block_size){
+  int iteration = 1000;
+  int access_per_iter = 22;
+  int SM = 15;
+  int block_per_sm = 1024/block_size;
+  int total_block = SM * block_per_sm;
+  //int block_size = 1024;
+
+  int n = total_block * block_size * access_per_iter * (iteration + 1);
+  double * A = new double[n];
+  unsigned long long int * start = new unsigned long long int[n];
+  unsigned long long int * end = new unsigned long long int[n];
+  unsigned long long int * dStart;
+  unsigned long long int * dEnd;
+  double * dA;
+  cudaMalloc(&dA, (n) * sizeof(double));
+  cudaMalloc((void**)&dStart, n * sizeof(unsigned long long int));
+  cudaMalloc((void**)&dEnd, n * sizeof(unsigned long long int));
+
+  array_generator<<<total_block, block_size>>>(dA, iteration, access_per_iter);
+  cudaDeviceSynchronize();
+  cudaError_t err = cudaGetLastError();
+  if (err != cudaSuccess)
+    printf("<array_gene>Error: %s\n", cudaGetErrorString(err));
+
+  clock_t t = clock();
+  global_memory_1024<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  cudaDeviceSynchronize();
+  t = clock() - t;
+
+  float real_time = ((float)t)/CLOCKS_PER_SEC;
+  cout <<"Runing time: " << real_time << " s." << endl;
+  long long total_byte = total_block * block_size * sizeof(double) * access_per_iter;
+  double total_gb = total_byte/1e9;
+  total_gb *= iteration;
+  cout << "Total data requested:"<<total_gb << " GB."<< endl;
+  double throughput = total_gb/real_time;
+  cout <<"Throughput: " << throughput << " GB/s." << endl;
+  err = cudaGetLastError();
+  if (err != cudaSuccess)
+    printf("<global_memory>Error: %s\n", cudaGetErrorString(err));
+
+  cudaMemcpy(A, dA, n * sizeof(double), cudaMemcpyDeviceToHost);
+
+}
+
+
 int main(){
   int i = 1024;
   //for (int i = 128; i < 2048; i *= 2) {
     cout << "block size: " << i << endl;
-    test(i);
+    test_1024(i);
     //}
 
 }
