@@ -3,7 +3,7 @@
 #include <climits>
 #include <algorithm>
 #include <cuda_profiler_api.h>
-#define LL 15 * 256 
+#define LL 15 * 2048 
 using namespace std;
 
 __global__ void array_generator(double * A, int iteration, int access_per_iter) {
