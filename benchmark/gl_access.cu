@@ -25,7 +25,7 @@ __global__ void array_generator(double * A, int iteration, int access_per_iter) 
 // this version disable unroll
 __global__ void global_memory_2048(double * A, int iteration, int access_per_iter,
                               unsigned long long int * dStart, unsigned long long int * dEnd) {
-  extern __shared__ double * cache[];
+  extern __shared__ double cache[];
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
 
@@ -74,7 +74,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
 // this version disable unroll
 __global__ void global_memory_2048_shared(double * A, int iteration, int access_per_iter,
                               unsigned long long int * dStart, unsigned long long int * dEnd) {
-  extern __shared__ double * cache[];
+  extern __shared__ double cache[];
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
 
@@ -82,13 +82,13 @@ __global__ void global_memory_2048_shared(double * A, int iteration, int access_
   //volatile clock_t end = 0;
   //volatile unsigned long long sum_time = 0;
 
-  cache[threadIdx.x * access_per_iter] = A;
-  cache[threadIdx.x * access_per_iter + 1] = A + LL;
-  cache[threadIdx.x * access_per_iter + 2] = A + LL * 2;
-  cache[threadIdx.x * access_per_iter + 3] = A + LL * 3;
-  cache[threadIdx.x * access_per_iter + 4] = A + LL * 4;
-  cache[threadIdx.x * access_per_iter + 5] = A + LL * 5;
-  cache[threadIdx.x * access_per_iter + 6] = A + LL * 6;
+  cache[threadIdx.x * access_per_iter] = (double)(unsigned long long int)A;
+  cache[threadIdx.x * access_per_iter + 1] = (double)(unsigned long long int)A + LL;
+  cache[threadIdx.x * access_per_iter + 2] = (double)(unsigned long long int)A + LL * 2;
+  cache[threadIdx.x * access_per_iter + 3] = (double)(unsigned long long int)A + LL * 3;
+  cache[threadIdx.x * access_per_iter + 4] = (double)(unsigned long long int)A + LL * 4;
+  cache[threadIdx.x * access_per_iter + 5] = (double)(unsigned long long int)A + LL * 5;
+  cache[threadIdx.x * access_per_iter + 6] = (double)(unsigned long long int)A + LL * 6;
 
   # pragma unroll 1
   for (int i = 0; i < iteration; i++) {
