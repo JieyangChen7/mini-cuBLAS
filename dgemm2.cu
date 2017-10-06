@@ -4,7 +4,7 @@
 #include <cmath>
 #include <time.h>
 #include <stdio.h>
-#define TEST_RUN 50 
+#define TEST_RUN 1 
 #define ESP 10e-10
 using namespace std;
 
@@ -220,7 +220,7 @@ void test(int m, int k);
 int main(){
   for (int i = 128; i < 32768; i *= 2){
     //i = 20480;
-    cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 1 << ")" << endl;
+    cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 2 << ")" << endl;
     test(i, i);
   }
 }
