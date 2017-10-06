@@ -135,13 +135,21 @@ void test(int m, int k){
     cudaMemcpy(dA, A, m * k * sizeof(double), cudaMemcpyHostToDevice);
     cudaMemcpy(dB, B, n * k * sizeof(double), cudaMemcpyHostToDevice);
     
-    test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
-    test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    test_kernel4_2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    float = base
+    float = time;
+    base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
+    time = test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    cout << "Speedup: " << base/time << "x." << endl;
+    time = test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    cout << "Speedup: " << base/time << "x." << endl;
+    time  = test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    cout << "Speedup: " << base/time << "x." << endl;
+    time = test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    cout << "Speedup: " << base/time << "x." << endl;
+    time = test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    cout << "Speedup: " << base/time << "x." << endl;
+    time = test_kernel4_2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+    cout << "Speedup: " << base/time << "x." << endl;
     
    
     cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
@@ -165,7 +173,7 @@ void test(int m, int k){
 
 
 
-void test_cublas_mm(int m, int n, int k, 
+float test_cublas_mm(int m, int n, int k, 
          double * dA, int lda, 
          double * dB, int ldb, 
          double * dC, int ldc){
@@ -186,9 +194,10 @@ void test_cublas_mm(int m, int n, int k,
     float real_time = ((float)t)/CLOCKS_PER_SEC;
 
     cout <<"Runing time of culasdgemm:" << real_time <<" ms." << endl;
+    return real_time;
 }
 
-void test_kernel2(int m, int n, int k, 
+float test_kernel2(int m, int n, int k, 
           double * dA, int lda, 
           double * dB, int ldb, 
           double * dC, int ldc){
@@ -210,11 +219,11 @@ void test_kernel2(int m, int n, int k,
     float real_time = ((float)t)/CLOCKS_PER_SEC;
 
     cout <<"Runing time of dgemm_kernel2: " << real_time << " ms." << endl;    
-
+    return real_time;
 } 
 
 
-void test_kernel2_1(int m, int n, int k, 
+float test_kernel2_1(int m, int n, int k, 
             double * dA, int lda, 
             double * dB, int ldb, 
             double * dC, int ldc){
@@ -236,11 +245,11 @@ void test_kernel2_1(int m, int n, int k,
     float real_time = ((float)t)/CLOCKS_PER_SEC;
 
     cout <<"Runing time of dgemm_kernel2_1: " << real_time << " ms." << endl;
-
+    return real_time;
 
 }
 
-void test_kernel3(int m, int n, int k, 
+float test_kernel3(int m, int n, int k, 
           double * dA, int lda, 
           double * dB, int ldb, 
           double * dC, int ldc){
@@ -257,10 +266,11 @@ void test_kernel3(int m, int n, int k,
 
     float real_time = ((float)t)/CLOCKS_PER_SEC;
     cout <<"Runing time of dgemm_kernel3: " << real_time << " ms." << endl;     
+    return real_time;
 }
 
 
-void test_kernel4(int m, int n, int k, 
+float test_kernel4(int m, int n, int k, 
             double * dA, int lda, 
             double * dB, int ldb, 
             double * dC, int ldc){
@@ -277,9 +287,10 @@ void test_kernel4(int m, int n, int k,
     t = clock() - t;
     float real_time = ((float)t)/CLOCKS_PER_SEC;
     cout <<"Runing time of dgemm_kernel4: " << real_time << " ms." << endl;    
+    return real_time;
 }
 
-void test_kernel4_1(int m, int n, int k, 
+float test_kernel4_1(int m, int n, int k, 
             double * dA, int lda, 
             double * dB, int ldb, 
             double * dC, int ldc){    
@@ -299,11 +310,12 @@ void test_kernel4_1(int m, int n, int k,
 
 
     cout <<"Runing time of dgemm_kernel4_1: " << real_time << " ms." << endl;   
+    return real_time;
 
 }
 
 
-void test_kernel4_2(int m, int n, int k, 
+float test_kernel4_2(int m, int n, int k, 
             double * dA, int lda, 
             double * dB, int ldb, 
             double * dC, int ldc){    
@@ -323,6 +335,7 @@ void test_kernel4_2(int m, int n, int k,
 
 
     cout <<"Runing time of dgemm_kernel4_2: " << real_time << " ms." << endl;   
+    return real_time;
 
 }
 
