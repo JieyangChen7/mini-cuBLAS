@@ -20,7 +20,7 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   register double a = 0;
   register double b1 = 0;
   register double b2 = 0;
-  #pragma unroll 1
+  #pragma unroll
   for (int i = 0; i < k; i++){
     //load data
     a = *A;
@@ -46,7 +46,7 @@ void test_kernel_naive(int m, int n, int k,
             float base){
   
 
-for (int T = 1; T < min(1024, m); T *= 2) {
+for (int T = 16; T < min(1024, m); T *= 2) {
    // int T = 128;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
