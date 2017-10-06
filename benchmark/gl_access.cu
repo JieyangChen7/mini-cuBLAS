@@ -1177,7 +1177,7 @@ int main(){
   } else if (LL / 15 == 256) {
     for (int i = 16; i <= 256; i *= 2) {
       cout << "block size: " << i << endl;
-      test_512(i);
+      test_256(i);
     }
   }
   
