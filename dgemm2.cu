@@ -101,11 +101,11 @@ dgemm_kernel_shared(int m, int n, int k, int T, double * A, int lda, double * B,
     cache[threadIdx.x * 2] = *(B + threadIdx.x);
     cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
     __syncthreads();
-    //B += T;
+    B += T;
     for (int i = 0; i < T; i++) {
-      //a = *(A + (i + j) * lda);
-      //temp1 += a * cache[i * 2];
-      //temp2 += a * cache[i * 2 + 1];
+      a = *(A + (i + j) * lda);
+      temp1 += a * cache[i * 2];
+      temp2 += a * cache[i * 2 + 1];
     }
     __syncthreads();
 
@@ -254,7 +254,7 @@ void test(int m, int k){
 
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
   
-    //test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
   // time  = test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
   //   cout << "Speedup: " << base/time << "x." << endl;
