@@ -297,35 +297,35 @@ __global__ void global_memory_512(double * A, int iteration, int access_per_iter
   double * a_next29 = A + LL * 28; 
   double * a_next30 = A + LL * 29;
 
-  double * a_next31 = A + LL * 31;
-  double * a_next32 = A + LL * 32;
-  double * a_next33 = A + LL * 33; 
-  double * a_next34 = A + LL * 34;
-  double * a_next35 = A + LL * 35; 
-  double * a_next36 = A + LL * 36;
+  double * a_next31 = A + LL * 30;
+  double * a_next32 = A + LL * 31;
+  double * a_next33 = A + LL * 32; 
+  double * a_next34 = A + LL * 33;
+  double * a_next35 = A + LL * 34; 
+  double * a_next36 = A + LL * 35;
 
-  double * a_next37 = A + LL * 37; 
-  double * a_next38 = A + LL * 38;
-  double * a_next39 = A + LL * 39; 
-  double * a_next40 = A + LL * 40;
+  double * a_next37 = A + LL * 36; 
+  double * a_next38 = A + LL * 37;
+  double * a_next39 = A + LL * 38; 
+  double * a_next40 = A + LL * 39;
 
-  double * a_next41 = A + LL * 41;
-  double * a_next42 = A + LL * 42;
-  double * a_next43 = A + LL * 43; 
-  double * a_next44 = A + LL * 44;
-  double * a_next45 = A + LL * 45; 
-  double * a_next46 = A + LL * 46;
+  double * a_next41 = A + LL * 40;
+  double * a_next42 = A + LL * 41;
+  double * a_next43 = A + LL * 42; 
+  double * a_next44 = A + LL * 43;
+  double * a_next45 = A + LL * 44; 
+  double * a_next46 = A + LL * 45;
 
-  double * a_next47 = A + LL * 47; 
-  double * a_next48 = A + LL * 48;
-  double * a_next49 = A + LL * 49; 
-  double * a_next50 = A + LL * 50;
+  double * a_next47 = A + LL * 46; 
+  double * a_next48 = A + LL * 47;
+  double * a_next49 = A + LL * 48; 
+  double * a_next50 = A + LL * 49;
 
-  double * a_next51 = A + LL * 51;
-  double * a_next52 = A + LL * 52; 
-  double * a_next53 = A + LL * 53;
-  double * a_next54 = A + LL * 54;
-  double * a_next55 = A + LL * 55;
+  double * a_next51 = A + LL * 50;
+  double * a_next52 = A + LL * 51; 
+  double * a_next53 = A + LL * 52;
+  double * a_next54 = A + LL * 53;
+  double * a_next55 = A + LL * 54;
 
 
 # pragma unroll 1
@@ -525,67 +525,66 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 
   double * a_next29 = A + LL * 28; 
   double * a_next30 = A + LL * 29;
-  double * a_next31 = A + LL * 31;
-  double * a_next32 = A + LL * 32;
+  double * a_next31 = A + LL * 30;
+  double * a_next32 = A + LL * 31;
 
-  double * a_next33 = A + LL * 33; 
-  double * a_next34 = A + LL * 34;
-  double * a_next35 = A + LL * 35; 
-  double * a_next36 = A + LL * 36;
+  double * a_next33 = A + LL * 32; 
+  double * a_next34 = A + LL * 33;
+  double * a_next35 = A + LL * 34; 
+  double * a_next36 = A + LL * 35;
 
-  double * a_next37 = A + LL * 37; 
-  double * a_next38 = A + LL * 38;
-  double * a_next39 = A + LL * 39; 
-  double * a_next40 = A + LL * 40;
+  double * a_next37 = A + LL * 36; 
+  double * a_next38 = A + LL * 37;
+  double * a_next39 = A + LL * 38; 
+  double * a_next40 = A + LL * 39;
 
-  double * a_next41 = A + LL * 41;
-  double * a_next42 = A + LL * 42;
-  double * a_next43 = A + LL * 43; 
-  double * a_next44 = A + LL * 44;
+  double * a_next41 = A + LL * 40;
+  double * a_next42 = A + LL * 41;
+  double * a_next43 = A + LL * 42; 
+  double * a_next44 = A + LL * 43;
 
-  double * a_next45 = A + LL * 45; 
-  double * a_next46 = A + LL * 46;
-  double * a_next47 = A + LL * 47; 
-  double * a_next48 = A + LL * 48;
+  double * a_next45 = A + LL * 44; 
+  double * a_next46 = A + LL * 45;
+  double * a_next47 = A + LL * 46; 
+  double * a_next48 = A + LL * 47;
 
-  double * a_next49 = A + LL * 49; 
-  double * a_next50 = A + LL * 50;
-  double * a_next51 = A + LL * 51;
-  double * a_next52 = A + LL * 52;
+  double * a_next49 = A + LL * 48; 
+  double * a_next50 = A + LL * 49;
+  double * a_next51 = A + LL * 50;
+  double * a_next52 = A + LL * 51;
 
-  double * a_next53 = A + LL * 53;
-  double * a_next54 = A + LL * 54;
-  double * a_next55 = A + LL * 55;
-  double * a_next56 = A + LL * 56;
-  double * a_next57 = A + LL * 57; 
-  double * a_next58 = A + LL * 58;
+  double * a_next53 = A + LL * 52;
+  double * a_next54 = A + LL * 53;
+  double * a_next55 = A + LL * 54;
+  double * a_next56 = A + LL * 55;
+  double * a_next57 = A + LL * 56; 
+  double * a_next58 = A + LL * 57;
 
-  double * a_next59 = A + LL * 59; 
-  double * a_next60 = A + LL * 60;
-  double * a_next61 = A + LL * 61;
-  double * a_next62 = A + LL * 62;
+  double * a_next59 = A + LL * 58; 
+  double * a_next60 = A + LL * 59;
+  double * a_next61 = A + LL * 60;
+  double * a_next62 = A + LL * 61;
 
-  double * a_next63 = A + LL * 63;
-  double * a_next64 = A + LL * 64;
-  double * a_next65 = A + LL * 65;
-  double * a_next66 = A + LL * 66;
+  double * a_next63 = A + LL * 62;
+  double * a_next64 = A + LL * 63;
+  double * a_next65 = A + LL * 64;
+  double * a_next66 = A + LL * 65;
 
-  double * a_next67 = A + LL * 67; 
-  double * a_next68 = A + LL * 68;
-  double * a_next69 = A + LL * 69; 
-  double * a_next70 = A + LL * 70;
+  double * a_next67 = A + LL * 66; 
+  double * a_next68 = A + LL * 67;
+  double * a_next69 = A + LL * 68; 
+  double * a_next70 = A + LL * 69;
 
-  double * a_next71 = A + LL * 71;
-  double * a_next72 = A + LL * 72;
-  double * a_next73 = A + LL * 73;
-  double * a_next74 = A + LL * 74;
-
-  double * a_next75 = A + LL * 75;
-  double * a_next76 = A + LL * 76;
-  double * a_next78 = A + LL * 78;
-  double * a_next79 = A + LL * 79; 
-  double * a_next80 = A + LL * 80;
-
+  double * a_next71 = A + LL * 70;
+  double * a_next72 = A + LL * 71;
+  double * a_next73 = A + LL * 72;
+  double * a_next74 = A + LL * 73;
+  double * a_next75 = A + LL * 74;
+  double * a_next76 = A + LL * 75;
+  double * a_next77 = A + LL * 76;
+  double * a_next78 = A + LL * 77; 
+  double * a_next79 = A + LL * 78;
+  double * a_next80 = A + LL * 79;
 
 
 # pragma unroll 1
