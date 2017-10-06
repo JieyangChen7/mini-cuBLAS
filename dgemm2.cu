@@ -92,7 +92,7 @@ int main(){
 }
 
 void test(int m, int k){
-  cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
+    cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
 
     //int m = 20480;
     int n = 2;
@@ -106,13 +106,6 @@ void test(int m, int k){
     	A[i] = i;
     }
 
-    //    for (int i = 0; i < m; i++){
-    // for (int j = 0; j < k; j++){
-    //	cout << *( A + i + j * m) << " ";
-    // }
-    // cout << endl;
-    //}
-    
     for (int i = 0; i < n * k; i++){
     	B[i] = 1;
     }
@@ -138,18 +131,17 @@ void test(int m, int k){
     float base;
     float time;
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
-    time = test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    cout << "Speedup: " << base/time << "x." << endl;
+  
     time = test_kernel2_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
     cout << "Speedup: " << base/time << "x." << endl;
-    time  = test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    cout << "Speedup: " << base/time << "x." << endl;
-    time = test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    cout << "Speedup: " << base/time << "x." << endl;
-    time = test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    cout << "Speedup: " << base/time << "x." << endl;
-    time = test_kernel4_2(m, n, k, dA, lda, dB, ldb, dC, ldc);
-    cout << "Speedup: " << base/time << "x." << endl;
+  // time  = test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
+  //   cout << "Speedup: " << base/time << "x." << endl;
+  //   time = test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
+  //   cout << "Speedup: " << base/time << "x." << endl;
+  //   time = test_kernel4_1(m, n, k, dA, lda, dB, ldb, dC, ldc);
+  //   cout << "Speedup: " << base/time << "x." << endl;
+  //   time = test_kernel4_2(m, n, k, dA, lda, dB, ldb, dC, ldc);
+  //   cout << "Speedup: " << base/time << "x." << endl;
     
    
     cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
@@ -203,35 +195,7 @@ float test_cublas_mm(int m, int n, int k,
     return real_time;
 }
 
-float test_kernel2(int m, int n, int k, 
-          double * dA, int lda, 
-          double * dB, int ldb, 
-          double * dC, int ldc){
 
-
-    int T = 128;
-    int blocksPerGrid = m / T;
-    int threadsPerBlock = T;
-    
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-
-    cudaEventRecord(start);
-    for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel2<<<blocksPerGrid, threadsPerBlock>>>(m, n, k, 
-              dA, lda, dB, ldb, dC, ldc);
-    cudaEventRecord(stop);
-
-    cudaEventSynchronize(stop);
-    float milliseconds = 0;
-    cudaEventElapsedTime(&milliseconds, start, stop);
-
-    float real_time = milliseconds / 1000;
-
-    cout <<"Runing time of dgemm_kernel2: " << real_time << " ms." << endl;    
-    return real_time;
-} 
 
 
 float test_kernel2_1(int m, int n, int k, 
@@ -393,43 +357,31 @@ void check_C(double * dC, int m, int n, double * checkC) {
 }
 
 
-__global__ void
-dgemm_kernel2(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
-{
-	//determine the row to process
-	int idx = blockIdx.x * blockDim.x + threadIdx.x;
-	A = A + idx;
 
-	for (int j = 0; j < n; j++){
-	  double temp = 0;
-	  for (int i = 0;i < k; i++){
-	    double a = *(A + i * lda);
-	    double b = *(B + j * ldb + i);
-	    temp = temp + a * b;
-	  }
-	  *(C + j * ldc + idx) = temp;
-	}
-}
 
 __global__ void
-dgemm_kernel2_1(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
+dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
   //determine the row to process                                                        
-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  register int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
-  double temp1 = 0;
-  double temp2 = 0;
-  double a = 0;
-  double b1 = 0;
-  double b2 = 0;
+  register double temp1 = 0;
+  register double temp2 = 0;
+  register double a = 0;
+  register double b1 = 0;
+  register double b2 = 0;
+  
   for (int i = 0; i < k; i++){
+    //load data
     a = *(A + i * lda);
     b1 = *B;
     b2 = *(B + ldb);
 
+    //compute
     temp1 = temp1 + a * *(B + i);
     temp2 = temp2 + a * *(B + i + ldb);
   }
+
   *(C + 0 * ldc + idx) = temp1;
   *(C + 1 * ldc + idx) = temp2;
   
