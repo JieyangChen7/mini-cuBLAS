@@ -247,7 +247,7 @@ void test(int m, int k){
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
   
     test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-
+    test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
   // time  = test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
   //   cout << "Speedup: " << base/time << "x." << endl;
   //   time = test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
