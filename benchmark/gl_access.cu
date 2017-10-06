@@ -309,17 +309,17 @@ __global__ void global_memory_512(double * A, int iteration, int access_per_iter
   double * a_next39 = A + LL * 39; 
   double * a_next40 = A + LL * 40;
 
-  double * a_next31 = A + LL * 41;
-  double * a_next32 = A + LL * 42;
-  double * a_next33 = A + LL * 43; 
-  double * a_next34 = A + LL * 44;
-  double * a_next35 = A + LL * 45; 
-  double * a_next36 = A + LL * 46;
+  double * a_next41 = A + LL * 41;
+  double * a_next42 = A + LL * 42;
+  double * a_next43 = A + LL * 43; 
+  double * a_next44 = A + LL * 44;
+  double * a_next45 = A + LL * 45; 
+  double * a_next46 = A + LL * 46;
 
-  double * a_next37 = A + LL * 47; 
-  double * a_next38 = A + LL * 48;
-  double * a_next39 = A + LL * 49; 
-  double * a_next40 = A + LL * 50;
+  double * a_next47 = A + LL * 47; 
+  double * a_next48 = A + LL * 48;
+  double * a_next49 = A + LL * 49; 
+  double * a_next50 = A + LL * 50;
 
 
 # pragma unroll 1
