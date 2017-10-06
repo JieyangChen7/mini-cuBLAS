@@ -183,17 +183,23 @@ float test_cublas_mm(int m, int n, int k,
     cublasHandle_t handle;
     cublasCreate(&handle);
 
-    clock_t t = clock();
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
       cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, k,
         &one, dA, lda, dB, ldb, &zero, dC, ldc);
+    cudaEventRecord(stop);
 
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
 
-    cudaDeviceSynchronize();
-    t = clock() - t;
-    float real_time = ((float)t)/CLOCKS_PER_SEC;
+    float real_time = milliseconds / 1000;
 
-    cout <<"Runing time of culasdgemm:" << real_time <<" ms." << endl;
+    cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
     return real_time;
 }
 
@@ -207,16 +213,21 @@ float test_kernel2(int m, int n, int k,
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
     
-    clock_t t = clock();
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
+    cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
       dgemm_kernel2<<<blocksPerGrid, threadsPerBlock>>>(m, n, k, 
               dA, lda, dB, ldb, dC, ldc);
+    cudaEventRecord(stop);
 
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
 
-    cudaDeviceSynchronize();
-    t = clock() - t;
-    float real_time = ((float)t)/CLOCKS_PER_SEC;
+    float real_time = milliseconds / 1000;
 
     cout <<"Runing time of dgemm_kernel2: " << real_time << " ms." << endl;    
     return real_time;
@@ -230,19 +241,25 @@ float test_kernel2_1(int m, int n, int k,
   
 
 
-  int T = 128;
+    int T = 128;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
-    clock_t t = clock(); 
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
       dgemm_kernel2_1<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
                   dA, lda, dB, ldb, dC, ldc);
+    cudaEventRecord(stop);
 
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
 
-    cudaDeviceSynchronize();
-    t = clock() - t;
-    float real_time = ((float)t)/CLOCKS_PER_SEC;
+    float real_time = milliseconds / 1000;
 
     cout <<"Runing time of dgemm_kernel2_1: " << real_time << " ms." << endl;
     return real_time;
@@ -258,13 +275,20 @@ float test_kernel3(int m, int n, int k,
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
     
-    clock_t t = clock();
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
       dgemm_kernel3<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-    cudaDeviceSynchronize();
-    t = clock() - t;
+    cudaEventRecord(stop);
 
-    float real_time = ((float)t)/CLOCKS_PER_SEC;
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
     cout <<"Runing time of dgemm_kernel3: " << real_time << " ms." << endl;     
     return real_time;
 }
@@ -279,13 +303,21 @@ float test_kernel4(int m, int n, int k,
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
-    clock_t t = clock();
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++) {
       dgemm_kernel4<<<blocksPerGrid, threadsPerBlock, ((T) + (T * T)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
     }
-    cudaDeviceSynchronize();
-    t = clock() - t;
-    float real_time = ((float)t)/CLOCKS_PER_SEC;
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
     cout <<"Runing time of dgemm_kernel4: " << real_time << " ms." << endl;    
     return real_time;
 }
@@ -299,14 +331,20 @@ float test_kernel4_1(int m, int n, int k,
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
-    clock_t t = clock();
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
       dgemm_kernel4_1<<<blocksPerGrid, threadsPerBlock, ((T * 2) + (T * tt)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
-    
+    cudaEventRecord(stop);
 
-    cudaDeviceSynchronize();
-    t = clock() - t;
-    float real_time = ((float)t)/CLOCKS_PER_SEC;
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
 
 
     cout <<"Runing time of dgemm_kernel4_1: " << real_time << " ms." << endl;   
@@ -324,16 +362,20 @@ float test_kernel4_2(int m, int n, int k,
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
-    clock_t t = clock();
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
       dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
-    
+    cudaEventRecord(stop);
 
-    cudaDeviceSynchronize();
-    t = clock() - t;
-    float real_time = ((float)t)/CLOCKS_PER_SEC;
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
 
-
+    float real_time = milliseconds / 1000;
     cout <<"Runing time of dgemm_kernel4_2: " << real_time << " ms." << endl;   
     return real_time;
 
