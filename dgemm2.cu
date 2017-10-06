@@ -8,6 +8,13 @@
 #define ESP 10e-10
 using namespace std;
 
+
+void check_cuda_error(){
+    cudaError_t err = cudaGetLastError();
+    if (err != cudaSuccess)
+    printf("Error: %s\n", cudaGetErrorString(err));
+}
+
 /////////////////////////NAIVE/////////////////////////
 __global__ void
 dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
@@ -128,6 +135,7 @@ float test_kernel_shared(int m, int n, int k,
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++)
         dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+        check_cuda_error();
       cudaEventRecord(stop);
 
       cudaEventSynchronize(stop);
