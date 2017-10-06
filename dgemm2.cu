@@ -8,7 +8,7 @@
 #define ESP 10e-10
 using namespace std;
 
-
+/////////////////////////NAIVE/////////////////////////
 __global__ void
 dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
@@ -76,11 +76,69 @@ for (int T = 16; T < min(1024, m); T *= 2) {
 }
 
 
+/////////////////////////SHARED/////////////////////////
 __global__ void
-dgemm_kernel3(int m, int n, int k, int T, 
-              double * A, int lda, 
-              double * B, int ldb, 
-              double * C, int ldc);
+dgemm_kernel_shared(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
+{
+  // store B (T * 2)
+  extern __shared__ double cache[];
+  
+  //determine the row to process
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+  register double temp1 = 0;
+  register double temp2 = 0;
+  register double a = 0;
+
+  for (int j = 0; j < k; j += T){
+    cache[threadIdx.x * 2] = *(B + threadIdx.x);
+    cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
+    __syncthreads();
+    B += T;
+    for (int i = 0; i < T; i++) {
+      a = *(A + (i + j) * lda);
+      temp1 += a * cache[i * 2];
+      temp2 += a * cache[i * 2 + 1];
+    }
+    __syncthreads();
+
+  }
+  *(C + 0 * ldc + idx) = temp1;
+  *(C + 1 * ldc + idx) = temp2;
+
+}
+
+
+float test_kernel_shared(int m, int n, int k, 
+          double * dA, int lda, 
+          double * dB, int ldb, 
+          double * dC, int ldc,
+          float base){
+
+    for (int T = 16; T < min(1024, m); T *= 2) {
+
+      //int T = 16;
+      int blocksPerGrid = m / T;
+      int threadsPerBlock = T;
+      
+      cudaEvent_t start, stop;
+      cudaEventCreate(&start);
+      cudaEventCreate(&stop);
+
+      cudaEventRecord(start);
+      for (int i = 0; i < TEST_RUN; i++)
+        dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+      cudaEventRecord(stop);
+
+      cudaEventSynchronize(stop);
+      float milliseconds = 0;
+      cudaEventElapsedTime(&milliseconds, start, stop);
+
+      float real_time = milliseconds / 1000;
+      cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << " s ("  << base/real_time <<"x)."<< endl;
+    }
+}
+
 
 __global__ void
 dgemm_kernel4(int m, int n, int k, int T, 
@@ -256,32 +314,7 @@ float test_cublas_mm(int m, int n, int k,
 
 
 
-float test_kernel3(int m, int n, int k, 
-          double * dA, int lda, 
-          double * dB, int ldb, 
-          double * dC, int ldc){
 
-    int T = 16;
-    int blocksPerGrid = m / T;
-    int threadsPerBlock = T;
-    
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-
-    cudaEventRecord(start);
-    for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel3<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-    cudaEventRecord(stop);
-
-    cudaEventSynchronize(stop);
-    float milliseconds = 0;
-    cudaEventElapsedTime(&milliseconds, start, stop);
-
-    float real_time = milliseconds / 1000;
-    cout <<"Runing time of dgemm_kernel3: " << real_time << " ms." << endl;     
-    return real_time;
-}
 
 
 float test_kernel4(int m, int n, int k, 
@@ -387,36 +420,7 @@ void check_C(double * dC, int m, int n, double * checkC) {
 
 
 
-__global__ void
-dgemm_kernel3(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
-{
-  // store B (T * 2)
-  extern __shared__ double cache[];
-  
-  //determine the row to process
-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  A = A + idx;
-  double temp1 = 0;
-  double temp2 = 0;
-  double a = 0;
 
-  for (int j = 0; j < k; j += T){
-    cache[threadIdx.x * 2] = *(B + threadIdx.x);
-    cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
-    __syncthreads();
-    B += T;
-    for (int i = 0; i < T; i++) {
-      a = *(A + (i + j) * lda);
-      temp1 += a * cache[i * 2];
-      temp2 += a * cache[i * 2 + 1];
-    }
-    __syncthreads();
-
-  }
-  *(C + 0 * ldc + idx) = temp1;
-  *(C + 1 * ldc + idx) = temp2;
-
-}
 
 __global__ void
 dgemm_kernel4(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
