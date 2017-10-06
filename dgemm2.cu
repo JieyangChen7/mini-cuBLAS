@@ -110,8 +110,8 @@ dgemm_kernel_shared(int m, int n, int k, int T, double * A, int lda, double * B,
     __syncthreads();
 
   }
-  *(C + 0 * ldc + idx) = temp1;
-  *(C + 1 * ldc + idx) = temp2;
+  //*(C + 0 * ldc + idx) = temp1;
+  //*(C + 1 * ldc + idx) = temp2;
 
 }
 
