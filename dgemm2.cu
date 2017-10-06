@@ -198,10 +198,10 @@ dgemm_kernel_prefetch(int m, int n, int k, int T, double * A, int lda, double * 
       r1 = *(A + 1 *lda);
       r2 = *(A + 2 *lda);
       r3 = *(A + 3 *lda);   
-      r4 = *(A + 4 *lda);
-      r5 = *(A+ 5 *lda);
-      r6 = *(A + 6 *lda);
-      r7 = *(A + 7 *lda);
+      // r4 = *(A + 4 *lda);
+      // r5 = *(A+ 5 *lda);
+      // r6 = *(A + 6 *lda);
+      // r7 = *(A + 7 *lda);
 
       // r8 = *(A + 8 *lda);
       // r9 = *(A + 9 *lda);
@@ -222,10 +222,10 @@ dgemm_kernel_prefetch(int m, int n, int k, int T, double * A, int lda, double * 
       cacheA[threadIdx.x + 1 * T] = r1;
       cacheA[threadIdx.x + 2 * T] = r2;
       cacheA[threadIdx.x + 3 * T] = r3;
-      cacheA[threadIdx.x + 4 * T] = r4;
-      cacheA[threadIdx.x + 5 * T] = r5;
-      cacheA[threadIdx.x + 6 * T] = r6;
-      cacheA[threadIdx.x + 7 * T] = r7;
+      // cacheA[threadIdx.x + 4 * T] = r4;
+      // cacheA[threadIdx.x + 5 * T] = r5;
+      // cacheA[threadIdx.x + 6 * T] = r6;
+      // cacheA[threadIdx.x + 7 * T] = r7;
 
       // cacheA[threadIdx.x + 8 * T] = r8;
       // cacheA[threadIdx.x + 9 * T] = r9;
