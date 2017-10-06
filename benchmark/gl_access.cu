@@ -1220,6 +1220,7 @@ void test_256(int block_size){
 }
 
 int main(){
+  cout << "start benchmark" << endl;
   if (LL / 15 == 1024) { 
     for (int i = 64; i <= 1024; i *= 2) {
       cout << "block size: " << i << endl;
