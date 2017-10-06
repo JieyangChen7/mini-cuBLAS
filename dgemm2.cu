@@ -21,10 +21,6 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   register double b1 = 0;
   register double b2 = 0;
 
-  // register double a2 = 0;
-  // register double b21 = 0;
-  // register double b22 = 0;
-
   #pragma unroll 
   for (int i = 0; i < k; i+=1){
     //load data
@@ -33,17 +29,11 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
     b2 = *(B + ldb);
     A += lda;
     B += 1;
-    // a2 = *A;
-    // b21 = *B;
-    // b22 = *(B + ldb);
-    // A += lda;
-    // B += 1;
 
     //compute
     temp1 = temp1 + a * b1;
     temp2 = temp2 + a * b2;
-    // temp1 = temp1 + a2 * b21;
-    // temp2 = temp2 + a2 * b22;
+
   }
 
   *(C + 0 * ldc + idx) = temp1;
@@ -80,7 +70,7 @@ for (int T = 16; T < min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    cout <<"Runing time of dgemm_kernel_naive: " << real_time << " s ("  << base/real_time <<"x)."<< endl;
+    cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s ("  << base/real_time <<"x)."<< endl;
   }
 
 }
