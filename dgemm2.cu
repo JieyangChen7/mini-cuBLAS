@@ -26,7 +26,7 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   register double b22 = 0;
 
   #pragma unroll 1
-  for (int i = 0; i < k; i++){
+  for (int i = 0; i < k; i+=2){
     //load data
     a = *A;
     b1 = *B;
