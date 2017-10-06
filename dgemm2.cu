@@ -135,7 +135,7 @@ void test(int m, int k){
     cudaMemcpy(dA, A, m * k * sizeof(double), cudaMemcpyHostToDevice);
     cudaMemcpy(dB, B, n * k * sizeof(double), cudaMemcpyHostToDevice);
     
-    float base
+    float base;
     float time;
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
     time = test_kernel2(m, n, k, dA, lda, dB, ldb, dC, ldc);
