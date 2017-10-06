@@ -104,14 +104,14 @@ dgemm_kernel_shared(int m, int n, int k, int T, double * A, int lda, double * B,
     B += T;
     for (int i = 0; i < T; i++) {
       //a = *(A + (i + j) * lda);
-      temp1 += a * cache[i * 2];
-      temp2 += a * cache[i * 2 + 1];
+      //temp1 += a * cache[i * 2];
+      //temp2 += a * cache[i * 2 + 1];
     }
     __syncthreads();
 
   }
-  //*(C + 0 * ldc + idx) = temp1;
-  //*(C + 1 * ldc + idx) = temp2;
+  *(C + 0 * ldc + idx) = temp1;
+  *(C + 1 * ldc + idx) = temp2;
 
 }
 
