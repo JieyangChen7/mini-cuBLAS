@@ -25,7 +25,7 @@ __global__ void array_generator(double * A, int iteration, int access_per_iter) 
 // this version disable unroll
 __global__ void global_memory_2048(double * A, int iteration, int access_per_iter,
                               unsigned long long int * dStart, unsigned long long int * dEnd) {
-  extern __shared__ double cache[];
+  extern __shared__ double * cache[];
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
 
