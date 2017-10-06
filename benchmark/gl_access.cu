@@ -1107,7 +1107,7 @@ void test_512(int block_size){
 
 
 void test_256(int block_size){
-  int iteration = 1000;
+  int iteration = 500;
   int access_per_iter = 120;
   int SM = 15;
   int block_per_sm = 256/block_size;
