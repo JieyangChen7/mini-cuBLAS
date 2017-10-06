@@ -82,7 +82,8 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     double total_gb = (double)total_gb / 1e9;
     cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
          <<" ("  << base/real_time <<"x)."
-         <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+         <<" (" << total_gb <<"GB)"
+         <<" (" << total_gb/real_time <<"GB/s)"<<endl;
   }
 
 }
