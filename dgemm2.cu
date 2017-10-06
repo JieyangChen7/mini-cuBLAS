@@ -143,7 +143,11 @@ float test_kernel_shared(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << " s ("  << base/real_time <<"x)."<< endl;
+      long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) * TEST_RUN;
+      double total_gb = total_gb / 1e9;
+      cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
+           <<" ("  << base/real_time <<"x)."
+           <<" (" << total_gb/real_time <<" GB/s)"<<endl;
     }
 }
 
