@@ -326,6 +326,39 @@ __global__ void global_memory_1024_2(double * A, int iteration, int access_per_i
 }
 
 
+__global__ void global_memory_1024_3(double * A, int iteration, int access_per_iter,
+                              unsigned long long int * dStart, unsigned long long int * dEnd) {
+  extern __shared__ double cache[];
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+
+  //volatile clock_t start = 0;
+  //volatile clock_t end = 0;
+  //volatile unsigned long long sum_time = 0;
+
+  
+  
+  for (int i = 0; i < iteration; i++) {
+    //start = clock();                                                                                                                      
+    A = (double *)(unsigned long long int) *A;
+    A = (double *)(unsigned long long int) *A;
+    A = (double *)(unsigned long long int) *A;
+    A = (double *)(unsigned long long int) *A;
+    A = (double *)(unsigned long long int) *A;
+    A = (double *)(unsigned long long int) *A;
+    A = (double *)(unsigned long long int) *A;
+    A = (double *)(unsigned long long int) *A;
+    A = (double *)(unsigned long long int) *A;
+    A = (double *)(unsigned long long int) *A;
+
+    
+    //end = clock(); 
+  }
+  *A = (unsigned long long int) *A;
+  
+}
+
+
 void test_2048(int block_size){
   int iteration = 1000;
   int access_per_iter = 12;
