@@ -45,7 +45,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   double * a_next11 = A + LL * 10;
   double * a_next12 = A + LL * 11;
   
-  
+  # unroll 1
   for (int i = 0; i < iteration; i++) {
     //start = clock();                                                                                                                      
     a_next1 = (double *)(unsigned long long int) *a_next1;
