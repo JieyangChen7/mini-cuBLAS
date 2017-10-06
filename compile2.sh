@@ -1,2 +1,2 @@
 
-nvcc --ptxas-options=-v dgemm2.cu -lcublas 
+nvcc --ptxas-options=-v -arch=sm_52 dgemm2.cu -lcublas 
