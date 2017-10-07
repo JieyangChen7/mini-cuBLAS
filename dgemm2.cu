@@ -549,8 +549,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
         cr1 = nr1;
         cr2 = nr2;
         cr3 = nr3;
-        cr4 = nr2;
-        cr5 = nr3;
+        cr4 = nr4;
+        cr5 = nr5;
       }
     }
   }
