@@ -542,32 +542,35 @@ float test_kernel_prefetch3(int m, int n, int k,
             double * dB, int ldb, 
             double * dC, int ldc,
             float base){
-    int T = 128;
+
+    for (int T = 16; T <= min(m, 1024); T*=2) {
+    //int T = 128;
     //int tt = 2;
-    int blocksPerGrid = m / T;
-    int threadsPerBlock = T;
+      int blocksPerGrid = m / T;
+      int threadsPerBlock = T;
 
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
+      cudaEvent_t start, stop;
+      cudaEventCreate(&start);
+      cudaEventCreate(&stop);
 
-    cudaEventRecord(start);
-    for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-    cudaEventRecord(stop);
+      cudaEventRecord(start);
+      for (int i = 0; i < TEST_RUN; i++)
+        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+      cudaEventRecord(stop);
 
-    cudaEventSynchronize(stop);
-    float milliseconds = 0;
-    cudaEventElapsedTime(&milliseconds, start, stop);
+      cudaEventSynchronize(stop);
+      float milliseconds = 0;
+      cudaEventElapsedTime(&milliseconds, start, stop);
 
-    float real_time = milliseconds / 1000;
-    long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
-    double total_gb = (double)total_bytes / 1e9;
-    total_gb *= TEST_RUN;
-    cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-         <<" ("  << base/real_time <<"x)."
-         <<" (" << total_gb <<"GB)"
-         <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+      float real_time = milliseconds / 1000;
+      long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+      double total_gb = (double)total_bytes / 1e9;
+      total_gb *= TEST_RUN;
+      cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
+           <<" ("  << base/real_time <<"x)."
+           <<" (" << total_gb <<"GB)"
+           <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    }
 
 }
 
