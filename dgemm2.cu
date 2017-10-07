@@ -466,8 +466,9 @@ void test_kernel_prefetch2(int m, int n, int k,
 //Single registers: m, n, k, T, t, lda, ldb, ldc, idx, j, l (11)
 //Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (28)
 //Shared mem.: T*2 + T*T (double)
+#define t 2
 __global__ void
-dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
+dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
   // store B (T * 2)                                                                                                                                                                                                                                                                       
   extern __shared__ double cacheB[];
@@ -538,7 +539,7 @@ float test_kernel_prefetch3(int m, int n, int k,
             double * dC, int ldc,
             float base){
     int T = 128;
-    int tt = 2;
+    //int tt = 2;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
@@ -548,7 +549,7 @@ float test_kernel_prefetch3(int m, int n, int k,
 
     cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+      dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
     cudaEventRecord(stop);
 
     cudaEventSynchronize(stop);
