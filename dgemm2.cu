@@ -484,11 +484,13 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
   double cr0, cr1;//, cr2, cr3;
 
   //prefectch A 
-  cr0 = *(A + 0 * lda);
-  cr1 = *(A + 1 * lda);
+  cr0 = *A;
+  A += lda;
+  cr1 = *A;
+  A += lda;
  // cr2 = *(A + 2 * lda);
  // cr3 = *(A + 3 * lda);
-  A += t * lda;
+ // A += t * lda;
 
   #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
@@ -501,8 +503,10 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
     #pragma unroll 1
     for (int l = j; l < j + T; l += t){
       if (l + t < k) {
-        nr0 = *(A + 0 *lda);
-        nr1 = *(A + 1 *lda);
+        nr0 = *A;
+        A += lda;
+        nr1 = *A;
+        A += lda;
     //    nr2 = *(A + 2 *lda);
     //    nr3 = *(A + 3 *lda); 
       }
