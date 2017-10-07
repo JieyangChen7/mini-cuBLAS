@@ -599,7 +599,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
      temp1 += cr3 * *(B);
      temp2 += cr3 * *(B +ldb);
      B += 1;
-      if (l + t < k) {
+      if (i + t < k) {
         cr0 = nr0;
         cr1 = nr1;
         cr2 = nr2;
