@@ -582,7 +582,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   B += 1;
 
 
-  #pragma unroll 1
+  #pragma unroll 
   for (int i = 0; i < k; i += t){ 
       if (i + t < k) {
         nr0 = *A;
@@ -632,8 +632,6 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
       cb01 = nb01;
       cb10 = nb10;
       cb11 = nb11;
-    
-
     
 
       if (i + t < k) {
