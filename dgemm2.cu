@@ -576,7 +576,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
   cb0 = *B;
   B += 1;
-  cb1 = *A;
+  cb1 = *B;
   B += 1;
 
   #pragma unroll 1
@@ -595,7 +595,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
       nb0 = *B;
       B += 1;
-      nb1 = *A;
+      nb1 = *B;
       B += 1;
 
       temp1 += cr0 * cb0;
@@ -606,7 +606,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
       nb0 = *B;
       B += 1;
-      nb1 = *A;
+      nb1 = *B;
       B += 1;
 
       temp1 += cr1 * cb0;
@@ -618,7 +618,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
       nb0 = *B;
       B += 1;
-      nb1 = *A;
+      nb1 = *B;
       B += 1;
 
       temp1 += cr2 * cb0;
@@ -631,7 +631,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
       if (i + t < k) {
         nb0 = *B;
         B += 1;
-        nb1 = *A;
+        nb1 = *B;
         B += 1;
       }
 
