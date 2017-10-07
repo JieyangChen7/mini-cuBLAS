@@ -480,8 +480,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   register double temp1 = 0;
   register double temp2 = 0;
 
-  register double nr0, nr1, nr2, nr3, nr4, nr5;
-  register double cr0, cr1, cr2, cr3, cr4, cr5;
+  register double nr0, nr1, nr2, nr3;
+  register double cr0, cr1, cr2, cr3;
 
   //prefectch A 
   cr0 = *A;
@@ -549,9 +549,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
 __global__ void
 dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
-  // store B (T * 2)                                                                                                                                                                                                                                                                       
-  extern __shared__ double cacheB[];
-
+                                                                                                                                                                                                                
   //determine the row to process                                                                                                                                                                                                                          
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
@@ -559,8 +557,10 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   register double temp1 = 0;
   register double temp2 = 0;
 
-  register double nr0, nr1, nr2, nr3, nr4, nr5;
-  register double cr0, cr1, cr2, cr3, cr4, cr5;
+  register double nr0, nr1, nr2, nr3;
+  register double cr0, cr1, cr2, cr3;
+
+  register double b0, b1;
 
   //prefectch A 
   cr0 = *A;
@@ -574,16 +574,8 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   A += lda;
 
   #pragma unroll 1
-  for (int j = 0; j < k; j += T){ 
-    __syncthreads();
-    cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
-    cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
-    __syncthreads();
-    B += T;
-
-    #pragma unroll 1
-    for (int l = j; l < j + T; l += t){
-      if (l + t < k) {
+  for (int i = 0; i < k; i += t){ 
+      if (i + t < k) {
         nr0 = *A;
         A += lda;
         nr1 = *A;
@@ -595,25 +587,24 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
         A += lda;
       }
 
-      temp1 += cr0 * cacheB[l - j + 0 ];
-      temp2 += cr0 * cacheB[l - j + 0 + 1];
-
-      temp1 += cr1 * cacheB[l - j + 1 ];
-      temp2 += cr1 * cacheB[l - j + 1 + 1];
-
-     temp1 += cr2 * cacheB[l - j + 2 ];
-     temp2 += cr2 * cacheB[l - j + 2 + 1];
-
-     temp1 += cr3 * cacheB[l - j + 3 ];
-     temp2 += cr3 * cacheB[l - j + 3 + 1];
-
+      temp1 += cr0 * *(B);
+      temp2 += cr0 * *(B + ldb);
+      B += 1;
+      temp1 += cr1 * *(B);
+      temp2 += cr1 * *(B +ldb);
+      B += 1;
+     temp1 += cr2 * *(B);
+     temp2 += cr2 * *(B +ldb);
+     B += 1;
+     temp1 += cr3 * *(B);
+     temp2 += cr3 * *(B +ldb);
+     B += 1;
       if (l + t < k) {
         cr0 = nr0;
         cr1 = nr1;
         cr2 = nr2;
         cr3 = nr3;
       }
-    }
   }
   *C = temp1;
   *(C + ldc) = temp2;
@@ -653,6 +644,46 @@ float test_kernel_prefetch3(int m, int n, int k,
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_prefetch3("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
+           <<" ("  << base/real_time <<"x)."
+           <<" (" << total_gb <<"GB)"
+           <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    }
+
+}
+
+
+float test_kernel_prefetch4(int m, int n, int k, 
+            double * dA, int lda, 
+            double * dB, int ldb, 
+            double * dC, int ldc,
+            float base){
+
+    for (int T = 16; T <= min(m, 1024); T*=2) {
+    //int T = 128;
+    int tt = 4;
+      int blocksPerGrid = m / T;
+      int threadsPerBlock = T;
+
+      cudaEvent_t start, stop;
+      cudaEventCreate(&start);
+      cudaEventCreate(&stop);
+
+      cudaEventRecord(start);
+      for (int i = 0; i < TEST_RUN; i++) {
+        dgemm_kernel4_3<<<blocksPerGrid, threadsPerBlock>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+        check_cuda_error();
+      }
+      cudaEventRecord(stop);
+
+      cudaEventSynchronize(stop);
+      float milliseconds = 0;
+      cudaEventElapsedTime(&milliseconds, start, stop);
+
+      float real_time = milliseconds / 1000;
+      long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+      double total_gb = (double)total_bytes / 1e9;
+      total_gb *= TEST_RUN;
+      cout <<"Runing time of dgemm_kernel_prefetch4("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
            <<" ("  << base/real_time <<"x)."
            <<" (" << total_gb <<"GB)"
            <<" (" << total_gb/real_time <<" GB/s)"<<endl;
@@ -725,6 +756,7 @@ void test(int m, int k){
     test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
    
     cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
