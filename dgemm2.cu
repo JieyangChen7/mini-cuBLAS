@@ -466,7 +466,7 @@ void test_kernel_prefetch2(int m, int n, int k,
 //Single registers: m, n, k, T, t, lda, ldb, ldc, idx, j, l (11)
 //Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (28)
 //Shared mem.: T*2 + T*T (double)
-#define t 4
+#define t 6
 __global__ void
 dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
@@ -480,17 +480,23 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
   register double temp1 = 0;
   register double temp2 = 0;
 
-  register double nr0, nr1, nr2, nr3;
-  register double cr0, cr1, cr2, cr3;
+  register double nr0, nr1, nr2, nr3, nr4, nr5;
+  register double cr0, cr1, cr2, cr3, cr4, cr5;
 
   //prefectch A 
   cr0 = *A;
   A += lda;
   cr1 = *A;
   A += lda;
+  
   cr2 = *A;
   A += lda;
   cr3 = *A;
+  A += lda;
+
+  cr4 = *A;
+  A += lda;
+  cr5 = *A;
   A += lda;
 
   #pragma unroll 1
@@ -508,9 +514,15 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
         A += lda;
         nr1 = *A;
         A += lda;
+
         nr2 = *A;
         A += lda;
         nr3 = *A;
+        A += lda;
+
+        nr4 = *A;
+        A += lda;
+        nr5 = *A;
         A += lda;
       }
 
@@ -526,11 +538,19 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
      temp1 += cr3 * cacheB[l - j + 3 ];
      temp2 += cr3 * cacheB[l - j + 3 + 1];
 
+    temp1 += cr4 * cacheB[l - j + 4 ];
+     temp2 += cr4 * cacheB[l - j + 4 + 1];
+
+     temp1 += cr5 * cacheB[l - j + 5 ];
+     temp2 += cr5 * cacheB[l - j + 5 + 1];
+
       if (l + t < k) {
         cr0 = nr0;
         cr1 = nr1;
-       cr2 = nr2;
-       cr3 = nr3;
+        cr2 = nr2;
+        cr3 = nr3;
+        cr4 = nr2;
+        cr5 = nr3;
       }
     }
   }
@@ -589,11 +609,11 @@ float test_cublas_mm(int m, int n, int k,
 void test(int m, int k);
 
 int main(){
-  for (int i = 128; i < 32768; i *= 2){
-    //i = 20480;
+  //for (int i = 128; i < 32768; i *= 2){
+    int i = 6144;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 2 << ")" << endl;
     test(i, i);
-  }
+  //}
 }
 
 void test(int m, int k){
