@@ -39,7 +39,7 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   register double b1 = 0;
   register double b2 = 0;
 
-  #pragma unroll 
+  #pragma unroll 1
   for (int i = 0; i < k; i+=1){
     //load data
     a = *A;
@@ -522,7 +522,7 @@ void test(int m, int k){
     test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+   // test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
   // time  = test_kernel3(m, n, k, dA, lda, dB, ldb, dC, ldc);
   //   cout << "Speedup: " << base/time << "x." << endl;
   //   time = test_kernel4(m, n, k, dA, lda, dB, ldb, dC, ldc);
