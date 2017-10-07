@@ -466,7 +466,7 @@ void test_kernel_prefetch2(int m, int n, int k,
 //Single registers: m, n, k, T, t, lda, ldb, ldc, idx, j, l (11)
 //Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (28)
 //Shared mem.: T*2 + T*T (double)
-#define t 2
+#define t 4
 __global__ void
 dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
@@ -477,20 +477,21 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
   C = C + idx;
-  double temp1 = 0;
-  double temp2 = 0;
+  register double temp1 = 0;
+  register double temp2 = 0;
 
-  double nr0, nr1;//, nr2, nr3;
-  double cr0, cr1;//, cr2, cr3;
+  register double nr0, nr1, nr2, nr3;
+  register double cr0, cr1, cr2, cr3;
 
   //prefectch A 
   cr0 = *A;
   A += lda;
   cr1 = *A;
   A += lda;
- // cr2 = *(A + 2 * lda);
- // cr3 = *(A + 3 * lda);
- // A += t * lda;
+  cr2 = *A;
+  A += lda;
+  cr3 = *(A;
+  A += lda;
 
   #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
@@ -507,8 +508,10 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
         A += lda;
         nr1 = *A;
         A += lda;
-    //    nr2 = *(A + 2 *lda);
-    //    nr3 = *(A + 3 *lda); 
+        nr2 = *A;
+        A += lda;
+        nr3 = *A;
+        A += lda;
       }
 
       temp1 += cr0 * cacheB[l - j + 0 ];
@@ -517,17 +520,17 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
       temp1 += cr1 * cacheB[l - j + 1 ];
       temp2 += cr1 * cacheB[l - j + 1 + 1];
 
-    //  temp1 += cr2 * cacheB[l - j + 2 ];
-    //  temp2 += cr2 * cacheB[l - j + 2 + 1];
+     temp1 += cr2 * cacheB[l - j + 2 ];
+     temp2 += cr2 * cacheB[l - j + 2 + 1];
 
-     // temp1 += cr3 * cacheB[l - j + 3 ];
-     // temp2 += cr3 * cacheB[l - j + 3 + 1];
+     temp1 += cr3 * cacheB[l - j + 3 ];
+     temp2 += cr3 * cacheB[l - j + 3 + 1];
 
       if (l + t < k) {
         cr0 = nr0;
         cr1 = nr1;
-       // cr2 = nr2;
-       // cr3 = nr3;
+       cr2 = nr2;
+       cr3 = nr3;
       }
     }
   }
@@ -566,7 +569,7 @@ float test_kernel_prefetch3(int m, int n, int k,
       long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
-      cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
+      cout <<"Runing time of dgemm_kernel_prefetch3("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
            <<" ("  << base/real_time <<"x)."
            <<" (" << total_gb <<"GB)"
            <<" (" << total_gb/real_time <<" GB/s)"<<endl;
