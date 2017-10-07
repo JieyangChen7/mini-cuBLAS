@@ -529,7 +529,6 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
        // cr2 = nr2;
        // cr3 = nr3;
       }
-      A += t * lda;
     }
   }
   *C = temp1;
