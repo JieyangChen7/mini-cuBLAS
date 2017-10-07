@@ -561,7 +561,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   register double cr0, cr1, cr2, cr3;
 
   register double nb00, nb01, nb10, nb11;
-  register double cb00, cb01, nb10, nb11;
+  register double cb00, cb01, cb10, cb11;
 
   //prefectch A 
   cr0 = *A;
