@@ -627,10 +627,13 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
       cb0 = nb0;
       cb1 = nb1;
 
-      nb0 = *B;
-      B += 1;
-      nb1 = *A;
-      B += 1;
+
+      if (i + t < k) {
+        nb0 = *B;
+        B += 1;
+        nb1 = *A;
+        B += 1;
+      }
 
       temp1 += cr3 * cb0;
       temp2 += cr3 * cb1;
