@@ -10,9 +10,9 @@ using namespace std;
 
 
 void check_cuda_error(){
-    // cudaError_t err = cudaGetLastError();
-    // if (err != cudaSuccess)
-    // printf("Error: %s\n", cudaGetErrorString(err));
+    cudaError_t err = cudaGetLastError();
+    if (err != cudaSuccess)
+    printf("Error: %s\n", cudaGetErrorString(err));
 }
 
 void check_C(double * dC, int m, int n, double * checkC) {
@@ -577,8 +577,10 @@ float test_kernel_prefetch3(int m, int n, int k,
       cudaEventCreate(&stop);
 
       cudaEventRecord(start);
-      for (int i = 0; i < TEST_RUN; i++)
+      for (int i = 0; i < TEST_RUN; i++) {
         dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+        check_cuda_error();
+      }
       cudaEventRecord(stop);
 
       cudaEventSynchronize(stop);
