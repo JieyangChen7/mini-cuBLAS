@@ -560,8 +560,8 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   register double nr0, nr1, nr2, nr3;
   register double cr0, cr1, cr2, cr3;
 
-  register double nb0, nb1;
-  register double cb0, cb1;
+  register double nb00, nb01, nb10, nb11;
+  register double cb00, cb01, nb10, nb11;
 
   //prefectch A 
   cr0 = *A;
@@ -574,10 +574,13 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   cr3 = *A;
   A += lda;
 
-  cb0 = *B;
+  cb00 = *B;
+  cb01 = *(B + ldb);
   B += 1;
-  cb1 = *B;
+  cb10 = *B;
+  cb11 = *(B + ldb);
   B += 1;
+
 
   #pragma unroll 1
   for (int i = 0; i < k; i += t){ 
@@ -593,53 +596,45 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
         A += lda;
       }
 
-      nb0 = *B;
+      nb00 = *B;
+      nb01 = *(B + ldb);
       B += 1;
-      nb1 = *B;
-      B += 1;
-
-      temp1 += cr0 * cb0;
-      temp2 += cr0 * cb1;
-
-      cb0 = nb0;
-      cb1 = nb1;
-
-      nb0 = *B;
-      B += 1;
-      nb1 = *B;
+      nb10 = *B;
+      nb11 = *(B + ldb);
       B += 1;
 
-      temp1 += cr1 * cb0;
-      temp2 += cr1 * cb1;
+      temp1 += cr0 * cb00;
+      temp2 += cr0 * cb01;
+      temp1 += cr1 * cb10;
+      temp2 += cr1 * cb11;
 
-      cb0 = nb0;
-      cb1 = nb1;
-
-
-      nb0 = *B;
-      B += 1;
-      nb1 = *B;
-      B += 1;
-
-      temp1 += cr2 * cb0;
-      temp2 += cr2 * cb1;
-
-      cb0 = nb0;
-      cb1 = nb1;
+      cb00 = nb00;
+      cb01 = nb01;
+      cb10 = nb10;
+      cb11 = nb11;
 
 
       if (i + t < k) {
-        nb0 = *B;
+        nb00 = *B;
+        nb01 = *(B + ldb);
         B += 1;
-        nb1 = *B;
+        nb10 = *B;
+        nb11 = *(B + ldb);
         B += 1;
       }
 
-      temp1 += cr3 * cb0;
-      temp2 += cr3 * cb1;
+      temp1 += cr2 * cb00;
+      temp2 += cr2 * cb01;
+      temp1 += cr3 * cb10;
+      temp2 += cr3 * cb11;
 
-      cb0 = nb0;
-      cb1 = nb1;
+      cb00 = nb00;
+      cb01 = nb01;
+      cb10 = nb10;
+      cb11 = nb11;
+    
+
+    
 
       if (i + t < k) {
         cr0 = nr0;
