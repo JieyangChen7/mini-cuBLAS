@@ -490,7 +490,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
   A += lda;
   cr2 = *A;
   A += lda;
-  cr3 = *(A;
+  cr3 = *A;
   A += lda;
 
   #pragma unroll 1
