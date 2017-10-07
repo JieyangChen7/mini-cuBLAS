@@ -4,15 +4,15 @@
 #include <cmath>
 #include <time.h>
 #include <stdio.h>
-#define TEST_RUN 100 
+#define TEST_RUN 10 
 #define ESP 10e-10
 using namespace std;
 
 
 void check_cuda_error(){
-    cudaError_t err = cudaGetLastError();
-    if (err != cudaSuccess)
-    printf("Error: %s\n", cudaGetErrorString(err));
+    // cudaError_t err = cudaGetLastError();
+    // if (err != cudaSuccess)
+    // printf("Error: %s\n", cudaGetErrorString(err));
 }
 
 void check_C(double * dC, int m, int n, double * checkC) {
