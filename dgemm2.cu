@@ -490,6 +490,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
  // cr3 = *(A + 3 * lda);
   A += t * lda;
 
+  #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
     __syncthreads();
     cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
@@ -497,7 +498,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, double * A, int lda, double * B, int
     __syncthreads();
     B += T;
 
-
+    #pragma unroll 1
     for (int l = j; l < j + T; l += t){
       if (l + t < k) {
         nr0 = *(A + 0 *lda);
