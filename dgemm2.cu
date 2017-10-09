@@ -89,7 +89,7 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * n + m * 2 * (m / 32)) * sizeof(double);
+    long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double);
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
@@ -161,7 +161,7 @@ float test_kernel_shared(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+      long long total_bytes = (m * k + k * n * (k / T)) * sizeof(double) ;
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -350,7 +350,7 @@ void test_kernel_prefetch(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+      long long total_bytes = (m * k + k * n * (k / T)) * sizeof(double) ;
         double total_gb = (double)total_bytes / 1e9;
         total_gb *= TEST_RUN;
         cout <<"Runing time of dgemm_kernel_prefetch("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -451,7 +451,7 @@ void test_kernel_prefetch2(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+    long long total_bytes = (m * k + k * n * (m / T)) * sizeof(double) ;
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -545,7 +545,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
 //Single registers: m, n, k, T, t, lda, ldb, ldc, idx, j, l (11)
 //Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (28)
 //Shared mem.: T*2 + T*T (double)
-
+#define LDA 30720
 __global__ void
 dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
@@ -582,7 +582,7 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   B += 1;
 
 
-  #pragma unroll 
+  #pragma unroll 1
   for (int i = 0; i < k; i += t){ 
       if (i + t < k) {
         nr0 = *A;
@@ -595,7 +595,12 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
         nr3 = *A;
         A += lda;
       }
-
+      
+      //temp1 += cr1 * cr1;
+      //temp2 += cr2 * cr2;
+      //temp1 += cr3 * cr3;
+      //temp1 += cr0 * cr0;
+      
       nb00 = *B;
       nb01 = *(B + ldb);
       B += 1;
@@ -633,13 +638,14 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
       cb10 = nb10;
       cb11 = nb11;
     
-
+      
       if (i + t < k) {
         cr0 = nr0;
         cr1 = nr1;
         cr2 = nr2;
         cr3 = nr3;
       }
+      
   }
   *C = temp1;
   *(C + ldc) = temp2;
@@ -675,7 +681,7 @@ float test_kernel_prefetch3(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+      long long total_bytes = (m * k + k * n * (k / T)) * sizeof(double) ;
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_prefetch3("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -715,7 +721,7 @@ float test_kernel_prefetch4(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+      long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double) ;
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_prefetch4("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -738,11 +744,11 @@ float test_cublas_mm(int m, int n, int k,
 void test(int m, int k);
 
 int main(){
-  for (int i = 128; i < 32768; i *= 2){
-  //  int i = 6144;
+  //for (int i = 128; i <=32768; i *= 2){
+  int i = 1024;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 2 << ")" << endl;
     test(i, i);
-  }
+    //}
 }
 
 void test(int m, int k){

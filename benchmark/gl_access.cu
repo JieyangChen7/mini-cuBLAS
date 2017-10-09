@@ -3,7 +3,7 @@
 #include <climits>
 #include <algorithm>
 #include <cuda_profiler_api.h>
-#define SM 24
+#define SM 15
 #define LL SM * 2048 
 #define ITERATION 1000
 using namespace std;
@@ -38,25 +38,33 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
    register double * a_next2 = A + LL;
    register double * a_next3 = A + LL * 2;
    register double * a_next4 = A + LL * 3;
-   register double * a_next5 = A + LL * 4;
-   register double * a_next6 = A + LL * 5;
-   register double * a_next7 = A + LL * 6;
-   register double * a_next8 = A + LL * 7;
+   //register double * a_next5 = A + LL * 4;
+   //register double * a_next6 = A + LL * 5;
+   //register double * a_next7 = A + LL * 6;
+   //register double * a_next8 = A + LL * 7;
 
+   register double temp = 0;
   # pragma unroll 1 
-  for (int i = 0; i < ITERATION; i++) {
-    //start = clock();                                                                                                                      
+  for (int i = 0; i < iteration; i++) {
+    //start = clock(); 
+
+    if (i < iteration - 1){
     a_next1 = (double *)(unsigned long long int) *a_next1;
     a_next2 = (double *)(unsigned long long int) *a_next2;
     
     a_next3 = (double *)(unsigned long long int) *a_next3;
     a_next4 = (double *)(unsigned long long int) *a_next4;
     
-    a_next5 = (double *)(unsigned long long int) *a_next5;
-    a_next6 = (double *)(unsigned long long int) *a_next6;
-    a_next7 = (double *)(unsigned long long int) *a_next7;
-    a_next8 = (double *)(unsigned long long int) *a_next8;
+    temp += i * iteration;
+    temp += i *iteration;
+    temp += i *iteration;
+    temp += i *iteration;
+    //a_next5 = (double *)(unsigned long long int) *a_next5;
+    //a_next6 = (double *)(unsigned long long int) *a_next6;
+    //a_next7 = (double *)(unsigned long long int) *a_next7;
+    //a_next8 = (double *)(unsigned long long int) *a_next8;
     //__syncthreads();
+    }
     //end = clock(); 
   }
   
@@ -64,11 +72,11 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   *A +=  (unsigned long long int)a_next2;
   *A +=  (unsigned long long int)a_next3;
   *A +=  (unsigned long long int)a_next4;
-    
-  *A +=  (unsigned long long int)a_next5;
-  *A +=  (unsigned long long int)a_next6;
-  *A +=  (unsigned long long int)a_next7;
-  *A +=  (unsigned long long int)a_next8;
+  *A += temp;
+  //*A +=  (unsigned long long int)a_next5;
+  //*A +=  (unsigned long long int)a_next6;
+  //*A +=  (unsigned long long int)a_next7;
+  //*A +=  (unsigned long long int)a_next8;
 
 }
 
@@ -1003,7 +1011,7 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 
 void test_2048(int block_size){
   int iteration = 1000;
-  int access_per_iter = 8;
+  int access_per_iter = 4;
   //int SM = 24;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
