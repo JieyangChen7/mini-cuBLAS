@@ -1146,7 +1146,7 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
         *(C + ldc * (5 + p)) = rstc6;
         *(C + ldc * (6 + p)) = rstc7;
         *(C + ldc * (7 + p)) = rstc8;
-        *(C + ldc * (8 + p)) = rstc9;
+
 
 
       }
