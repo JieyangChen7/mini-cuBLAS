@@ -1032,7 +1032,7 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
   C = C + idx;
-  B = B + ldb * (idx / 4) + idx % 4
+  B = B + ldb * (idx / 4) + idx % 4;
   register double rst1 = 0;
   register double rst2 = 0;
   register double rst3 = 0;
@@ -1073,7 +1073,7 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
     __syncthreads();
     cacheB[threadIdx.x] = *(B);
     __syncthreads();
-    B += T;
+    B += 4;
 
     #pragma unroll 1
     for (int l = j; l < j + T; l += t){
