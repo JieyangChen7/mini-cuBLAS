@@ -618,8 +618,8 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   register double nr0, nr1, nr2, nr3;
   register double cr0, cr1, cr2, cr3;
 
-  register double nb00, nb01, nb02, nb03, nb10, nb11, nb12, nb13;
-  register double cb00, cb01, cb02, cb03, cb10, cb11, cb12, cb13;
+  register double nb00, nb01, nb02, nb03;//, nb10, nb11, nb12, nb13;
+  register double cb00, cb01, cb02, cb03;//, cb10, cb11, cb12, cb13;
 
   //prefectch A 
   cr0 = *A;
@@ -637,14 +637,14 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   cb02 = *(B + ldb * 2);
   cb03 = *(B + ldb * 3);
   B += 1;
-  cb10 = *B;
-  cb11 = *(B + ldb);
-  cb12 = *(B + ldb * 2);
-  cb13 = *(B + ldb * 3);
-  B += 1;
+  // cb10 = *B;
+  // cb11 = *(B + ldb);
+  // cb12 = *(B + ldb * 2);
+  // cb13 = *(B + ldb * 3);
+  // B += 1;
 
 
-  #pragma unroll 
+  #pragma unroll 1
   for (int i = 0; i < k; i += t){ 
       if (i + t < k) {
         nr0 = *A;
@@ -663,31 +663,65 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
       nb02 = *(B + ldb * 2);
       nb03 = *(B + ldb * 3);
       B += 1;
-      nb10 = *B;
-      nb11 = *(B + ldb);
-      nb12 = *(B + ldb * 2);
-      nb13 = *(B + ldb * 3);
-      B += 1;
+      // nb10 = *B;
+      // nb11 = *(B + ldb);
+      // nb12 = *(B + ldb * 2);
+      // nb13 = *(B + ldb * 3);
+      // B += 1;
 
       temp1 += cr0 * cb00;
       temp2 += cr0 * cb01;
       temp3 += cr0 * cb02;
       temp4 += cr0 * cb03;
 
-      temp1 += cr1 * cb10;
-      temp2 += cr1 * cb11;
-      temp3 += cr1 * cb12;
-      temp4 += cr1 * cb13;
+      // temp1 += cr1 * cb10;
+      // temp2 += cr1 * cb11;
+      // temp3 += cr1 * cb12;
+      // temp4 += cr1 * cb13;
 
       cb00 = nb00;
       cb01 = nb01;
       cb02 = nb02;
       cb03 = nb03;
 
-      cb10 = nb10;
-      cb11 = nb11;
-      cb12 = nb12;
-      cb13 = nb13;
+      // cb10 = nb10;
+      // cb11 = nb11;
+      // cb12 = nb12;
+      // cb13 = nb13;
+
+      nb00 = *B;
+      nb01 = *(B + ldb);
+      nb02 = *(B + ldb * 2);
+      nb03 = *(B + ldb * 3);
+      B += 1;
+
+      temp1 += cr1 * cb00;
+      temp2 += cr1 * cb01;
+      temp3 += cr1 * cb02;
+      temp4 += cr1 * cb03;
+
+      cb00 = nb00;
+      cb01 = nb01;
+      cb02 = nb02;
+      cb03 = nb03;
+
+      nb00 = *B;
+      nb01 = *(B + ldb);
+      nb02 = *(B + ldb * 2);
+      nb03 = *(B + ldb * 3);
+      B += 1;
+
+      temp1 += cr2 * cb00;
+      temp2 += cr2 * cb01;
+      temp3 += cr2 * cb02;
+      temp4 += cr2 * cb03;
+
+      cb00 = nb00;
+      cb01 = nb01;
+      cb02 = nb02;
+      cb03 = nb03;
+
+
 
 
       if (i + t < k) {
@@ -695,28 +729,30 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
         nb01 = *(B + ldb);
         nb02 = *(B + ldb * 2);
         nb03 = *(B + ldb * 3);
-        B += 1;
-        nb10 = *B;
-        nb11 = *(B + ldb);
-        nb12 = *(B + ldb * 2);
-        nb13 = *(B + ldb * 3);
-        B += 1;
+         B += 1;
+        // nb10 = *B;
+        // nb11 = *(B + ldb);
+        // nb12 = *(B + ldb * 2);
+        // nb13 = *(B + ldb * 3);
+        // B += 1;
       }
 
-      temp1 += cr2 * cb00;
-      temp2 += cr2 * cb01;
-      temp1 += cr3 * cb10;
-      temp2 += cr3 * cb11;
+      temp1 += cr4 * cn00;
+      temp2 += cr4 * cb01;
+      temp3 += cr4 * cn02;
+      temp4 += cr4 * cb03;
+      // temp1 += cr4 * cb10;
+      // temp2 += cr4 * cb11;
 
       cb00 = nb00;
       cb01 = nb01;
       cb02 = nb02;
       cb03 = nb03;
 
-      cb10 = nb10;
-      cb11 = nb11;
-      cb12 = nb12;
-      cb13 = nb13;
+      // cb10 = nb10;
+      // cb11 = nb11;
+      // cb12 = nb12;
+      // cb13 = nb13;
     
 
       if (i + t < k) {
