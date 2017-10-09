@@ -615,8 +615,8 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   register double temp3 = 0;
   register double temp4 = 0;
 
-  register double nr0, nr1, nr2, nr3;
-  register double cr0, cr1, cr2, cr3;
+  register double nr0, nr1;//, nr2, nr3;
+  register double cr0, cr1;//, cr2, cr3;
 
   register double nb00, nb01, nb02, nb03;//, nb10, nb11, nb12, nb13;
   register double cb00, cb01, cb02, cb03;//, cb10, cb11, cb12, cb13;
@@ -627,10 +627,10 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   cr1 = *A;
   A += lda;
   
-  cr2 = *A;
-  A += lda;
-  cr3 = *A;
-  A += lda;
+  // cr2 = *A;
+  // A += lda;
+  // cr3 = *A;
+  // A += lda;
 
   cb00 = *B;
   cb01 = *(B + ldb);
@@ -652,10 +652,10 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
         nr1 = *A;
         A += lda;
 
-        nr2 = *A;
-        A += lda;
-        nr3 = *A;
-        A += lda;
+        // nr2 = *A;
+        // A += lda;
+        // nr3 = *A;
+        // A += lda;
       }
 
       nb00 = *B;
@@ -705,61 +705,63 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
       cb02 = nb02;
       cb03 = nb03;
 
-      nb00 = *B;
-      nb01 = *(B + ldb);
-      nb02 = *(B + ldb * 2);
-      nb03 = *(B + ldb * 3);
-      B += 1;
-
-      temp1 += cr2 * cb00;
-      temp2 += cr2 * cb01;
-      temp3 += cr2 * cb02;
-      temp4 += cr2 * cb03;
-
-      cb00 = nb00;
-      cb01 = nb01;
-      cb02 = nb02;
-      cb03 = nb03;
 
 
+      // nb00 = *B;
+      // nb01 = *(B + ldb);
+      // nb02 = *(B + ldb * 2);
+      // nb03 = *(B + ldb * 3);
+      // B += 1;
+
+      // temp1 += cr2 * cb00;
+      // temp2 += cr2 * cb01;
+      // temp3 += cr2 * cb02;
+      // temp4 += cr2 * cb03;
+
+      // cb00 = nb00;
+      // cb01 = nb01;
+      // cb02 = nb02;
+      // cb03 = nb03;
 
 
-      if (i + t < k) {
-        nb00 = *B;
-        nb01 = *(B + ldb);
-        nb02 = *(B + ldb * 2);
-        nb03 = *(B + ldb * 3);
-         B += 1;
-        // nb10 = *B;
-        // nb11 = *(B + ldb);
-        // nb12 = *(B + ldb * 2);
-        // nb13 = *(B + ldb * 3);
-        // B += 1;
-      }
 
-      temp1 += cr3 * cb00;
-      temp2 += cr3 * cb01;
-      temp3 += cr3 * cb02;
-      temp4 += cr3 * cb03;
-      // temp1 += cr4 * cb10;
-      // temp2 += cr4 * cb11;
 
-      cb00 = nb00;
-      cb01 = nb01;
-      cb02 = nb02;
-      cb03 = nb03;
+      // if (i + t < k) {
+      //   nb00 = *B;
+      //   nb01 = *(B + ldb);
+      //   nb02 = *(B + ldb * 2);
+      //   nb03 = *(B + ldb * 3);
+      //    B += 1;
+      //   // nb10 = *B;
+      //   // nb11 = *(B + ldb);
+      //   // nb12 = *(B + ldb * 2);
+      //   // nb13 = *(B + ldb * 3);
+      //   // B += 1;
+      // }
 
-      // cb10 = nb10;
-      // cb11 = nb11;
-      // cb12 = nb12;
-      // cb13 = nb13;
+      // temp1 += cr3 * cb00;
+      // temp2 += cr3 * cb01;
+      // temp3 += cr3 * cb02;
+      // temp4 += cr3 * cb03;
+      // // temp1 += cr4 * cb10;
+      // // temp2 += cr4 * cb11;
+
+      // cb00 = nb00;
+      // cb01 = nb01;
+      // cb02 = nb02;
+      // cb03 = nb03;
+
+      // // cb10 = nb10;
+      // // cb11 = nb11;
+      // // cb12 = nb12;
+      // // cb13 = nb13;
     
 
       if (i + t < k) {
         cr0 = nr0;
         cr1 = nr1;
-        cr2 = nr2;
-        cr3 = nr3;
+        // cr2 = nr2;
+        // cr3 = nr3;
       }
   }
   *C = temp1;
@@ -818,7 +820,7 @@ float test_kernel_prefetch4(int m, int n, int k,
 
     for (int T = 16; T <= min(m, 1024); T*=2) {
     //int T = 128;
-    int tt = 4;
+    int tt = 2;
       int blocksPerGrid = m / T;
       int threadsPerBlock = T;
 
