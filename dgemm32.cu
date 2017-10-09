@@ -845,6 +845,7 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
   #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
 
+
     __syncthreads();
     cacheB[threadIdx.x * 16 + 0] = *(B + threadIdx.x + ldb * 0);
     cacheB[threadIdx.x * 16 + 1] = *(B + threadIdx.x + ldb * 1);
@@ -1069,22 +1070,22 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
       temp15 += cr3 * cacheB[l - j + 3 + 14];
       temp16 += cr3 * cacheB[l - j + 3 + 15];
      
-      *C = temp1;
-      *(C + ldc) = temp2;
-      *(C + ldc * 2) = temp3;
-      *(C + ldc * 3) = temp4;
-      *(C + ldc * 4) = temp5;
-      *(C + ldc * 5) = temp6;
-      *(C + ldc * 6) = temp7;
-      *(C + ldc * 7) = temp8;
-      *(C + ldc * 8) = temp9;
-      *(C + ldc * 9) = temp10;
-      *(C + ldc * 10) = temp11;
-      *(C + ldc * 11) = temp12;
-      *(C + ldc * 12) = temp13;
-      *(C + ldc * 13) = temp14;
-      *(C + ldc * 14) = temp15;
-      *(C + ldc * 15) = temp16;
+      *(C + ldc * 16) = temp1;
+      *(C + ldc * 17) = temp2;
+      *(C + ldc * 18) = temp3;
+      *(C + ldc * 19) = temp4;
+      *(C + ldc * 20) = temp5;
+      *(C + ldc * 21) = temp6;
+      *(C + ldc * 22) = temp7;
+      *(C + ldc * 23) = temp8;
+      *(C + ldc * 24) = temp9;
+      *(C + ldc * 25) = temp10;
+      *(C + ldc * 26) = temp11;
+      *(C + ldc * 27) = temp12;
+      *(C + ldc * 28) = temp13;
+      *(C + ldc * 29) = temp14;
+      *(C + ldc * 30) = temp15;
+      *(C + ldc * 31) = temp16;
 
       
       cr0 = nr0;
@@ -1379,7 +1380,7 @@ void test(int m, int k);
 int main(){
   for (int i = 128; i <= 32768; i *= 2){
   //  int i = 6144;
-    cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 16 << ")" << endl;
+    cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 32 << ")" << endl;
     test(i, i);
   }
 }
