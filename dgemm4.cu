@@ -737,10 +737,10 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
         // B += 1;
       }
 
-      temp1 += cr4 * cn00;
-      temp2 += cr4 * cb01;
-      temp3 += cr4 * cn02;
-      temp4 += cr4 * cb03;
+      temp1 += cr3 * cb00;
+      temp2 += cr3 * cb01;
+      temp3 += cr3 * cb02;
+      temp4 += cr3 * cb03;
       // temp1 += cr4 * cb10;
       // temp2 += cr4 * cb11;
 
