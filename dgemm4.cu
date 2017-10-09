@@ -619,10 +619,10 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   *(C + ldc) = temp2;
   *(C + ldc * 2) = temp3;
   *(C + ldc * 3) = temp4;
-  *(C + ldc * 3) = temp5;
-  *(C + ldc * 3) = temp6;
-  *(C + ldc * 3) = temp7;
-  *(C + ldc * 3) = temp8;
+  *(C + ldc * 4) = temp5;
+  *(C + ldc * 5) = temp6;
+  *(C + ldc * 6) = temp7;
+  *(C + ldc * 7) = temp8;
     
 }
 
