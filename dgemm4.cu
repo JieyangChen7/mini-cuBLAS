@@ -123,23 +123,31 @@ dgemm_kernel_shared(int m, int n, int k, int T, double * A, int lda, double * B,
   A = A + idx;
   register double temp1 = 0;
   register double temp2 = 0;
+  register double temp3 = 0;
+  register double temp4 = 0;
   register double a = 0;
 
   for (int j = 0; j < k; j += T){
     cache[threadIdx.x * 2] = *(B + threadIdx.x);
     cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
+    cache[threadIdx.x * 2 + 2] = *(B + threadIdx.x + ldb * 2);
+    cache[threadIdx.x * 2 + 3] = *(B + threadIdx.x + ldb * 3);
     __syncthreads();
     B += T;
     for (int i = 0; i < T; i++) {
       a = *(A + (i + j) * lda);
       temp1 += a * cache[i * 2];
       temp2 += a * cache[i * 2 + 1];
+      temp3 += a * cache[i * 2 + 2];
+      temp4 += a * cache[i * 2 + 3];
     }
     __syncthreads();
 
   }
   *(C + 0 * ldc + idx) = temp1;
   *(C + 1 * ldc + idx) = temp2;
+  *(C + 2 * ldc + idx) = temp3;
+  *(C + 3 * ldc + idx) = temp4;
 
 }
 
@@ -162,7 +170,7 @@ float test_kernel_shared(int m, int n, int k,
 
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++)
-        dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double) * 2>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+        dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double) * 4>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
         check_cuda_error();
       cudaEventRecord(stop);
 
@@ -797,7 +805,7 @@ void test(int m, int k){
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
   
     test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
