@@ -1091,7 +1091,7 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
 
     
       for (int p = 0; p < 32; p += 8){
-        double * curr_b = cacheB[p * 4];
+        double * curr_b = cacheB + p * 4;
 
         rst1 += cr0 * cacheB[0 + 0];
         rst2 += cr0 * cacheB[0 + 4];
