@@ -1089,7 +1089,7 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
         A += lda;
       }
 
-    
+      #pragma unroll 1
       for (int p = 0; p < 32; p += 8){
         double * curr_b = cacheB + p * 4;
 
