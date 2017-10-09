@@ -972,7 +972,7 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
       cr2 = nr2;
       cr3 = nr3;
     }
-
+      b = 0;
       *(C + ldc * (0 + b) )+= temp1;
       *(C + ldc * (1 + b) )+= temp2;
       *(C + ldc * (2 + b) )+= temp3;
