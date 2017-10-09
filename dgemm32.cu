@@ -852,8 +852,8 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
       int b = p * 16;
       __syncthreads();
       for (int q = b; q < b + 16; q++){
-        //cacheB[threadIdx.x * 16 + q]
-        cr1 += *(B + ldb * q);
+        cacheB[threadIdx.x * 16 + q] = cr1;
+        //cr1 += *(B + ldb * q);
       }
     // cacheB[threadIdx.x * 16 + 0] = *(B + ldb * 0);
     // cacheB[threadIdx.x * 16 + 1] = *(B + ldb * 1);
