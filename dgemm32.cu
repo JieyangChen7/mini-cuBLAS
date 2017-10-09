@@ -1018,6 +1018,151 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
 
 
 
+//Single registers: m, n, k, T, t, lda, ldb, ldc, idx, j, l (11)
+//Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (28)
+//Shared mem.: T*2 + T*T (double)
+//#define t 4
+__global__ void
+dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
+{
+  // store B (T * 2)                                                                                                                                                                                                                                                                       
+  extern __shared__ double cacheB[];
+
+  //determine the row to process                                                                                                                                                                                                                          
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+  C = C + idx;
+  B = B + ldb * (idx / 4) + idx % 4
+  register double rst1 = 0;
+  register double rst2 = 0;
+  register double rst3 = 0;
+  register double rst4 = 0;
+  register double rst5 = 0;
+  register double rst6 = 0;
+  register double rst7 = 0;
+  register double rst8 = 0;
+
+  register double rstc1 = 0;
+  register double rstc2 = 0;
+  register double rstc3 = 0;
+  register double rstc4 = 0;
+  register double rstc5 = 0;
+  register double rstc6 = 0;
+  register double rstc7 = 0;
+  register double rstc8 = 0;
+ 
+
+
+  register double nr0, nr1, nr2, nr3;
+  register double cr0, cr1, cr2, cr3;
+
+  //prefectch A 
+  cr0 = *A;
+  A += lda;
+  cr1 = *A;
+  A += lda;
+  
+  cr2 = *A;
+  A += lda;
+  cr3 = *A;
+  A += lda;
+
+  #pragma unroll 1
+  for (int j = 0; j < k; j += T){ 
+
+    __syncthreads();
+    cacheB[threadIdx.x] = *(B);
+    __syncthreads();
+    B += T;
+
+    #pragma unroll 1
+    for (int l = j; l < j + T; l += t){
+      if (l + t < k) {
+        nr0 = *A;
+        A += lda;
+        nr1 = *A;
+        A += lda;
+
+        nr2 = *A;
+        A += lda;
+        nr3 = *A;
+        A += lda;
+      }
+
+    
+      for (int p = 0; p < 32; p += 8){
+        double * curr_b = cacheB[p * 4];
+
+        rst1 += cr0 * cacheB[0 + 0];
+        rst2 += cr0 * cacheB[0 + 4];
+        rst3 += cr0 * cacheB[0 + 8];
+        rst4 += cr0 * cacheB[0 + 12];
+        rst5 += cr0 * cacheB[0 + 16];
+        rst6 += cr0 * cacheB[0 + 20];
+        rst7 += cr0 * cacheB[0 + 24];
+        rst8 += cr0 * cacheB[0 + 28];
+
+        rst1 += cr1 * cacheB[1 + 0];
+        rst2 += cr1 * cacheB[1 + 4];
+        rst3 += cr1 * cacheB[1 + 8];
+        rst4 += cr1 * cacheB[1 + 12];
+        rst5 += cr1 * cacheB[1 + 16];
+        rst6 += cr1 * cacheB[1 + 20];
+        rst7 += cr1 * cacheB[1 + 24];
+        rst8 += cr1 * cacheB[1 + 28];
+
+        rst1 += cr2 * cacheB[2 + 0];
+        rst2 += cr2 * cacheB[2 + 4];
+        rst3 += cr2 * cacheB[2 + 8];
+        rst4 += cr2 * cacheB[2 + 12];
+        rst5 += cr2 * cacheB[2 + 16];
+        rst6 += cr2 * cacheB[2 + 20];
+        rst7 += cr2 * cacheB[2 + 24];
+        rst8 += cr2 * cacheB[2 + 28];
+
+        rst1 += cr3 * cacheB[3 + 0];
+        rst2 += cr3 * cacheB[3 + 4];
+        rst3 += cr3 * cacheB[3 + 8];
+        rst4 += cr3 * cacheB[3 + 12];
+        rst5 += cr3 * cacheB[3 + 16];
+        rst6 += cr3 * cacheB[3 + 20];
+        rst7 += cr3 * cacheB[3 + 24];
+        rst8 += cr3 * cacheB[3 + 28];
+
+        rstc1 = rst1;
+        rstc2 = rst2;
+        rstc3 = rst3;
+        rstc4 = rst4;
+        rstc5 = rst5;
+        rstc6 = rst6;
+        rstc7 = rst7;
+        rstc8 = rst8;
+
+        *(C + ldc * (0 + p)) = rstc1;
+        *(C + ldc * (1 + p)) = rstc2;
+        *(C + ldc * (2 + p)) = rstc3;
+        *(C + ldc * (3 + p)) = rstc4;
+        *(C + ldc * (4 + p)) = rstc5;
+        *(C + ldc * (5 + p)) = rstc6;
+        *(C + ldc * (6 + p)) = rstc7;
+        *(C + ldc * (7 + p)) = rstc8;
+        *(C + ldc * (8 + p)) = rstc9;
+
+
+      }
+
+      if (l + t < k) {
+        cr0 = nr0;
+        cr1 = nr1;
+        cr2 = nr2;
+        cr3 = nr3;
+      }
+    }
+  }
+     
+}
+
+
 
 //Single registers: m, n, k, T, t, lda, ldb, ldc, idx, j, l (11)
 //Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (28)
@@ -1199,8 +1344,8 @@ float test_kernel_prefetch3(int m, int n, int k,
             double * dC, int ldc,
             float base){
 
-    for (int T = 16; T <= min(m, 256); T*=2) {
-    //int T = 128;
+    //for (int T = 16; T <= min(m, 256); T*=2) {
+    int T = 128;
     int tt = 4;
       int blocksPerGrid = m / T;
       int threadsPerBlock = T;
@@ -1211,7 +1356,7 @@ float test_kernel_prefetch3(int m, int n, int k,
 
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel4_2_iter<<<blocksPerGrid, threadsPerBlock, (T * 16) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+        dgemm_kernel4_2_iter2<<<blocksPerGrid, threadsPerBlock, (T * 128) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
         check_cuda_error();
       }
       cudaEventRecord(stop);
@@ -1230,7 +1375,7 @@ float test_kernel_prefetch3(int m, int n, int k,
            <<" ("  << base/real_time <<"x)."
            <<" (" << total_gb <<"GB)"
            <<" (" << total_gb/real_time <<" GB/s)"<<endl;
-    }
+   // }
 
 }
 
