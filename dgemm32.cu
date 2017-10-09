@@ -946,31 +946,50 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
       temp14 += cr3 * cacheB[l - j + 3 + 13];
       temp15 += cr3 * cacheB[l - j + 3 + 14];
       temp16 += cr3 * cacheB[l - j + 3 + 15];
-     
-      *C = temp1;
-      *(C + ldc) = temp2;
-      *(C + ldc * 2) = temp3;
-      *(C + ldc * 3) = temp4;
-      *(C + ldc * 4) = temp5;
-      *(C + ldc * 5) = temp6;
-      *(C + ldc * 6) = temp7;
-      *(C + ldc * 7) = temp8;
-      *(C + ldc * 8) = temp9;
-      *(C + ldc * 9) = temp10;
-      *(C + ldc * 10) = temp11;
-      *(C + ldc * 11) = temp12;
-      *(C + ldc * 12) = temp13;
-      *(C + ldc * 13) = temp14;
-      *(C + ldc * 14) = temp15;
-      *(C + ldc * 15) = temp16;
-
       
       cr0 = nr0;
       cr1 = nr1;
       cr2 = nr2;
       cr3 = nr3;
- 
     }
+
+
+      *C += temp1;
+      *(C + ldc) += temp2;
+      *(C + ldc * 2) += temp3;
+      *(C + ldc * 3) += temp4;
+      *(C + ldc * 4) += temp5;
+      *(C + ldc * 5) += temp6;
+      *(C + ldc * 6) += temp7;
+      *(C + ldc * 7) += temp8;
+      *(C + ldc * 8) += temp9;
+      *(C + ldc * 9) += temp10;
+      *(C + ldc * 10) += temp11;
+      *(C + ldc * 11) += temp12;
+      *(C + ldc * 12) += temp13;
+      *(C + ldc * 13) += temp14;
+      *(C + ldc * 14) += temp15;
+      *(C + ldc * 15) += temp16;
+
+
+      temp1 = 0;
+      temp2 = 0;
+      temp3 = 0;
+      temp4 = 0;
+      temp5 = 0;
+      temp6 = 0;
+      temp7 = 0;
+      temp8 = 0;
+      temp9 = 0;
+      temp10 = 0;
+      temp11 = 0;
+      temp12 = 0;
+      temp13 = 0;
+      temp14 = 0;
+      temp15 = 0;
+      temp16 = 0;
+
+
 
     __syncthreads();
     cacheB[threadIdx.x * 16 + 0] = *(B + threadIdx.x + ldb * 16);
@@ -1070,22 +1089,7 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
       temp15 += cr3 * cacheB[l - j + 3 + 14];
       temp16 += cr3 * cacheB[l - j + 3 + 15];
      
-      *(C + ldc * 16) = temp1;
-      *(C + ldc * 17) = temp2;
-      *(C + ldc * 18) = temp3;
-      *(C + ldc * 19) = temp4;
-      *(C + ldc * 20) = temp5;
-      *(C + ldc * 21) = temp6;
-      *(C + ldc * 22) = temp7;
-      *(C + ldc * 23) = temp8;
-      *(C + ldc * 24) = temp9;
-      *(C + ldc * 25) = temp10;
-      *(C + ldc * 26) = temp11;
-      *(C + ldc * 27) = temp12;
-      *(C + ldc * 28) = temp13;
-      *(C + ldc * 29) = temp14;
-      *(C + ldc * 30) = temp15;
-      *(C + ldc * 31) = temp16;
+      
 
       
       cr0 = nr0;
@@ -1095,6 +1099,22 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
       
     }
 
+    *(C + ldc * 16) += temp1;
+    *(C + ldc * 17) += temp2;
+    *(C + ldc * 18) += temp3;
+    *(C + ldc * 19) += temp4;
+    *(C + ldc * 20) += temp5;
+    *(C + ldc * 21) += temp6;
+    *(C + ldc * 22) += temp7;
+    *(C + ldc * 23) += temp8;
+    *(C + ldc * 24) += temp9;
+    *(C + ldc * 25) += temp10;
+    *(C + ldc * 26) += temp11;
+    *(C + ldc * 27) += temp12;
+    *(C + ldc * 28) += temp13;
+    *(C + ldc * 29) += temp14;
+    *(C + ldc * 30) += temp15;
+    *(C + ldc * 31) += temp16;
 
 
 
