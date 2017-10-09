@@ -406,7 +406,7 @@ dgemm_kernel_prefetch_s2r_4_16(int m, int n, int k, int T, int t, double * A, in
   extern __shared__ double cache[];
  
   double * cacheA = cache;
-  double * cacheB = cache + T * t; / 16 threads * 8 elements
+  double * cacheB = cache + T * t; // 16 threads * 8 elements
 
   //determine the row to process                                                                                                                                                                                                                                                           
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
