@@ -23,7 +23,7 @@ void check_C(double * dC, int m, int n, double * checkC) {
       return;
     }
   }
-  cout << "correct" << endl;
+  //cout << "correct" << endl;
 }
 
 /////////////////////////NAIVE/////////////////////////
@@ -523,6 +523,10 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   register double temp2 = 0;
   register double temp3 = 0;
   register double temp4 = 0;
+  register double temp5 = 0;
+  register double temp6 = 0;
+  register double temp7 = 0;
+  register double temp8 = 0;
 
   register double nr0, nr1, nr2, nr3;
   register double cr0, cr1, cr2, cr3;
@@ -540,11 +544,125 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
 
   #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
+
+    __syncthreads();
+    cacheB[threadIdx.x * 8] = *(B + threadIdx.x);
+    cacheB[threadIdx.x * 8 + 1] = *(B + threadIdx.x + ldb);
+    cacheB[threadIdx.x * 8 + 2] = *(B + threadIdx.x + ldb * 2);
+    cacheB[threadIdx.x * 8 + 3] = *(B + threadIdx.x + ldb * 3);
+    cacheB[threadIdx.x * 8 + 4] = *(B + threadIdx.x + ldb * 4);
+    cacheB[threadIdx.x * 8 + 5] = *(B + threadIdx.x + ldb * 5);
+    cacheB[threadIdx.x * 8 + 6] = *(B + threadIdx.x + ldb * 6);
+    cacheB[threadIdx.x * 8 + 7] = *(B + threadIdx.x + ldb * 7);
+    __syncthreads();
+    B += T;
+
+    #pragma unroll 1
+    for (int l = j; l < j + T; l += t){
+      if (l + t < k) {
+        nr0 = *A;
+        A += lda;
+        nr1 = *A;
+        A += lda;
+
+        nr2 = *A;
+        A += lda;
+        nr3 = *A;
+        A += lda;
+      }
+
+      temp1 += cr0 * cacheB[l - j + 0 ];
+      temp2 += cr0 * cacheB[l - j + 0 + 1];
+      temp3 += cr0 * cacheB[l - j + 0 + 2];
+      temp4 += cr0 * cacheB[l - j + 0 + 3];
+      temp5 += cr0 * cacheB[l - j + 0 + 4];
+      temp6 += cr0 * cacheB[l - j + 0 + 5];
+      temp7 += cr0 * cacheB[l - j + 0 + 6];
+      temp8 += cr0 * cacheB[l - j + 0 + 7];
+
+      temp1 += cr1 * cacheB[l - j + 1 ];
+      temp2 += cr1 * cacheB[l - j + 1 + 1];
+      temp3 += cr1 * cacheB[l - j + 1 + 2];
+      temp4 += cr1 * cacheB[l - j + 1 + 3];
+      temp5 += cr1 * cacheB[l - j + 1 + 3];
+      temp6 += cr1 * cacheB[l - j + 1 + 3];
+      temp7 += cr1 * cacheB[l - j + 1 + 3];
+      temp8 += cr1 * cacheB[l - j + 1 + 3];
+
+      temp1 += cr2 * cacheB[l - j + 2 ];
+      temp2 += cr2 * cacheB[l - j + 2 + 1];
+      temp3 += cr2 * cacheB[l - j + 2 + 2];
+      temp4 += cr2 * cacheB[l - j + 2 + 3];
+      temp5 += cr2 * cacheB[l - j + 2 + 4];
+      temp6 += cr2 * cacheB[l - j + 2 + 5];
+      temp7 += cr2 * cacheB[l - j + 2 + 6];
+      temp8 += cr2 * cacheB[l - j + 2 + 7];
+
+      temp1 += cr3 * cacheB[l - j + 3 ];
+      temp2 += cr3 * cacheB[l - j + 3 + 1];
+      temp3 += cr3 * cacheB[l - j + 3 + 2];
+      temp4 += cr3 * cacheB[l - j + 3 + 3];
+      temp5 += cr3 * cacheB[l - j + 3 + 4];
+      temp6 += cr3 * cacheB[l - j + 3 + 5];
+      temp7 += cr3 * cacheB[l - j + 3 + 6];
+      temp8 += cr3 * cacheB[l - j + 3 + 7];
+
+      if (l + t < k) {
+        cr0 = nr0;
+        cr1 = nr1;
+        cr2 = nr2;
+        cr3 = nr3;
+      }
+    }
+  }
+  *C = temp1;
+  *(C + ldc) = temp2;
+  *(C + ldc * 2) = temp3;
+  *(C + ldc * 3) = temp4;
+  *(C + ldc * 3) = temp5;
+  *(C + ldc * 3) = temp6;
+  *(C + ldc * 3) = temp7;
+  *(C + ldc * 3) = temp8;
+    
+}
+
+
+__global__ void
+dgemm_kernel4_22(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
+{
+  // store B (T * 2)                                                                                                                                                                                                                                                                       
+  extern __shared__ double cacheB[];
+
+  //determine the row to process                                                                                                                                                                                                                          
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+  C = C + idx;
+  register double temp1 = 0;
+  register double temp2 = 0;
+  register double temp3 = 0;
+  register double temp4 = 0;
+
+  register double nr0, nr1, nr2, nr3;
+  register double cr0, cr1, cr2, cr3;
+
+  //prefectch A 
+  cr0 = *A;
+  A += lda;
+  cr1 = *A;
+  A += lda;
+  
+  cr2 = *A;
+  A += lda;
+  cr3 = *A;
+  A += lda;
+
+  #pragma unroll 1
+  for (int j = 0; j < k; j += T){ 
+
+
     __syncthreads();
     cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
     cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
-    cacheB[threadIdx.x * 4 + 2] = *(B + threadIdx.x + ldb * 2);
-    cacheB[threadIdx.x * 4 + 3] = *(B + threadIdx.x + ldb * 3);
     __syncthreads();
     B += T;
 
@@ -596,6 +714,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   *(C + ldc * 3) = temp4;
     
 }
+
 
 
 //Single registers: m, n, k, T, t, lda, ldb, ldc, idx, j, l (11)
@@ -790,7 +909,7 @@ float test_kernel_prefetch3(int m, int n, int k,
 
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 4)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 8) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
         check_cuda_error();
       }
       cudaEventRecord(stop);
@@ -874,7 +993,7 @@ void test(int m, int k){
     cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
 
     //int m = 20480;
-    int n = 4;
+    int n = 8
     //int k = 20480;
     double * A = new double[m * k];
     double * B = new double[n * k];
@@ -910,21 +1029,38 @@ void test(int m, int k){
     float base;
 
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
+    cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
   
-    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    // check_C(C, m, n, checkC);
+
+
+    // test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    // check_C(C, m, n, checkC);
+
+    // test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    // check_C(C, m, n, checkC);
+
+    // test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    // check_C(C, m, n, checkC);
+
     test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    check_C(C, m, n, checkC);
+
     //test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
    
-    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
-    cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    //cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
     //}
-    check_C(C, m, n, checkC);
+   // check_C(C, m, n, checkC);
 
     //free device memory
     cudaFree(dA);
