@@ -49,8 +49,8 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
     a = *A;
     b1 = *B;
     b2 = *(B + ldb);
-    b3 = *(B + ldb);
-    b4 = *(B + ldb);
+    b3 = *(B + ldb * 2);
+    b4 = *(B + ldb * 3);
     A += lda;
     B += 1;
 
@@ -748,7 +748,7 @@ float test_cublas_mm(int m, int n, int k,
 void test(int m, int k);
 
 int main(){
-  for (int i = 128; i < 32768; i *= 2){
+  for (int i = 128; i <= 32768; i *= 2){
   //  int i = 6144;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 2 << ")" << endl;
     test(i, i);
