@@ -514,20 +514,19 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
 {
   // store B (T * 2)                                                                                                                                                                                                                                                                       
   extern __shared__ double cacheB[];
-  double * temp = cacheB + T * 8;
 
   //determine the row to process                                                                                                                                                                                                                          
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
   C = C + idx;
-  // register double temp1 = 0;
-  // register double temp2 = 0;
-  // register double temp3 = 0;
-  // register double temp4 = 0;
-  // register double temp5 = 0;
-  // register double temp6 = 0;
-  // register double temp7 = 0;
-  // register double temp8 = 0;
+  register double temp1 = 0;
+  register double temp2 = 0;
+  register double temp3 = 0;
+  register double temp4 = 0;
+  register double temp5 = 0;
+  register double temp6 = 0;
+  register double temp7 = 0;
+  register double temp8 = 0;
 
 
   register double nr0, nr1, nr2, nr3;
@@ -573,41 +572,41 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
         A += lda;
       }
 
-      temp[0] += cr0 * cacheB[l - j + 0 ];
-      temp[1] += cr0 * cacheB[l - j + 0 + 1];
-      temp[2] += cr0 * cacheB[l - j + 0 + 2];
-      temp[3] += cr0 * cacheB[l - j + 0 + 3];
-      temp[4] += cr0 * cacheB[l - j + 0 + 4];
-      temp[5] += cr0 * cacheB[l - j + 0 + 5];
-      temp[6] += cr0 * cacheB[l - j + 0 + 6];
-      temp[7] += cr0 * cacheB[l - j + 0 + 7];
+      temp1 += cr0 * cacheB[l - j + 0 ];
+      temp2 += cr0 * cacheB[l - j + 0 + 1];
+      temp3 += cr0 * cacheB[l - j + 0 + 2];
+      temp4 += cr0 * cacheB[l - j + 0 + 3];
+      temp5 += cr0 * cacheB[l - j + 0 + 4];
+      temp6 += cr0 * cacheB[l - j + 0 + 5];
+      temp7 += cr0 * cacheB[l - j + 0 + 6];
+      temp8 += cr0 * cacheB[l - j + 0 + 7];
 
-      temp[0] += cr1 * cacheB[l - j + 1 ];
-      temp[1] += cr1 * cacheB[l - j + 1 + 1];
-      temp[2] += cr1 * cacheB[l - j + 1 + 2];
-      temp[3] += cr1 * cacheB[l - j + 1 + 3];
-      temp[4] += cr1 * cacheB[l - j + 1 + 3];
-      temp[5] += cr1 * cacheB[l - j + 1 + 3];
-      temp[6] += cr1 * cacheB[l - j + 1 + 3];
-      temp[7] += cr1 * cacheB[l - j + 1 + 3];
+      temp1 += cr1 * cacheB[l - j + 1 ];
+      temp2 += cr1 * cacheB[l - j + 1 + 1];
+      temp3 += cr1 * cacheB[l - j + 1 + 2];
+      temp4 += cr1 * cacheB[l - j + 1 + 3];
+      temp5 += cr1 * cacheB[l - j + 1 + 3];
+      temp6 += cr1 * cacheB[l - j + 1 + 3];
+      temp7 += cr1 * cacheB[l - j + 1 + 3];
+      temp8 += cr1 * cacheB[l - j + 1 + 3];
 
-      temp[0] += cr2 * cacheB[l - j + 2 ];
-      temp[1] += cr2 * cacheB[l - j + 2 + 1];
-      temp[2] += cr2 * cacheB[l - j + 2 + 2];
-      temp[3] += cr2 * cacheB[l - j + 2 + 3];
-      temp[4] += cr2 * cacheB[l - j + 2 + 4];
-      temp[5] += cr2 * cacheB[l - j + 2 + 5];
-      temp[6] += cr2 * cacheB[l - j + 2 + 6];
-      temp[7] += cr2 * cacheB[l - j + 2 + 7];
+      temp1 += cr2 * cacheB[l - j + 2 ];
+      temp2 += cr2 * cacheB[l - j + 2 + 1];
+      temp3 += cr2 * cacheB[l - j + 2 + 2];
+      temp4 += cr2 * cacheB[l - j + 2 + 3];
+      temp5 += cr2 * cacheB[l - j + 2 + 4];
+      temp6 += cr2 * cacheB[l - j + 2 + 5];
+      temp7 += cr2 * cacheB[l - j + 2 + 6];
+      temp8 += cr2 * cacheB[l - j + 2 + 7];
 
-      temp[0] += cr3 * cacheB[l - j + 3 ];
-      temp[1] += cr3 * cacheB[l - j + 3 + 1];
-      temp[2] += cr3 * cacheB[l - j + 3 + 2];
-      temp[3] += cr3 * cacheB[l - j + 3 + 3];
-      temp[4] += cr3 * cacheB[l - j + 3 + 4];
-      temp[5] += cr3 * cacheB[l - j + 3 + 5];
-      temp[6] += cr3 * cacheB[l - j + 3 + 6];
-      temp[7] += cr3 * cacheB[l - j + 3 + 7];
+      temp1 += cr3 * cacheB[l - j + 3 ];
+      temp2 += cr3 * cacheB[l - j + 3 + 1];
+      temp3 += cr3 * cacheB[l - j + 3 + 2];
+      temp4 += cr3 * cacheB[l - j + 3 + 3];
+      temp5 += cr3 * cacheB[l - j + 3 + 4];
+      temp6 += cr3 * cacheB[l - j + 3 + 5];
+      temp7 += cr3 * cacheB[l - j + 3 + 6];
+      temp8 += cr3 * cacheB[l - j + 3 + 7];
 
       if (l + t < k) {
         cr0 = nr0;
@@ -617,14 +616,14 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       }
     }
   }
-  *C = temp[0];
-  *(C + ldc) = temp[1];
-  *(C + ldc * 2) = temp[2];
-  *(C + ldc * 3) = temp[3];
-  *(C + ldc * 4) = temp[4];
-  *(C + ldc * 5) = temp[5];
-  *(C + ldc * 6) = temp[6];
-  *(C + ldc * 7) = temp[7];
+  *C = temp1;
+  *(C + ldc) = temp2;
+  *(C + ldc * 2) = temp3;
+  *(C + ldc * 3) = temp4;
+  *(C + ldc * 4) = temp5;
+  *(C + ldc * 5) = temp6;
+  *(C + ldc * 6) = temp7;
+  *(C + ldc * 7) = temp8;
     
 }
 
@@ -812,7 +811,7 @@ float test_kernel_prefetch3(int m, int n, int k,
             double * dC, int ldc,
             float base){
 
-    for (int T = 16; T <= min(m, 1024); T*=2) {
+    for (int T = 16; T <= min(m, 512); T*=2) {
     //int T = 128;
     int tt = 4;
       int blocksPerGrid = m / T;
@@ -824,7 +823,7 @@ float test_kernel_prefetch3(int m, int n, int k,
 
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, (T * 8 + 8) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, (T * 8) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
         check_cuda_error();
       }
       cudaEventRecord(stop);
