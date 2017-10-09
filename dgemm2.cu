@@ -745,7 +745,7 @@ void test(int m, int k);
 
 int main(){
   for (int i = 128; i <=32768; i *= 2){
-  int i = 1024;
+  //int i = 1024;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 2 << ")" << endl;
     test(i, i);
   }
