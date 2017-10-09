@@ -413,6 +413,8 @@ dgemm_kernel_prefetch_s2r_4_16(int m, int n, int k, int T, int t, double * A, in
   A = A + idx;
   double temp1 = 0;
   double temp2 = 0;
+  double temp3 = 0;
+  double temp4 = 0;
 
   #pragma unroll 1
   //prefectch A 
@@ -426,8 +428,10 @@ dgemm_kernel_prefetch_s2r_4_16(int m, int n, int k, int T, int t, double * A, in
   #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
     __syncthreads();
-    cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
-    cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
+    cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
+    cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
+    cacheB[threadIdx.x * 4 + 2] = *(B + threadIdx.x + ldb * 2);
+    cacheB[threadIdx.x * 4 + 3] = *(B + threadIdx.x + ldb * 3);
     __syncthreads();
     B += T;
 
@@ -444,6 +448,8 @@ dgemm_kernel_prefetch_s2r_4_16(int m, int n, int k, int T, int t, double * A, in
       for (int i = 0; i < t; i++) {
         temp1 += cacheA[threadIdx.x +i * T] * cacheB[l - j + i ];
         temp2 += cacheA[threadIdx.x +i * T] * cacheB[l - j + i + 1];
+        temp3 += cacheA[threadIdx.x +i * T] * cacheB[l - j + i + 2];
+        temp4 += cacheA[threadIdx.x +i * T] * cacheB[l - j + i + 3];
       }
       if (l + t < k) {
       cacheA[threadIdx.x + 0 * T] = r0;
@@ -456,6 +462,8 @@ dgemm_kernel_prefetch_s2r_4_16(int m, int n, int k, int T, int t, double * A, in
   }
   *(C + 0 * ldc + idx) = temp1;
   *(C + 1 * ldc + idx) = temp2;
+  *(C + 2 * ldc + idx) = temp3;
+  *(C + 3 * ldc + idx) = temp4;
     
 }
 
@@ -475,7 +483,7 @@ void test_kernel_prefetch2(int m, int n, int k,
 
     cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++){
-      dgemm_kernel_prefetch_s2r_4_16<<<blocksPerGrid, threadsPerBlock, ((T * 2) + (T * tt)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+      dgemm_kernel_prefetch_s2r_4_16<<<blocksPerGrid, threadsPerBlock, ((T * 4) + (T * tt)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
       check_cuda_error();
     }
     cudaEventRecord(stop);
@@ -485,7 +493,7 @@ void test_kernel_prefetch2(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+    long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(double) ;
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -823,7 +831,7 @@ void test(int m, int k){
     test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
