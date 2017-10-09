@@ -965,11 +965,6 @@ float test_cublas_mm(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * 4 * (k / 32)) * sizeof(double) ;
-    double total_gb = (double)total_bytes / 1e9;d
-
-
-
     cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
 
     return real_time;
