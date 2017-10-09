@@ -521,6 +521,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   C = C + idx;
   register double temp1 = 0;
   register double temp2 = 0;
+  register double temp3 = 0;
+  register double temp4 = 0;
 
   register double nr0, nr1, nr2, nr3;
   register double cr0, cr1, cr2, cr3;
@@ -539,8 +541,10 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
     __syncthreads();
-    cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
-    cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
+    cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
+    cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
+    cacheB[threadIdx.x * 4 + 2] = *(B + threadIdx.x + ldb * 2);
+    cacheB[threadIdx.x * 4 + 3] = *(B + threadIdx.x + ldb * 3);
     __syncthreads();
     B += T;
 
@@ -560,15 +564,23 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
 
       temp1 += cr0 * cacheB[l - j + 0 ];
       temp2 += cr0 * cacheB[l - j + 0 + 1];
+      temp3 += cr0 * cacheB[l - j + 0 + 2];
+      temp4 += cr0 * cacheB[l - j + 0 + 3];
 
       temp1 += cr1 * cacheB[l - j + 1 ];
       temp2 += cr1 * cacheB[l - j + 1 + 1];
+      temp3 += cr1 * cacheB[l - j + 1 + 2];
+      temp4 += cr1 * cacheB[l - j + 1 + 3];
 
-     temp1 += cr2 * cacheB[l - j + 2 ];
-     temp2 += cr2 * cacheB[l - j + 2 + 1];
+      temp1 += cr2 * cacheB[l - j + 2 ];
+      temp2 += cr2 * cacheB[l - j + 2 + 1];
+      temp3 += cr2 * cacheB[l - j + 2 + 2];
+      temp4 += cr2 * cacheB[l - j + 2 + 3];
 
-     temp1 += cr3 * cacheB[l - j + 3 ];
-     temp2 += cr3 * cacheB[l - j + 3 + 1];
+      temp1 += cr3 * cacheB[l - j + 3 ];
+      temp2 += cr3 * cacheB[l - j + 3 + 1];
+      temp3 += cr3 * cacheB[l - j + 3 + 2];
+      temp4 += cr3 * cacheB[l - j + 3 + 3];
 
       if (l + t < k) {
         cr0 = nr0;
@@ -580,6 +592,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   }
   *C = temp1;
   *(C + ldc) = temp2;
+  *(C + ldc * 2) = temp3;
+  *(C + ldc * 3) = temp4;
     
 }
 
@@ -598,12 +612,14 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   C = C + idx;
   register double temp1 = 0;
   register double temp2 = 0;
+  register double temp3 = 0;
+  register double temp4 = 0;
 
   register double nr0, nr1, nr2, nr3;
   register double cr0, cr1, cr2, cr3;
 
-  register double nb00, nb01, nb10, nb11;
-  register double cb00, cb01, cb10, cb11;
+  register double nb00, nb01, nb02, nb03, nb10, nb11, nb12, nb13;
+  register double cb00, cb01, cb02, cb03, cb10, cb11, cb12, cb13;
 
   //prefectch A 
   cr0 = *A;
@@ -618,9 +634,13 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
   cb00 = *B;
   cb01 = *(B + ldb);
+  cb02 = *(B + ldb * 2);
+  cb03 = *(B + ldb * 3);
   B += 1;
   cb10 = *B;
   cb11 = *(B + ldb);
+  cb12 = *(B + ldb * 2);
+  cb13 = *(B + ldb * 3);
   B += 1;
 
 
@@ -640,28 +660,46 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
       nb00 = *B;
       nb01 = *(B + ldb);
+      nb02 = *(B + ldb * 2);
+      nb03 = *(B + ldb * 3);
       B += 1;
       nb10 = *B;
       nb11 = *(B + ldb);
+      nb12 = *(B + ldb * 2);
+      nb13 = *(B + ldb * 3);
       B += 1;
 
       temp1 += cr0 * cb00;
       temp2 += cr0 * cb01;
+      temp3 += cr0 * cb02;
+      temp4 += cr0 * cb03;
+
       temp1 += cr1 * cb10;
       temp2 += cr1 * cb11;
+      temp3 += cr1 * cb12;
+      temp4 += cr1 * cb13;
 
       cb00 = nb00;
       cb01 = nb01;
+      cb02 = nb02;
+      cb03 = nb03;
+
       cb10 = nb10;
       cb11 = nb11;
+      cb12 = nb12;
+      cb13 = nb13;
 
 
       if (i + t < k) {
         nb00 = *B;
         nb01 = *(B + ldb);
+        nb02 = *(B + ldb * 2);
+        nb03 = *(B + ldb * 3);
         B += 1;
         nb10 = *B;
         nb11 = *(B + ldb);
+        nb12 = *(B + ldb * 2);
+        nb13 = *(B + ldb * 3);
         B += 1;
       }
 
@@ -672,8 +710,13 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
       cb00 = nb00;
       cb01 = nb01;
+      cb02 = nb02;
+      cb03 = nb03;
+
       cb10 = nb10;
       cb11 = nb11;
+      cb12 = nb12;
+      cb13 = nb13;
     
 
       if (i + t < k) {
@@ -685,6 +728,8 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
   }
   *C = temp1;
   *(C + ldc) = temp2;
+  *(C + ldc * 2) = temp3;
+  *(C + ldc * 3) = temp4;
     
 }
 
@@ -707,7 +752,7 @@ float test_kernel_prefetch3(int m, int n, int k,
 
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 4)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
         check_cuda_error();
       }
       cudaEventRecord(stop);
@@ -717,7 +762,7 @@ float test_kernel_prefetch3(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+      long long total_bytes = (m * k+ k * 4 * (k / T)) * sizeof(double) ;
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_prefetch3("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -757,7 +802,7 @@ float test_kernel_prefetch4(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * n + m * 2 * (m / T)) * sizeof(double) ;
+      long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(double) ;
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_prefetch4("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -832,8 +877,8 @@ void test(int m, int k){
     test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
    
     cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
