@@ -851,9 +851,8 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
     for (int p = 0; p < 2; p++){
       int b = p * 16;
       __syncthreads();
-      for (int q = b; q < b + 16; q++){
-        cacheB[threadIdx.x * 16 + q] = cr1;
-        //cr1 += *(B + ldb * q);
+      for (int q = 0; q < 16; q++){
+        cacheB[threadIdx.x * 16 + q] = *(B + ldb * (b + q));
       }
     // cacheB[threadIdx.x * 16 + 0] = *(B + ldb * 0);
     // cacheB[threadIdx.x * 16 + 1] = *(B + ldb * 1);
@@ -877,29 +876,20 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
     for (int l = j; l < j + T; l += t){
       A = A + t * lda;
 
-      // if (p == 0) {
-      //   if (l + t < j + T) {
-      //     nr0 = *(A + lda * 0);
-      //     nr1 = *(A + lda * 1);  
-      //     nr2 = *(A + lda * 2);
-      //     nr3 = *(A + lda * 3);
-
-      //   } else {
-      //     A = A - T * lda;
-      //     nr0 = *(A + lda * 0);
-      //     nr1 = *(A + lda * 1);  
-      //     nr2 = *(A + lda * 2);
-      //     nr3 = *(A + lda * 3);
-      //   }
-      // } else {
-      //   if (l + t < k) {
-      //     nr0 = *(A + lda * 0);
-      //     nr1 = *(A + lda * 1);  
-      //     nr2 = *(A + lda * 2);
-      //     nr3 = *(A + lda * 3);
-      //   }
-      // }
-
+      if (p == 0) {
+        if (l + t == j + T) {
+          A = A - T * lda;
+        }
+      } else {
+        if (l + t < k) {
+          A = A - t * lda;
+          
+        }
+      }
+      nr0 = *(A + lda * 0);
+      nr1 = *(A + lda * 1);  
+      nr2 = *(A + lda * 2);
+      nr3 = *(A + lda * 3);
       temp1 += cr0 * cacheB[l - j + 0 ];
       temp2 += cr0 * cacheB[l - j + 0 + 1];
       temp3 += cr0 * cacheB[l - j + 0 + 2];
