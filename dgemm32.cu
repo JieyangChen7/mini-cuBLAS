@@ -878,9 +878,17 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
 
       if (p == 0) {
         if (l + t < j + T) {
+          nr0 = *(A + lda * 0);
+          nr1 = *(A + lda * 1);  
+          nr2 = *(A + lda * 2);
+          nr3 = *(A + lda * 3);
 
         } else {
           A = A - T * lda;
+          nr0 = *(A + lda * 0);
+          nr1 = *(A + lda * 1);  
+          nr2 = *(A + lda * 2);
+          nr3 = *(A + lda * 3);
         }
       } else {
         if (l + t < k) {
@@ -890,11 +898,6 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
           nr3 = *(A + lda * 3);
         }
       }
-
-      nr0 = *(A + lda * 0);
-      nr1 = *(A + lda * 1);  
-      nr2 = *(A + lda * 2);
-      nr3 = *(A + lda * 3);
 
       temp1 += cr0 * cacheB[l - j + 0 ];
       temp2 += cr0 * cacheB[l - j + 0 + 1];
