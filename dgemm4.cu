@@ -660,8 +660,8 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
       nb00 = *B;
       nb01 = *(B + ldb);
-      nb02 = *(B + ldb * 2);
-      nb03 = *(B + ldb * 3);
+      // nb02 = *(B + ldb * 2);
+      // nb03 = *(B + ldb * 3);
       B += 1;
       // nb10 = *B;
       // nb11 = *(B + ldb);
@@ -916,7 +916,7 @@ void test(int m, int k){
     test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    //test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
    
     cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
@@ -965,8 +965,13 @@ float test_cublas_mm(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
+    long long total_bytes = (m * k + k * 4 * (k / 32)) * sizeof(double) ;
+    double total_gb = (double)total_bytes / 1e9;d
+
+
 
     cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
+
     return real_time;
 }
 
