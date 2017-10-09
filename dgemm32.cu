@@ -1093,41 +1093,41 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
       for (int p = 0; p < 32; p += 8){
         double * curr_b = cacheB + p * 4;
 
-        rst1 += cr0 * cacheB[0 + 0];
-        rst2 += cr0 * cacheB[0 + 4];
-        rst3 += cr0 * cacheB[0 + 8];
-        rst4 += cr0 * cacheB[0 + 12];
-        rst5 += cr0 * cacheB[0 + 16];
-        rst6 += cr0 * cacheB[0 + 20];
-        rst7 += cr0 * cacheB[0 + 24];
-        rst8 += cr0 * cacheB[0 + 28];
+        rst1 += cr0 * curr_b[0 + 0];
+        rst2 += cr0 * curr_b[0 + 4];
+        rst3 += cr0 * curr_b[0 + 8];
+        rst4 += cr0 * curr_b[0 + 12];
+        rst5 += cr0 * curr_b[0 + 16];
+        rst6 += cr0 * curr_b[0 + 20];
+        rst7 += cr0 * curr_b[0 + 24];
+        rst8 += cr0 * curr_b[0 + 28];
 
-        rst1 += cr1 * cacheB[1 + 0];
-        rst2 += cr1 * cacheB[1 + 4];
-        rst3 += cr1 * cacheB[1 + 8];
-        rst4 += cr1 * cacheB[1 + 12];
-        rst5 += cr1 * cacheB[1 + 16];
-        rst6 += cr1 * cacheB[1 + 20];
-        rst7 += cr1 * cacheB[1 + 24];
-        rst8 += cr1 * cacheB[1 + 28];
+        rst1 += cr1 * curr_b[1 + 0];
+        rst2 += cr1 * curr_b[1 + 4];
+        rst3 += cr1 * curr_b[1 + 8];
+        rst4 += cr1 * curr_b[1 + 12];
+        rst5 += cr1 * curr_b[1 + 16];
+        rst6 += cr1 * curr_b[1 + 20];
+        rst7 += cr1 * curr_b[1 + 24];
+        rst8 += cr1 * curr_b[1 + 28];
 
-        rst1 += cr2 * cacheB[2 + 0];
-        rst2 += cr2 * cacheB[2 + 4];
-        rst3 += cr2 * cacheB[2 + 8];
-        rst4 += cr2 * cacheB[2 + 12];
-        rst5 += cr2 * cacheB[2 + 16];
-        rst6 += cr2 * cacheB[2 + 20];
-        rst7 += cr2 * cacheB[2 + 24];
-        rst8 += cr2 * cacheB[2 + 28];
+        rst1 += cr2 * curr_b[2 + 0];
+        rst2 += cr2 * curr_b[2 + 4];
+        rst3 += cr2 * curr_b[2 + 8];
+        rst4 += cr2 * curr_b[2 + 12];
+        rst5 += cr2 * curr_b[2 + 16];
+        rst6 += cr2 * curr_b[2 + 20];
+        rst7 += cr2 * curr_b[2 + 24];
+        rst8 += cr2 * curr_b[2 + 28];
 
-        rst1 += cr3 * cacheB[3 + 0];
-        rst2 += cr3 * cacheB[3 + 4];
-        rst3 += cr3 * cacheB[3 + 8];
-        rst4 += cr3 * cacheB[3 + 12];
-        rst5 += cr3 * cacheB[3 + 16];
-        rst6 += cr3 * cacheB[3 + 20];
-        rst7 += cr3 * cacheB[3 + 24];
-        rst8 += cr3 * cacheB[3 + 28];
+        rst1 += cr3 * curr_b[3 + 0];
+        rst2 += cr3 * curr_b[3 + 4];
+        rst3 += cr3 * curr_b[3 + 8];
+        rst4 += cr3 * curr_b[3 + 12];
+        rst5 += cr3 * curr_b[3 + 16];
+        rst6 += cr3 * curr_b[3 + 20];
+        rst7 += cr3 * curr_b[3 + 24];
+        rst8 += cr3 * curr_b[3 + 28];
 
         rstc1 = rst1;
         rstc2 = rst2;
