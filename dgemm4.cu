@@ -40,6 +40,8 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   register double a = 0;
   register double b1 = 0;
   register double b2 = 0;
+  register double b3 = 0;
+  register double b4 = 0;
 
   #pragma unroll 1
   for (int i = 0; i < k; i+=1){
