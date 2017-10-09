@@ -814,6 +814,7 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
   C = C + idx;
+  B = B + threadIdx.x;
   register double temp1 = 0;
   register double temp2 = 0;
   register double temp3 = 0;
@@ -842,36 +843,52 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
   cr2 = *(A + lda * 2);
   cr3 = *(A + lda * 3);
 
+
+
   #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
 
-
-    __syncthreads();
-    cacheB[threadIdx.x * 16 + 0] = *(B + threadIdx.x + ldb * 0);
-    cacheB[threadIdx.x * 16 + 1] = *(B + threadIdx.x + ldb * 1);
-    cacheB[threadIdx.x * 16 + 2] = *(B + threadIdx.x + ldb * 2);
-    cacheB[threadIdx.x * 16 + 3] = *(B + threadIdx.x + ldb * 3);
-    cacheB[threadIdx.x * 16 + 4] = *(B + threadIdx.x + ldb * 4);
-    cacheB[threadIdx.x * 16 + 5] = *(B + threadIdx.x + ldb * 5);
-    cacheB[threadIdx.x * 16 + 6] = *(B + threadIdx.x + ldb * 6);
-    cacheB[threadIdx.x * 16 + 7] = *(B + threadIdx.x + ldb * 7);
-    cacheB[threadIdx.x * 16 + 8] = *(B + threadIdx.x + ldb * 8);
-    cacheB[threadIdx.x * 16 + 9] = *(B + threadIdx.x + ldb * 9);
-    cacheB[threadIdx.x * 16 + 10] = *(B + threadIdx.x + ldb * 10);
-    cacheB[threadIdx.x * 16 + 11] = *(B + threadIdx.x + ldb * 11);
-    cacheB[threadIdx.x * 16 + 12] = *(B + threadIdx.x + ldb * 12);
-    cacheB[threadIdx.x * 16 + 13] = *(B + threadIdx.x + ldb * 13);
-    cacheB[threadIdx.x * 16 + 14] = *(B + threadIdx.x + ldb * 14);
-    cacheB[threadIdx.x * 16 + 15] = *(B + threadIdx.x + ldb * 15);
+    for (int p = 0; p < 2; p++){
+      int b = p * 16;
+      __syncthreads();
+      for (int q = b; q < b + 16; q++){
+        cacheB[threadIdx.x * 16 + q] = *(B + ldb * q);
+      }
+    // cacheB[threadIdx.x * 16 + 0] = *(B + ldb * 0);
+    // cacheB[threadIdx.x * 16 + 1] = *(B + ldb * 1);
+    // cacheB[threadIdx.x * 16 + 2] = *(B + ldb * 2);
+    // cacheB[threadIdx.x * 16 + 3] = *(B + ldb * 3);
+    // cacheB[threadIdx.x * 16 + 4] = *(B + ldb * 4);
+    // cacheB[threadIdx.x * 16 + 5] = *(B + ldb * 5);
+    // cacheB[threadIdx.x * 16 + 6] = *(B + ldb * 6);
+    // cacheB[threadIdx.x * 16 + 7] = *(B + ldb * 7);
+    // cacheB[threadIdx.x * 16 + 8] = *(B + ldb * 8);
+    // cacheB[threadIdx.x * 16 + 9] = *(B + ldb * 9);
+    // cacheB[threadIdx.x * 16 + 10] = *(B + ldb * 10);
+    // cacheB[threadIdx.x * 16 + 11] = *(B + ldb * 11);
+    // cacheB[threadIdx.x * 16 + 12] = *(B + ldb * 12);
+    // cacheB[threadIdx.x * 16 + 13] = *(B + ldb * 13);
+    // cacheB[threadIdx.x * 16 + 14] = *(B + ldb * 14);
+    // cacheB[threadIdx.x * 16 + 15] = *(B + ldb * 15);
     __syncthreads();
   
     #pragma unroll 1
     for (int l = j; l < j + T; l += t){
       A = A + t * lda;
-      if (l + t < j + T) {
 
+      if (p == 0) {
+        if (l + t < j + T) {
+
+        } else {
+          A = A - T * lda;
+        }
       } else {
-        A = A - T * lda;
+        if (l + t < k) {
+          nr0 = *(A + lda * 0);
+          nr1 = *(A + lda * 1);  
+          nr2 = *(A + lda * 2);
+          nr3 = *(A + lda * 3);
+        }
       }
 
       nr0 = *(A + lda * 0);
@@ -953,23 +970,22 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
       cr3 = nr3;
     }
 
-
-      *C += temp1;
-      *(C + ldc) += temp2;
-      *(C + ldc * 2) += temp3;
-      *(C + ldc * 3) += temp4;
-      *(C + ldc * 4) += temp5;
-      *(C + ldc * 5) += temp6;
-      *(C + ldc * 6) += temp7;
-      *(C + ldc * 7) += temp8;
-      *(C + ldc * 8) += temp9;
-      *(C + ldc * 9) += temp10;
-      *(C + ldc * 10) += temp11;
-      *(C + ldc * 11) += temp12;
-      *(C + ldc * 12) += temp13;
-      *(C + ldc * 13) += temp14;
-      *(C + ldc * 14) += temp15;
-      *(C + ldc * 15) += temp16;
+      *(C + ldc * 0 + b) += temp1;
+      *(C + ldc * 1 + b) += temp2;
+      *(C + ldc * 2 + b) += temp3;
+      *(C + ldc * 3 + b) += temp4;
+      *(C + ldc * 4 + b) += temp5;
+      *(C + ldc * 5 + b) += temp6;
+      *(C + ldc * 6 + b) += temp7;
+      *(C + ldc * 7 + b) += temp8;
+      *(C + ldc * 8 + b) += temp9;
+      *(C + ldc * 9 + b) += temp10;
+      *(C + ldc * 10 + b) += temp11;
+      *(C + ldc * 11 + b) += temp12;
+      *(C + ldc * 12 + b) += temp13;
+      *(C + ldc * 13 + b) += temp14;
+      *(C + ldc * 14 + b) += temp15;
+      *(C + ldc * 15 + b) += temp16;
 
 
       temp1 = 0;
@@ -989,132 +1005,9 @@ dgemm_kernel4_2_iter(int m, int n, int k, int T, int t, double * A, int lda, dou
       temp15 = 0;
       temp16 = 0;
 
+  }
 
-
-    __syncthreads();
-    cacheB[threadIdx.x * 16 + 0] = *(B + threadIdx.x + ldb * 16);
-    cacheB[threadIdx.x * 16 + 1] = *(B + threadIdx.x + ldb * 17);
-    cacheB[threadIdx.x * 16 + 2] = *(B + threadIdx.x + ldb * 18);
-    cacheB[threadIdx.x * 16 + 3] = *(B + threadIdx.x + ldb * 19);
-    cacheB[threadIdx.x * 16 + 4] = *(B + threadIdx.x + ldb * 20);
-    cacheB[threadIdx.x * 16 + 5] = *(B + threadIdx.x + ldb * 21);
-    cacheB[threadIdx.x * 16 + 6] = *(B + threadIdx.x + ldb * 22);
-    cacheB[threadIdx.x * 16 + 7] = *(B + threadIdx.x + ldb * 23);
-    cacheB[threadIdx.x * 16 + 8] = *(B + threadIdx.x + ldb * 24);
-    cacheB[threadIdx.x * 16 + 9] = *(B + threadIdx.x + ldb * 25);
-    cacheB[threadIdx.x * 16 + 10] = *(B + threadIdx.x + ldb * 26);
-    cacheB[threadIdx.x * 16 + 11] = *(B + threadIdx.x + ldb * 27);
-    cacheB[threadIdx.x * 16 + 12] = *(B + threadIdx.x + ldb * 28);
-    cacheB[threadIdx.x * 16 + 13] = *(B + threadIdx.x + ldb * 29);
-    cacheB[threadIdx.x * 16 + 14] = *(B + threadIdx.x + ldb * 30);
-    cacheB[threadIdx.x * 16 + 15] = *(B + threadIdx.x + ldb * 31);
-    __syncthreads();
-    B += T;
-
-    #pragma unroll 1
-    for (int l = j; l < j + T; l += t){
-      A = A + t * lda;
-      if (l + t < k) {
-        nr0 = *(A + lda * 0);
-        nr1 = *(A + lda * 1);  
-        nr2 = *(A + lda * 2);
-        nr3 = *(A + lda * 3);
-      }
-
-      temp1 += cr0 * cacheB[l - j + 0 ];
-      temp2 += cr0 * cacheB[l - j + 0 + 1];
-      temp3 += cr0 * cacheB[l - j + 0 + 2];
-      temp4 += cr0 * cacheB[l - j + 0 + 3];
-      temp5 += cr0 * cacheB[l - j + 0 + 4];
-      temp6 += cr0 * cacheB[l - j + 0 + 5];
-      temp7 += cr0 * cacheB[l - j + 0 + 6];
-      temp8 += cr0 * cacheB[l - j + 0 + 7];
-      temp9 += cr0 * cacheB[l - j + 0  + 8];
-      temp10 += cr0 * cacheB[l - j + 0 + 9];
-      temp11 += cr0 * cacheB[l - j + 0 + 10];
-      temp12 += cr0 * cacheB[l - j + 0 + 11];
-      temp13 += cr0 * cacheB[l - j + 0 + 12];
-      temp14 += cr0 * cacheB[l - j + 0 + 13];
-      temp15 += cr0 * cacheB[l - j + 0 + 14];
-      temp16 += cr0 * cacheB[l - j + 0 + 15];
-      
-      temp1 += cr1 * cacheB[l - j + 1 ];
-      temp2 += cr1 * cacheB[l - j + 1 + 1];
-      temp3 += cr1 * cacheB[l - j + 1 + 2];
-      temp4 += cr1 * cacheB[l - j + 1 + 3];
-      temp5 += cr1 * cacheB[l - j + 1 + 4];
-      temp6 += cr1 * cacheB[l - j + 1 + 5];
-      temp7 += cr1 * cacheB[l - j + 1 + 6];
-      temp8 += cr1 * cacheB[l - j + 1 + 7];
-      temp9 += cr1 * cacheB[l - j + 1  + 8];
-      temp10 += cr1 * cacheB[l - j + 1 + 9];
-      temp11 += cr1 * cacheB[l - j + 1 + 10];
-      temp12 += cr1 * cacheB[l - j + 1 + 11];
-      temp13 += cr1 * cacheB[l - j + 1 + 12];
-      temp14 += cr1 * cacheB[l - j + 1 + 13];
-      temp15 += cr1 * cacheB[l - j + 1 + 14];
-      temp16 += cr1 * cacheB[l - j + 1 + 15];
-      
-      temp1 += cr2 * cacheB[l - j + 2 ];
-      temp2 += cr2 * cacheB[l - j + 2 + 1];
-      temp3 += cr2 * cacheB[l - j + 2 + 2];
-      temp4 += cr2 * cacheB[l - j + 2 + 3];
-      temp5 += cr2 * cacheB[l - j + 2 + 4];
-      temp6 += cr2 * cacheB[l - j + 2 + 5];
-      temp7 += cr2 * cacheB[l - j + 2 + 6];
-      temp8 += cr2 * cacheB[l - j + 2 + 7];
-      temp9 += cr2 * cacheB[l - j + 2 + 8];
-      temp10 += cr2 * cacheB[l - j + 2 + 9];
-      temp11 += cr2 * cacheB[l - j + 2 + 10];
-      temp12 += cr2 * cacheB[l - j + 2 + 11];
-      temp13 += cr2 * cacheB[l - j + 2 + 12];
-      temp14 += cr2 * cacheB[l - j + 2 + 13];
-      temp15 += cr2 * cacheB[l - j + 2 + 14];
-      temp16 += cr2 * cacheB[l - j + 2 + 15];
-     
-      temp1 += cr3 * cacheB[l - j + 3 ];
-      temp2 += cr3 * cacheB[l - j + 3 + 1];
-      temp3 += cr3 * cacheB[l - j + 3 + 2];
-      temp4 += cr3 * cacheB[l - j + 3 + 3];
-      temp5 += cr3 * cacheB[l - j + 3 + 4];
-      temp6 += cr3 * cacheB[l - j + 3 + 5];
-      temp7 += cr3 * cacheB[l - j + 3 + 6];
-      temp8 += cr3 * cacheB[l - j + 3 + 7];
-      temp9 += cr3 * cacheB[l - j + 3 + 8 ];
-      temp10 += cr3 * cacheB[l - j + 3 + 9];
-      temp11 += cr3 * cacheB[l - j + 3 + 10];
-      temp12 += cr3 * cacheB[l - j + 3 + 11];
-      temp13 += cr3 * cacheB[l - j + 3 + 12];
-      temp14 += cr3 * cacheB[l - j + 3 + 13];
-      temp15 += cr3 * cacheB[l - j + 3 + 14];
-      temp16 += cr3 * cacheB[l - j + 3 + 15];
-     
-      
-
-      
-      cr0 = nr0;
-      cr1 = nr1;
-      cr2 = nr2;
-      cr3 = nr3;
-      
-    }
-
-    *(C + ldc * 16) += temp1;
-    *(C + ldc * 17) += temp2;
-    *(C + ldc * 18) += temp3;
-    *(C + ldc * 19) += temp4;
-    *(C + ldc * 20) += temp5;
-    *(C + ldc * 21) += temp6;
-    *(C + ldc * 22) += temp7;
-    *(C + ldc * 23) += temp8;
-    *(C + ldc * 24) += temp9;
-    *(C + ldc * 25) += temp10;
-    *(C + ldc * 26) += temp11;
-    *(C + ldc * 27) += temp12;
-    *(C + ldc * 28) += temp13;
-    *(C + ldc * 29) += temp14;
-    *(C + ldc * 30) += temp15;
-    *(C + ldc * 31) += temp16;
+  
 
 
 
