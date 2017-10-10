@@ -1032,7 +1032,7 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
   C = C + idx;
-  B = B + ldb * (idx / 4) + idx % 4;
+  B = B + ldb * (threadIdx.x / 4) + threadIdx.x % 4;
   register double rst1 = 0;
   register double rst2 = 0;
   register double rst3 = 0;
