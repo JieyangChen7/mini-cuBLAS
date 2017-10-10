@@ -1068,7 +1068,7 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
   A += lda;
 
     #pragma unroll 1
-    for (int l = j; l < j + T; l += t){
+    for (int l = 0; l < k; l += t){
 
       __syncthreads();
       cacheB[threadIdx.x] = *(B);
