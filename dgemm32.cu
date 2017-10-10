@@ -1067,16 +1067,14 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
   cr3 = *A;
   A += lda;
 
-  #pragma unroll 1
-  for (int j = 0; j < k; j += T){ 
-
-    __syncthreads();
-    cacheB[threadIdx.x] = *(B);
-    __syncthreads();
-    B += 4;
-
     #pragma unroll 1
     for (int l = j; l < j + T; l += t){
+
+      __syncthreads();
+      cacheB[threadIdx.x] = *(B);
+      __syncthreads();
+      B += 4;
+
       if (l + t < k) {
         nr0 = *A;
         A += lda;
@@ -1158,7 +1156,7 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
         cr3 = nr3;
       }
     }
-  }
+  
      
 }
 
