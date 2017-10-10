@@ -1138,14 +1138,14 @@ dgemm_kernel4_2_iter2(int m, int n, int k, int T, int t, double * A, int lda, do
         rstc7 = rst7;
         rstc8 = rst8;
 
-        *(C + ldc * (0 + p)) = rstc1;
-        *(C + ldc * (1 + p)) = rstc2;
-        *(C + ldc * (2 + p)) = rstc3;
-        *(C + ldc * (3 + p)) = rstc4;
-        *(C + ldc * (4 + p)) = rstc5;
-        *(C + ldc * (5 + p)) = rstc6;
-        *(C + ldc * (6 + p)) = rstc7;
-        *(C + ldc * (7 + p)) = rstc8;
+        *(C + ldc * (0 + p)) += rstc1;
+        *(C + ldc * (1 + p)) += rstc2;
+        *(C + ldc * (2 + p)) += rstc3;
+        *(C + ldc * (3 + p)) += rstc4;
+        *(C + ldc * (4 + p)) += rstc5;
+        *(C + ldc * (5 + p)) += rstc6;
+        *(C + ldc * (6 + p)) += rstc7;
+        *(C + ldc * (7 + p)) += rstc8;
 
 
 
