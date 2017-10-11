@@ -122,27 +122,11 @@ void test_2048(int block_size){
 
 int main(){
   cout << "start benchmark" << endl;
-  if (LL / SM == 1024) { 
-    for (int i = 64; i <= 1024; i *= 2) {
-      cout << "block size: " << i << endl;
-      test_1024(i);
-    }
-  } else if (LL / SM == 2048) {
+  
     for (int i = 128; i <= 1024; i *= 2) {
       cout << "block size: " << i << endl;
       test_2048(i);
     }
-  } else if (LL / SM == 512) {
-    for (int i = 32; i <= 512; i *= 2) {
-      cout << "block size: " << i << endl;
-      test_512(i);
-    }
-  } else if (LL / SM == 256) {
-    for (int i = 16; i <= 256; i *= 2) {
-      cout << "block size: " << i << endl;
-      test_256(i);
-    }
-  }
-  
+
 
 }
