@@ -1025,7 +1025,7 @@ void test_2048(int block_size){
 }
 
 void test_1024(int block_size){
-  int iteration = 1000;
+  int iteration = 100;
   int access_per_iter = 23;
   //int SM = 15;
   int block_per_sm = 1024/block_size;
