@@ -98,12 +98,12 @@ void test_2048(int block_size){
   //double real_time = ((double)t)/CLOCKS_PER_SEC;
   cout <<"Runing time: " << real_time << " s." << endl;
   long long total_ops = total_block * block_size * access_per_iter;
-  double total_gb = (double)total_byte/1e9;
+  double total_gb = (double)total_ops/1e9;
   total_gb *= iteration;
-  cout << "Total ops:"<<total_gb << " GB."<< endl;
+  cout << "Total ops:"<<total_gb << " Gflos."<< endl;
   double throughput = total_gb/real_time;
   cout <<"Perf: " << throughput << " Gflop/s." << endl;
-  err = cudaGetLastError();
+  cudaError_t err = cudaGetLastError();
   if (err != cudaSuccess)
     printf("<global_memory>Error: %s\n", cudaGetErrorString(err));
 
