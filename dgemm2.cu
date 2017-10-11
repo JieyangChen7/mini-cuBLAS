@@ -687,7 +687,7 @@ float test_kernel_prefetch3(int m, int n, int k,
            <<" ("  << base/real_time <<"x)."
            <<" (" << total_gb <<"GB)"
            <<" (" << total_gb/real_time <<" GB/s)"<<endl;
-    }
+ //   }
 
 }
 
