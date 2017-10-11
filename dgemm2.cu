@@ -776,7 +776,7 @@ void test(int m, int k){
     }
 
     for (int i = 0; i < n * k; i++){
-    	B[i] = (double)i/k;
+    	B[i] = (double)i/(n * k);
     }
     
     double * dA;
