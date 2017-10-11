@@ -499,8 +499,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
     __syncthreads();
     cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
     cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
-    ///if (j == 0)
-    //  printf("%f %f", cacheB[threadIdx.x * 2], cacheB[threadIdx.x * 2 + 1]);
+    if (j == 0)
+      printf("%f %f \n", *(B + threadIdx.x), *(B + threadIdx.x + ldb));
     __syncthreads();
     B += T;
 
