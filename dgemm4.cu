@@ -639,8 +639,8 @@ dgemm_kernel4_22(int m, int n, int k, int T, int t, double * A, int lda, double 
   for (int j = 0; j < k; j += T){ 
 
     __syncthreads();
-    cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
-    cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
+    cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
+    cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
     __syncthreads();
     B += T;
 
