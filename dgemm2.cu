@@ -743,7 +743,7 @@ float test_cublas_mm(int m, int n, int k,
 void test(int m, int k);
 
 int main(){
-  for (int i = 20480; i <= 30720; i += 1024){
+  for (int i = 10240; i <= 30720; i += 1024){
   //int i = 1024;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 2 << ")" << endl;
     test(i, i);
@@ -791,12 +791,12 @@ void test(int m, int k){
 
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
   
-    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    //test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
    
     cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
