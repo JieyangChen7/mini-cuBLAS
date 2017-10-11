@@ -554,11 +554,11 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       if (l + t < k) {
         nr0 = *A;
         A += lda;
-        nr1 = *(A + lda);
+        nr1 = *(A);
         A += lda;
-        nr2 = *(A + lda * 2);
+        nr2 = *(A);
         A += lda;
-        nr3 = *(A + lda * 3);
+        nr3 = *(A );
         A += lda ;
       }
 
