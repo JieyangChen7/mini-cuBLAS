@@ -542,10 +542,10 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   for (int j = 0; j < k; j += T){ 
 
     __syncthreads();
-    //cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
-    //cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
-    //cacheB[threadIdx.x * 4 + 2] = *(B + threadIdx.x + ldb * 2);
-    //cacheB[threadIdx.x * 4 + 3] = *(B + threadIdx.x + ldb * 3);
+    cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
+    cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
+    cacheB[threadIdx.x * 4 + 2] = *(B + threadIdx.x + ldb * 2);
+    cacheB[threadIdx.x * 4 + 3] = *(B + threadIdx.x + ldb * 3);
     __syncthreads();
     B += T;
 
@@ -572,15 +572,15 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       temp3 += cr1 * cacheB[(l - j) * 4 + 6];
       temp4 += cr1 * cacheB[(l - j) * 4 + 7];
 
-      temp1 += cr2 * cacheB[(l - j) * 4 + 8 ];
-      temp2 += cr2 * cacheB[(l - j) * 4 + 9];
-      temp3 += cr2 * cacheB[(l - j) * 4+ 10];
-      temp4 += cr2 * cacheB[(l - j) * 4 + 11];
+      // temp1 += cr2 * cacheB[(l - j) * 4 + 8 ];
+      // temp2 += cr2 * cacheB[(l - j) * 4 + 9];
+      // temp3 += cr2 * cacheB[(l - j) * 4+ 10];
+      // temp4 += cr2 * cacheB[(l - j) * 4 + 11];
 
-      temp1 += cr3 * cacheB[(l - j) * 4 + 12 ];
-      temp2 += cr3 * cacheB[(l - j) * 4 + 13];
-      temp3 += cr3 * cacheB[(l - j) * 4 + 14];
-      temp4 += cr3 * cacheB[(l - j) * 4 + 15];
+      // temp1 += cr3 * cacheB[(l - j) * 4 + 12 ];
+      // temp2 += cr3 * cacheB[(l - j) * 4 + 13];
+      // temp3 += cr3 * cacheB[(l - j) * 4 + 14];
+      // temp4 += cr3 * cacheB[(l - j) * 4 + 15];
 
       if (l + t < k) {
         cr0 = nr0;
