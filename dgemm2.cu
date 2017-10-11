@@ -505,7 +505,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
     B += T;
 
     #pragma unroll 1
-    for (int l = j; l < j + T; l += t){
+    for (int l = j; l < j + T; l += 4){
       if (l + t < k) {
         nr0 = *A;
         A += lda;

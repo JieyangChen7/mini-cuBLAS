@@ -550,7 +550,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
     B += T;
 
     #pragma unroll 1
-    for (int l = j; l < j + T; l += t){
+    for (int l = j; l < j + T; l += 4){
       if (l + t < k) {
         nr0 = *A;
         A += lda;
@@ -562,25 +562,25 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
         A += lda ;
       }
 
-      temp1 += cr0 * cacheB[l - j + 0 ];
-      temp2 += cr0 * cacheB[l - j + 1];
-      temp3 += cr0 * cacheB[l - j + 2];
-      temp4 += cr0 * cacheB[l - j + 3];
+      temp1 += cr0 * cacheB[(l - j) * 4 + 0 ];
+      temp2 += cr0 * cacheB[(l - j) * 4 + 1];
+      temp3 += cr0 * cacheB[(l - j) * 4 + 2];
+      temp4 += cr0 * cacheB[(l - j) * 4 + 3];
 
-      temp1 += cr1 * cacheB[l - j + 4];
-      temp2 += cr1 * cacheB[l - j + 5];
-      temp3 += cr1 * cacheB[l - j + 6];
-      temp4 += cr1 * cacheB[l - j + 7];
+      temp1 += cr1 * cacheB[(l - j) * 4 + 4];
+      temp2 += cr1 * cacheB[(l - j) * 4 + 5];
+      temp3 += cr1 * cacheB[(l - j) * 4 + 6];
+      temp4 += cr1 * cacheB[(l - j) * 4 + 7];
 
-      temp1 += cr2 * cacheB[l - j + 8 ];
-      temp2 += cr2 * cacheB[l - j + 9];
-      temp3 += cr2 * cacheB[l - j + 10];
-      temp4 += cr2 * cacheB[l - j + 11];
+      temp1 += cr2 * cacheB[(l - j) * 4 + 8 ];
+      temp2 += cr2 * cacheB[(l - j) * 4 + 9];
+      temp3 += cr2 * cacheB[(l - j) * 4+ 10];
+      temp4 += cr2 * cacheB[(l - j) * 4 + 11];
 
-      temp1 += cr3 * cacheB[l - j + 12 ];
-      temp2 += cr3 * cacheB[l - j + 13];
-      temp3 += cr3 * cacheB[l - j + 14];
-      temp4 += cr3 * cacheB[l - j + 15];
+      temp1 += cr3 * cacheB[(l - j) * 4 + 12 ];
+      temp2 += cr3 * cacheB[(l - j) * 4 + 13];
+      temp3 += cr3 * cacheB[(l - j) * 4 + 14];
+      temp4 += cr3 * cacheB[(l - j) * 4 + 15];
 
       if (l + t < k) {
         cr0 = nr0;
