@@ -572,41 +572,41 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
         A += lda;
       }
 
-      temp1 += cr0 * cacheB[l - j + 0 ];
-      temp2 += cr0 * cacheB[l - j + 0 + 1];
-      temp3 += cr0 * cacheB[l - j + 0 + 2];
-      temp4 += cr0 * cacheB[l - j + 0 + 3];
-      temp5 += cr0 * cacheB[l - j + 0 + 4];
-      temp6 += cr0 * cacheB[l - j + 0 + 5];
-      temp7 += cr0 * cacheB[l - j + 0 + 6];
-      temp8 += cr0 * cacheB[l - j + 0 + 7];
+      temp1 += cr0 * cacheB[(l - j)*8 + 0 ];
+      temp2 += cr0 * cacheB[(l - j)*8 + 0 + 1];
+      temp3 += cr0 * cacheB[(l - j)*8 + 0 + 2];
+      temp4 += cr0 * cacheB[(l - j)*8 + 0 + 3];
+      temp5 += cr0 * cacheB[(l - j)*8 + 0 + 4];
+      temp6 += cr0 * cacheB[(l - j)*8 + 0 + 5];
+      temp7 += cr0 * cacheB[(l - j)*8 + 0 + 6];
+      temp8 += cr0 * cacheB[(l - j)*8 + 0 + 7];
 
-      temp1 += cr1 * cacheB[l - j + 1 ];
-      temp2 += cr1 * cacheB[l - j + 1 + 1];
-      temp3 += cr1 * cacheB[l - j + 1 + 2];
-      temp4 += cr1 * cacheB[l - j + 1 + 3];
-      temp5 += cr1 * cacheB[l - j + 1 + 3];
-      temp6 += cr1 * cacheB[l - j + 1 + 3];
-      temp7 += cr1 * cacheB[l - j + 1 + 3];
-      temp8 += cr1 * cacheB[l - j + 1 + 3];
+      temp1 += cr1 * cacheB[(l - j)*8 + 1 ];
+      temp2 += cr1 * cacheB[(l - j)*8 + 1 + 1];
+      temp3 += cr1 * cacheB[(l - j)*8 + 1 + 2];
+      temp4 += cr1 * cacheB[(l - j)*8 + 1 + 3];
+      temp5 += cr1 * cacheB[(l - j)*8 + 1 + 3];
+      temp6 += cr1 * cacheB[(l - j)*8 + 1 + 3];
+      temp7 += cr1 * cacheB[(l - j)*8 + 1 + 3];
+      temp8 += cr1 * cacheB[(l - j)*8 + 1 + 3];
 
-      temp1 += cr2 * cacheB[l - j + 2 ];
-      temp2 += cr2 * cacheB[l - j + 2 + 1];
-      temp3 += cr2 * cacheB[l - j + 2 + 2];
-      temp4 += cr2 * cacheB[l - j + 2 + 3];
-      temp5 += cr2 * cacheB[l - j + 2 + 4];
-      temp6 += cr2 * cacheB[l - j + 2 + 5];
-      temp7 += cr2 * cacheB[l - j + 2 + 6];
-      temp8 += cr2 * cacheB[l - j + 2 + 7];
+      temp1 += cr2 * cacheB[(l - j) * 8 + 2 ];
+      temp2 += cr2 * cacheB[(l - j) * 8 + 2 + 1];
+      temp3 += cr2 * cacheB[(l - j) * 8 + 2 + 2];
+      temp4 += cr2 * cacheB[(l - j) * 8 + 2 + 3];
+      temp5 += cr2 * cacheB[(l - j) * 8 + 2 + 4];
+      temp6 += cr2 * cacheB[(l - j) * 8 + 2 + 5];
+      temp7 += cr2 * cacheB[(l - j) * 8 + 2 + 6];
+      temp8 += cr2 * cacheB[(l - j) * 8 + 2 + 7];
 
-      temp1 += cr3 * cacheB[l - j + 3 ];
-      temp2 += cr3 * cacheB[l - j + 3 + 1];
-      temp3 += cr3 * cacheB[l - j + 3 + 2];
-      temp4 += cr3 * cacheB[l - j + 3 + 3];
-      temp5 += cr3 * cacheB[l - j + 3 + 4];
-      temp6 += cr3 * cacheB[l - j + 3 + 5];
-      temp7 += cr3 * cacheB[l - j + 3 + 6];
-      temp8 += cr3 * cacheB[l - j + 3 + 7];
+      temp1 += cr3 * cacheB[(l - j)*8 + 3 ];
+      temp2 += cr3 * cacheB[(l - j)*8 + 3 + 1];
+      temp3 += cr3 * cacheB[(l - j)*8 + 3 + 2];
+      temp4 += cr3 * cacheB[(l - j)*8 + 3 + 3];
+      temp5 += cr3 * cacheB[(l - j)*8 + 3 + 4];
+      temp6 += cr3 * cacheB[(l - j)*8 + 3 + 5];
+      temp7 += cr3 * cacheB[(l - j)*8 + 3 + 6];
+      temp8 += cr3 * cacheB[(l - j)*8 + 3 + 7];
 
       if (l + t < k) {
         cr0 = nr0;
