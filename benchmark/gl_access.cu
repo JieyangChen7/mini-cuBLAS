@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cuda_profiler_api.h>
 #define SM 24
-#define LL SM * 2048 
+#define LL SM * 1024 
 using namespace std;
 
 __global__ void array_generator(double * A, int iteration, int access_per_iter) {
@@ -76,55 +76,6 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   *A +=  (unsigned long long int)a_next6;
   *A +=  (unsigned long long int)a_next7;
   //*A +=  (unsigned long long int)a_next8;
-
-}
-
-
-// Kernel for 2048 threads / sm
-// Max register use is: 32
-// this version disable unroll
-__global__ void global_memory_2048_shared(double * A, int iteration, int access_per_iter,
-                              unsigned long long int * dStart, unsigned long long int * dEnd) {
-  extern __shared__ double cache[];
-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  A = A + idx;
-
-  //volatile clock_t start = 0;
-  //volatile clock_t end = 0;
-  //volatile unsigned long long sum_time = 0;
-
-  cache[threadIdx.x * access_per_iter] = (double)(unsigned long long int)A;
-  // cache[threadIdx.x * access_per_iter + 1] = (double)(unsigned long long int)A + LL;
-  // cache[threadIdx.x * access_per_iter + 2] = (double)(unsigned long long int)A + LL * 2;
-  // cache[threadIdx.x * access_per_iter + 3] = (double)(unsigned long long int)A + LL * 3;
-  // cache[threadIdx.x * access_per_iter + 4] = (double)(unsigned long long int)A + LL * 4;
-  // cache[threadIdx.x * access_per_iter + 5] = (double)(unsigned long long int)A + LL * 5;
-  // cache[threadIdx.x * access_per_iter + 6] = (double)(unsigned long long int)A + LL * 6;
-
-  # pragma unroll 1
-  for (int i = 0; i < iteration; i++) {
-    //start = clock();                                                                                                                      
-    cache[threadIdx.x * access_per_iter] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter];
-    // cache[threadIdx.x * access_per_iter + 1] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 1];
-    
-    // cache[threadIdx.x * access_per_iter + 2] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 2];
-    // cache[threadIdx.x * access_per_iter + 3] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 3];
-    
-    // cache[threadIdx.x * access_per_iter + 4] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 4];
-    // cache[threadIdx.x * access_per_iter + 5] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 5];
-    // cache[threadIdx.x * access_per_iter + 6] = *(double *)(unsigned long long int) cache[threadIdx.x * access_per_iter + 6];
-
-    //end = clock(); 
-  }
-  
-  *A += (unsigned long long int)cache[threadIdx.x * access_per_iter];
-  // *A +=  (unsigned long long int)cache[threadIdx.x * access_per_iter + 1];
-  // *A +=  (unsigned long long int)cache[threadIdx.x * access_per_iter + 2];
-  // *A +=  (unsigned long long int)cache[threadIdx.x * access_per_iter + 3];
-    
-  // *A +=  (unsigned long long int)cache[threadIdx.x * access_per_iter + 4];
-  // *A +=  (unsigned long long int)cache[threadIdx.x * access_per_iter + 5];
-  // *A +=  (unsigned long long int)cache[threadIdx.x * access_per_iter + 6];
 
 }
 
