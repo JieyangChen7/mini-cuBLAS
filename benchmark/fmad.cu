@@ -11,13 +11,13 @@ using namespace std;
 // Kernel for 2048 threads / sm
 // Max register use is: 32
 // this version disable unroll
-__global__ void global_memory_2048(double * A, int iteration, int access_per_iter, clock_t * time) {
+__global__ void global_memory_2048(double * A, int iteration, int access_per_iter, unsigned long long int * time) {
   extern __shared__ double cache[];
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
 
-  volatile clock_t start = 0;
-  volatile clock_t end = 0;
+  volatile unsigned long long int start = 0;
+  volatile unsigned long long int end = 0;
   //volatile unsigned long long sum_time = 0;
 
   
