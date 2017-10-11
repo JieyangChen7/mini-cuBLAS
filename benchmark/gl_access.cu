@@ -5,7 +5,6 @@
 #include <cuda_profiler_api.h>
 #define SM 56
 #define LL SM * 2048 
-#define ITERATION 2000
 using namespace std;
 
 __global__ void array_generator(double * A, int iteration, int access_per_iter) {
@@ -1010,7 +1009,7 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 
 
 void test_2048(int block_size){
-  int iteration = 1000;
+  int iteration = 2000;
   int access_per_iter = 8;
   //int SM = 24;
   int block_per_sm = 2048/block_size;
