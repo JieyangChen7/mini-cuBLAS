@@ -3,7 +3,7 @@
 #include <climits>
 #include <algorithm>
 #include <cuda_profiler_api.h>
-#define SM 56
+#define SM 15
 #define LL SM * 2048 
 using namespace std;
 
