@@ -537,7 +537,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
     }
   }
   *C = temp1;
- // *(C + ldc) = temp2;
+  *(C + ldc) = temp2;
     
 }
 
