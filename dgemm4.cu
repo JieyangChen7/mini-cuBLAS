@@ -803,7 +803,7 @@ float test_kernel_prefetch3(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k+ k * 4 * (k / T)) * sizeof(double) ;
+      long long total_bytes = (m * k+ k * 4 * T) * sizeof(double) ;
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_prefetch3("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
