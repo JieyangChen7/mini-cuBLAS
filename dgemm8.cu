@@ -547,14 +547,14 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   for (int j = 0; j < k; j += T){ 
 
     __syncthreads();
-    cacheB[threadIdx.x * 8] = *(B + threadIdx.x);
-    cacheB[threadIdx.x * 8 + 1] = *(B + threadIdx.x + ldb);
-    cacheB[threadIdx.x * 8 + 2] = *(B + threadIdx.x + ldb * 2);
-    cacheB[threadIdx.x * 8 + 3] = *(B + threadIdx.x + ldb * 3);
-    cacheB[threadIdx.x * 8 + 4] = *(B + threadIdx.x + ldb * 4);
-    cacheB[threadIdx.x * 8 + 5] = *(B + threadIdx.x + ldb * 5);
-    cacheB[threadIdx.x * 8 + 6] = *(B + threadIdx.x + ldb * 6);
-    cacheB[threadIdx.x * 8 + 7] = *(B + threadIdx.x + ldb * 7);
+    // cacheB[threadIdx.x * 8] = *(B + threadIdx.x);
+    // cacheB[threadIdx.x * 8 + 1] = *(B + threadIdx.x + ldb);
+    // cacheB[threadIdx.x * 8 + 2] = *(B + threadIdx.x + ldb * 2);
+    // cacheB[threadIdx.x * 8 + 3] = *(B + threadIdx.x + ldb * 3);
+    // cacheB[threadIdx.x * 8 + 4] = *(B + threadIdx.x + ldb * 4);
+    // cacheB[threadIdx.x * 8 + 5] = *(B + threadIdx.x + ldb * 5);
+    // cacheB[threadIdx.x * 8 + 6] = *(B + threadIdx.x + ldb * 6);
+    // cacheB[threadIdx.x * 8 + 7] = *(B + threadIdx.x + ldb * 7);
     __syncthreads();
     B += T;
 
