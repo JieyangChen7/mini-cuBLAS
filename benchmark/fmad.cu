@@ -51,7 +51,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   }
   end = clock();
   *A += temp;
-
+  time[idx] = end -start;
  // *A +=  (unsigned long long int)a_next8;
 
 }
