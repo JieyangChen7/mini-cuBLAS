@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cuda_profiler_api.h>
 #define SM 24
-#define LL SM * 512 
+#define LL SM * 256 
 using namespace std;
 
 __global__ void array_generator(double * A, int iteration, int access_per_iter) {
@@ -1151,7 +1151,7 @@ void test_512(int block_size){
 
 
 void test_256(int block_size){
-  int iteration = 500;
+  int iteration = 100;
   int access_per_iter = 120;
   //int SM = 15;
   int block_per_sm = 256/block_size;
@@ -1175,12 +1175,22 @@ void test_256(int block_size){
   if (err != cudaSuccess)
     printf("<array_gene>Error: %s\n", cudaGetErrorString(err));
 
-  clock_t t = clock();
-  global_memory_256<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
-  cudaDeviceSynchronize();
-  t = clock() - t;
+  cudaEvent_t t1, t2;
+  cudaEventCreate(&t1);
+  cudaEventCreate(&t2);
 
-  float real_time = ((float)t)/CLOCKS_PER_SEC;
+  cudaEventRecord(t1);
+  global_memory_256<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  cudaEventRecord(t2);
+
+  cudaEventSynchronize(t2);
+  //cudaDeviceSynchronize();
+  //t = clock() - t;
+
+  float milliseconds = 0;
+  cudaEventElapsedTime(&milliseconds, t1, t2);
+  double real_time = milliseconds/1000;
+
   cout <<"Runing time: " << real_time << " s." << endl;
   long long total_byte = total_block * block_size * sizeof(double) * access_per_iter;
   double total_gb = total_byte/1e9;
