@@ -540,6 +540,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   register double nr0, nr1, nr2, nr3;
   register double cr0, cr1, cr2, cr3;
 
+  register double b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15;
+
   //prefectch A 
   cr0 = *A;
   A += lda;
@@ -551,8 +553,6 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   cr3 = *A;
   A += lda;
 
-  #pragma unroll 1
-  for (int j = 0; j < k; j += T){ 
 
     __syncthreads();
     cacheB[threadIdx.x * 16] = *(B + threadIdx.x);
@@ -572,6 +572,29 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
     cacheB[threadIdx.x * 16 + 14] = *(B + threadIdx.x + ldb * 14);
     cacheB[threadIdx.x * 16 + 15] = *(B + threadIdx.x + ldb * 15);
     __syncthreads();
+    B += T;
+
+  #pragma unroll 1
+  for (int j = 0; j < k; j += T){ 
+
+    
+    b0 = *(B + threadIdx.x);
+    b1 = *(B + threadIdx.x + ldb);
+    b2 = *(B + threadIdx.x + ldb * 2);
+    b3 = *(B + threadIdx.x + ldb * 3);
+    b4 = *(B + threadIdx.x + ldb * 4);
+    b5 = *(B + threadIdx.x + ldb * 5);
+    b6 = *(B + threadIdx.x + ldb * 6);
+    b7 = *(B + threadIdx.x + ldb * 7);
+    b8 = *(B + threadIdx.x + ldb * 8);
+    b9 = *(B + threadIdx.x + ldb * 9);
+    b10 = *(B + threadIdx.x + ldb * 10);
+    b11 = *(B + threadIdx.x + ldb * 11);
+    b12 = *(B + threadIdx.x + ldb * 12);
+    b13 = *(B + threadIdx.x + ldb * 13);
+    b14 = *(B + threadIdx.x + ldb * 14);
+    b15 = *(B + threadIdx.x + ldb * 15);
+  
     B += T;
 
     #pragma unroll 1
@@ -663,6 +686,26 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
         cr3 = nr3;
       }
     }
+
+    __syncthreads();
+    cacheB[threadIdx.x * 16] = b0;
+    cacheB[threadIdx.x * 16 + 1] = b1;
+    cacheB[threadIdx.x * 16 + 2] = b2;
+    cacheB[threadIdx.x * 16 + 3] = b3;
+    cacheB[threadIdx.x * 16 + 4] = b4;
+    cacheB[threadIdx.x * 16 + 5] = b5;
+    cacheB[threadIdx.x * 16 + 6] = b6;
+    cacheB[threadIdx.x * 16 + 7] = b7;
+    cacheB[threadIdx.x * 16 + 8] = b8;
+    cacheB[threadIdx.x * 16 + 9] = b9;
+    cacheB[threadIdx.x * 16 + 10] = b10;
+    cacheB[threadIdx.x * 16 + 11] = b11;
+    cacheB[threadIdx.x * 16 + 12] = b12;
+    cacheB[threadIdx.x * 16 + 13] = b13;
+    cacheB[threadIdx.x * 16 + 14] = b14;
+    cacheB[threadIdx.x * 16 + 15] = b15;
+    __syncthreads();
+
   }
   *C = temp1;
   *(C + ldc) = temp2;
