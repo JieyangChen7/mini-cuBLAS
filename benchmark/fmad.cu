@@ -67,7 +67,7 @@ void test_2048(int block_size){
   //int block_size = 1024;
   cout << "Total concurrent threads/SM: " << block_per_sm * block_size << endl;
   cout << "Total block: " << total_block << endl;
-  int n = total_block * block_size * access_per_iter * (iteration + 1);
+  int n = total_block * block_size;
   double * A = new double[n];
   unsigned long long int * start = new unsigned long long int[n];
   unsigned long long int * end = new unsigned long long int[n];
@@ -130,7 +130,7 @@ void test_2048(int block_size){
 int main(){
   cout << "start benchmark" << endl;
   
-    for (int i = 128; i <= 1024; i *= 2) {
+    for (int i = 1024; i <= 1024; i *= 2) {
       cout << "block size: " << i << endl;
       test_2048(i);
     }
