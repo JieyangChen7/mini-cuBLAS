@@ -934,7 +934,7 @@ float test_kernel_prefetch3(int m, int n, int k,
 
       float real_time = milliseconds / 1000;
       double read_a = ((m * k) / 1e9) * sizeof(double);
-      double read_b = ((k * 16 * (k / T)) / 1e9) * sizeof(double);
+      double read_b = ((k * 16 * T) / 1e9) * sizeof(double);
 
       double total_gb = read_a + read_b;
       total_gb *= TEST_RUN;
