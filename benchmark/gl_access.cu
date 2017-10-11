@@ -42,7 +42,8 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
    // register double * a_next7 = A + LL * 6;
   // register double * a_next8 = A + LL * 7;
 
-  // register double temp = 0;
+   register double temp = 0;
+  
   # pragma unroll 1 
   for (int i = 0; i < iteration; i++) {
     //start = clock(); 
@@ -54,10 +55,11 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
     a_next3 = (double *)(unsigned long long int) *a_next3;
     a_next4 = (double *)(unsigned long long int) *a_next4;
     
-    // temp += i * iteration;
-    // temp += i *iteration;
-    // temp += i *iteration;
-    // temp += i *iteration;
+    temp += temp * iteration;
+    temp += temp *iteration;
+    temp += temp *iteration;
+    temp += temp *iteration;
+
     // a_next5 = (double *)(unsigned long long int) *a_next5;
     // a_next6 = (double *)(unsigned long long int) *a_next6;
     // a_next7 = (double *)(unsigned long long int) *a_next7;
@@ -71,7 +73,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   *A +=  (unsigned long long int)a_next2;
   *A +=  (unsigned long long int)a_next3;
   *A +=  (unsigned long long int)a_next4;
- // // *A += temp;
+  *A += temp;
   // *A +=  (unsigned long long int)a_next5;
   // *A +=  (unsigned long long int)a_next6;
   // *A +=  (unsigned long long int)a_next7;
