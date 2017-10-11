@@ -3,7 +3,7 @@
 #include <climits>
 #include <algorithm>
 #include <cuda_profiler_api.h>
-#define SM 24
+#define SM 1
 #define LL SM * 2048 
 using namespace std;
 
@@ -1238,7 +1238,7 @@ int main(){
       test_1024(i);
     }
   } else if (LL / SM == 2048) {
-    for (int i = 128; i <= 1024; i *= 2) {
+    for (int i = 1024; i <= 1024; i *= 2) {
       cout << "block size: " << i << endl;
       test_2048(i);
     }
