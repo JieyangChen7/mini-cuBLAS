@@ -658,9 +658,9 @@ float test_kernel_prefetch3(int m, int n, int k,
             double * dC, int ldc,
             float base){
 
-   // for (int T = 16; T <= min(m, 1024); T*=2) {
-    int T = m / 24;
-    int tt = 4;
+    for (int T = 2; T <= min(m, 1024); T*=2) {
+   
+      int tt = 4;
       int blocksPerGrid = m / T;
       int threadsPerBlock = T;
 
@@ -687,7 +687,7 @@ float test_kernel_prefetch3(int m, int n, int k,
            <<" ("  << base/real_time <<"x)."
            <<" (" << total_gb <<"GB)"
            <<" (" << total_gb/real_time <<" GB/s)"<<endl;
- //   }
+    }
 
 }
 
