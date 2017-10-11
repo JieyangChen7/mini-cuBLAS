@@ -541,12 +541,12 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   #pragma unroll 1
   for (int j = 0; j < k; j += T){ 
 
-    __syncthreads();
-    cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
-    cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
-    cacheB[threadIdx.x * 4 + 2] = *(B + threadIdx.x + ldb * 2);
-    cacheB[threadIdx.x * 4 + 3] = *(B + threadIdx.x + ldb * 3);
-    __syncthreads();
+    // __syncthreads();
+    // cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
+    // cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
+    // cacheB[threadIdx.x * 4 + 2] = *(B + threadIdx.x + ldb * 2);
+    // cacheB[threadIdx.x * 4 + 3] = *(B + threadIdx.x + ldb * 3);
+    // __syncthreads();
     B += T;
 
     #pragma unroll 1
