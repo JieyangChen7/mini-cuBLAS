@@ -16,17 +16,17 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
 
-  //volatile clock_t start = 0;
-  //volatile clock_t end = 0;
+  volatile clock_t start = 0;
+  volatile clock_t end = 0;
   //volatile unsigned long long sum_time = 0;
 
   
 
   register double temp = 0;
-  
+  start = clock(); 
   # pragma unroll 1 
   for (int i = 0; i < iteration; i++) {
-    //start = clock(); 
+    
 
      temp += temp * iteration;
     temp += temp *iteration;
@@ -47,8 +47,9 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
     temp += temp *iteration;
     temp += temp *iteration;
     temp += temp *iteration;
+   
   }
-
+  end = clock();
   *A += temp;
 
  // *A +=  (unsigned long long int)a_next8;
