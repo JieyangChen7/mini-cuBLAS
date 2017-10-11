@@ -503,7 +503,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
     B += T;
 
     #pragma unroll 1
-    for (int l = j; l < j + T -t; l += t){
+    for (int l = j; l < j + T; l += t){
       if (l + t < k) {
         nr0 = *A;
         A += lda;
@@ -516,17 +516,17 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
         A += lda;
       }
 
-     // temp1 += cr0 * cacheB[l - j + 0 ];
-      temp2 += cr0 * cacheB[l - j + 1];
+      temp1 += cr0 * cacheB[(l - j) * 2 + 0 ];
+      temp2 += cr0 * cacheB[(l - j) * 2 + 1];
 
-      temp1 += cr1 * cacheB[l - j + 2 ];
-      temp2 += cr1 * cacheB[l - j + 3];
+      temp1 += cr1 * cacheB[(l - j) * 2 + 2 ];
+      temp2 += cr1 * cacheB[(l - j) * 2 + 3];
 
-     temp1 += cr2 * cacheB[l - j + 4 ];
-     temp2 += cr2 * cacheB[l - j + 5];
+     temp1 += cr2 * cacheB[(l - j) * 2 + 4 ];
+     temp2 += cr2 * cacheB[(l - j) * 2 + 5];
 
-     temp1 += cr3 * cacheB[l - j + 6];
-     temp2 += cr3 * cacheB[l - j + 7];
+     temp1 += cr3 * cacheB[(l - j) * 2 + 6];
+     temp2 += cr3 * cacheB[(l - j) * 2 + 7];
 
    //   if (l + t < k) {
         cr0 = nr0;
