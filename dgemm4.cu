@@ -583,25 +583,25 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
      //  temp4 += cr3 * cacheB[(l - j) * 4 + 15];
 
 
-      temp1 += cr0 * cr0;
-      temp2 += cr0 * cr0;
-      temp3 += cr0 * cr0;
-      temp4 += cr0 * cr0;
-
-      temp1 += cr1 * cr0;
-      temp2 += cr1 * cr0;
-      temp3 += cr1 * cr0;
-      temp4 += cr1 * cr0;
- 
-     temp1 += cr2 * cr0;
-      temp2 += cr2 * cr0;
-      temp3 += cr2 * cr0;
+      temp1 += cr0 * cr1;
+      temp2 += cr2 * cr3;
+      temp3 += cr1 * cr3;
       temp4 += cr2 * cr0;
 
-      temp1 += cr3 * cr0;
-      temp2 += cr3 * cr0;
-      temp3 += cr3 * cr0;
-      temp4 += cr3 * cr0;
+     //  temp1 += cr1 * cr0;
+     //  temp2 += cr1 * cr0;
+     //  temp3 += cr1 * cr0;
+     //  temp4 += cr1 * cr0;
+ 
+     // temp1 += cr2 * cr0;
+     //  temp2 += cr2 * cr0;
+     //  temp3 += cr2 * cr0;
+     //  temp4 += cr2 * cr0;
+
+     //  temp1 += cr3 * cr0;
+     //  temp2 += cr3 * cr0;
+     //  temp3 += cr3 * cr0;
+     //  temp4 += cr3 * cr0;
 
 
       if (l + t < k) {
