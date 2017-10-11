@@ -1239,7 +1239,7 @@ int main(){
       test_1024(i);
     }
   } else if (LL / SM == 2048) {
-    for (int i = 128; i <= 128; i *= 2) {
+    for (int i = 128; i <= 1024; i *= 2) {
       cout << "block size: " << i << endl;
       test_2048(i);
     }
