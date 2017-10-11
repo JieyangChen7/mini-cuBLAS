@@ -499,8 +499,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
     __syncthreads();
     cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
     cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
-    if (j == 0 && idx == 0)
-      printf("%f %f \n", *(B + threadIdx.x), *(B + threadIdx.x + ldb));
+    // if (j == 0 && idx == 0)
+    //   printf("%f %f \n", *(B + threadIdx.x), *(B + threadIdx.x + ldb));
     __syncthreads();
     B += T;
 
@@ -518,10 +518,10 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
         A += lda;
       }
 
-      if (j == 0 && idx == 0){
-        printf("%f %f \n",  cacheB[(l - j) * 2 + 0 ], cacheB[(l - j) * 2 + 1]);
-        printf("%f %f %f %f\n",  cr0, cr1, cr2 ,cr3);
-      }
+      // if (j == 0 && idx == 0){
+      //   printf("%f %f \n",  cacheB[(l - j) * 2 + 0 ], cacheB[(l - j) * 2 + 1]);
+      //   printf("%f %f %f %f\n",  cr0, cr1, cr2 ,cr3);
+      // }
 
 
       temp1 += cr0 * cacheB[(l - j) * 2 + 0 ];
