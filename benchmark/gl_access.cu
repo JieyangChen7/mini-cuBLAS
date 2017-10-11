@@ -34,11 +34,11 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   //volatile unsigned long long sum_time = 0;
 
    register double * a_next1 = A;
-   register double * a_next2 = A + LL;
-   register double * a_next3 = A + LL * 2;
-   register double * a_next4 = A + LL * 3;
-   register double * a_next5 = A + LL * 4;
-   register double * a_next6 = A + LL * 5;
+   // register double * a_next2 = A + LL;
+   // register double * a_next3 = A + LL * 2;
+   // register double * a_next4 = A + LL * 3;
+   // register double * a_next5 = A + LL * 4;
+   // register double * a_next6 = A + LL * 5;
    //register double * a_next7 = A + LL * 6;
    //register double * a_next8 = A + LL * 7;
 
@@ -49,17 +49,17 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
 
    
     a_next1 = (double *)(unsigned long long int) *a_next1;
-    a_next2 = (double *)(unsigned long long int) *a_next2;
+    // a_next2 = (double *)(unsigned long long int) *a_next2;
     
-    a_next3 = (double *)(unsigned long long int) *a_next3;
-    a_next4 = (double *)(unsigned long long int) *a_next4;
+    // a_next3 = (double *)(unsigned long long int) *a_next3;
+    // a_next4 = (double *)(unsigned long long int) *a_next4;
     
     // temp += i * iteration;
     // temp += i *iteration;
     // temp += i *iteration;
     // temp += i *iteration;
-    a_next5 = (double *)(unsigned long long int) *a_next5;
-    a_next6 = (double *)(unsigned long long int) *a_next6;
+    // a_next5 = (double *)(unsigned long long int) *a_next5;
+    // a_next6 = (double *)(unsigned long long int) *a_next6;
     //a_next7 = (double *)(unsigned long long int) *a_next7;
     //a_next8 = (double *)(unsigned long long int) *a_next8;
     //__syncthreads();
@@ -68,12 +68,12 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   }
   
   *A += (unsigned long long int)a_next1;
-  *A +=  (unsigned long long int)a_next2;
-  *A +=  (unsigned long long int)a_next3;
-  *A +=  (unsigned long long int)a_next4;
- // *A += temp;
-  *A +=  (unsigned long long int)a_next5;
-  *A +=  (unsigned long long int)a_next6;
+ //  *A +=  (unsigned long long int)a_next2;
+ //  *A +=  (unsigned long long int)a_next3;
+ //  *A +=  (unsigned long long int)a_next4;
+ // // *A += temp;
+ //  *A +=  (unsigned long long int)a_next5;
+ //  *A +=  (unsigned long long int)a_next6;
   //*A +=  (unsigned long long int)a_next7;
   //*A +=  (unsigned long long int)a_next8;
 
