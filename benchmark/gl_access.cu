@@ -40,9 +40,9 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
    register double * a_next5 = A + LL * 4;
    register double * a_next6 = A + LL * 5;
    register double * a_next7 = A + LL * 6;
-   register double * a_next8 = A + LL * 7;
+   //register double * a_next8 = A + LL * 7;
 
-   register double temp = 0;
+  // register double temp = 0;
   # pragma unroll 1 
   for (int i = 0; i < iteration; i++) {
     //start = clock(); 
@@ -61,7 +61,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
     a_next5 = (double *)(unsigned long long int) *a_next5;
     a_next6 = (double *)(unsigned long long int) *a_next6;
     a_next7 = (double *)(unsigned long long int) *a_next7;
-    a_next8 = (double *)(unsigned long long int) *a_next8;
+    //a_next8 = (double *)(unsigned long long int) *a_next8;
     //__syncthreads();
     
     //end = clock(); 
@@ -75,7 +75,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   *A +=  (unsigned long long int)a_next5;
   *A +=  (unsigned long long int)a_next6;
   *A +=  (unsigned long long int)a_next7;
-  *A +=  (unsigned long long int)a_next8;
+  //*A +=  (unsigned long long int)a_next8;
 
 }
 
@@ -1009,8 +1009,8 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 
 
 void test_2048(int block_size){
-  int iteration = 2000;
-  int access_per_iter = 8;
+  int iteration = 1000;
+  int access_per_iter = 7;
   //int SM = 24;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
