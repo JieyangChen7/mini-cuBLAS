@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cuda_profiler_api.h>
 #define SM 24
-#define LL SM * 256 
+#define LL SM * 2048 
 using namespace std;
 
 __global__ void array_generator(double * A, int iteration, int access_per_iter) {
