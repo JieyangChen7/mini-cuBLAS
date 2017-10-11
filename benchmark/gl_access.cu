@@ -1054,7 +1054,7 @@ void test_1024(int block_size){
   cudaEventCreate(&t2);
 
   cudaEventRecord(t1);
-  global_memory_1024<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  global_memory_1024<<<total_block, block_size>>>(dA, iteration, access_per_iter, dStart, dEnd);
   cudaEventRecord(t2);
 
   cudaEventSynchronize(t2);
@@ -1089,7 +1089,7 @@ void test_1024(int block_size){
 
 void test_512(int block_size){
   int iteration = 100;
-  int access_per_iter = 120;
+  int access_per_iter = 55;
   //int SM = 15;
   int block_per_sm = 512/block_size;
   int total_block = SM * block_per_sm;
@@ -1117,7 +1117,7 @@ void test_512(int block_size){
   cudaEventCreate(&t2);
 
   cudaEventRecord(t1);
-  global_memory_512<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  global_memory_512<<<total_block, block_size>>>(dA, iteration, access_per_iter, dStart, dEnd);
   cudaEventRecord(t2);
 
   cudaEventSynchronize(t2);
