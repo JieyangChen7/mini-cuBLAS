@@ -772,11 +772,11 @@ void test(int m, int k){
     double * checkC = new double[m * n];     
 
     for (int i = 0; i < m * k; i++){
-    	A[i] = i;
+    	A[i] = i/(m * k);
     }
 
     for (int i = 0; i < n * k; i++){
-    	B[i] = i;
+    	B[i] = i/k;
     }
     
     double * dA;
