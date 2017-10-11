@@ -545,7 +545,6 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
 //Single registers: m, n, k, T, t, lda, ldb, ldc, idx, j, l (11)
 //Double registers: cacheB, A, B, C, nr0-3, cr0-3, temp1-2 (28)
 //Shared mem.: T*2 + T*T (double)
-#define LDA 30720
 __global__ void
 dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
@@ -659,8 +658,8 @@ float test_kernel_prefetch3(int m, int n, int k,
             double * dC, int ldc,
             float base){
 
-    for (int T = 16; T <= min(m, 1024); T*=2) {
-    //int T = 128;
+   // for (int T = 16; T <= min(m, 1024); T*=2) {
+    int T = m / 24;
     int tt = 4;
       int blocksPerGrid = m / T;
       int threadsPerBlock = T;
