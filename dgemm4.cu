@@ -564,24 +564,24 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       }
 
       temp1 += cr0 * cacheB[l - j + 0 ];
-      temp2 += cr0 * cacheB[l - j + T + 1];
-      // temp3 += cr0 * cacheB[l - j + 0 + 2];
-      // temp4 += cr0 * cacheB[l - j + 0 + 3];
+      temp2 += cr0 * cacheB[l - j + 1];
+      temp3 += cr0 * cacheB[l - j + 2];
+      temp4 += cr0 * cacheB[l - j + 3];
 
-      temp1 += cr1 * cacheB[l - j + T ];
-      temp2 += cr1 * cacheB[l - j + T + 1];
-      // temp3 += cr1 * cacheB[l - j + 1 + 2];
-      // temp4 += cr1 * cacheB[l - j + 1 + 3];
+      temp1 += cr1 * cacheB[l - j + 4];
+      temp2 += cr1 * cacheB[l - j + 5];
+      temp3 += cr1 * cacheB[l - j + 6];
+      temp4 += cr1 * cacheB[l - j + 7];
 
-      temp1 += cr2 * cacheB[l - j + T ];
-      temp2 += cr2 * cacheB[l - j + T + 1];
-      // temp3 += cr2 * cacheB[l - j + 2 + 2];
-      // temp4 += cr2 * cacheB[l - j + 2 + 3];
+      temp1 += cr2 * cacheB[l - j + 8 ];
+      temp2 += cr2 * cacheB[l - j + 9];
+      temp3 += cr2 * cacheB[l - j + 10];
+      temp4 += cr2 * cacheB[l - j + 11];
 
-      temp1 += cr3 * cacheB[l - j + T ];
-      temp2 += cr3 * cacheB[l - j + T + 1];
-      // temp3 += cr3 * cacheB[l - j + 3 + 2];
-      // temp4 += cr3 * cacheB[l - j + 3 + 3];
+      temp1 += cr3 * cacheB[l - j + 12 ];
+      temp2 += cr3 * cacheB[l - j + 13];
+      temp3 += cr3 * cacheB[l - j + 14];
+      temp4 += cr3 * cacheB[l - j + 15];
 
       if (l + t < k) {
         cr0 = nr0;
@@ -593,8 +593,8 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
   }
   *C = temp1;
   *(C + ldc) = temp2;
-  // *(C + ldc * 2) = temp3;
-  // *(C + ldc * 3) = temp4;
+   *(C + ldc * 2) = temp3;
+   *(C + ldc * 3) = temp4;
     
 }
 
