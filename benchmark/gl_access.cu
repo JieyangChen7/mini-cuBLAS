@@ -43,7 +43,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
    //register double * a_next8 = A + LL * 7;
 
   // register double temp = 0;
-  # pragma unroll 2 
+  # pragma unroll 1 
   for (int i = 0; i < iteration; i++) {
     //start = clock(); 
 
