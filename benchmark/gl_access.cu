@@ -1049,12 +1049,23 @@ void test_1024(int block_size){
   if (err != cudaSuccess)
     printf("<array_gene>Error: %s\n", cudaGetErrorString(err));
 
-  clock_t t = clock();
+  cudaEvent_t t1, t2;
+  cudaEventCreate(&t1);
+  cudaEventCreate(&t2);
+
+  cudaEventRecord(t1);
   global_memory_1024<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
   cudaDeviceSynchronize();
-  t = clock() - t;
+  cudaEventRecord(t2);
 
-  float real_time = ((float)t)/CLOCKS_PER_SEC;
+  cudaEventSynchronize(t2);
+  //cudaDeviceSynchronize();
+  //t = clock() - t;
+
+  float milliseconds = 0;
+  cudaEventElapsedTime(&milliseconds, t1, t2);
+  double real_time = milliseconds/1000;
+  
   cout <<"Runing time: " << real_time << " s." << endl;
   long long total_byte = total_block * block_size * sizeof(double) * access_per_iter;
   double total_gb = total_byte/1e9;
