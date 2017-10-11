@@ -65,15 +65,15 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
     temp += temp *iteration;
     temp += temp *iteration;
 
-    temp += temp * iteration;
-    temp += temp *iteration;
-    temp += temp *iteration;
-    temp += temp *iteration;
+    // temp += temp * iteration;
+    // temp += temp *iteration;
+    // temp += temp *iteration;
+    // temp += temp *iteration;
 
-    temp += temp * iteration;
-    temp += temp *iteration;
-    temp += temp *iteration;
-    temp += temp *iteration;
+    // temp += temp * iteration;
+    // temp += temp *iteration;
+    // temp += temp *iteration;
+    // temp += temp *iteration;
     // a_next5 = (double *)(unsigned long long int) *a_next5;
     // a_next6 = (double *)(unsigned long long int) *a_next6;
     // a_next7 = (double *)(unsigned long long int) *a_next7;
