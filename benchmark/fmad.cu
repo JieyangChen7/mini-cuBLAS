@@ -11,7 +11,7 @@ using namespace std;
 // Kernel for 2048 threads / sm
 // Max register use is: 32
 // this version disable unroll
-__global__ void global_memory_2048(double * A, int iteration, int access_per_iter) {
+__global__ void global_memory_2048(double * A, int iteration, int access_per_iter, clock_t * time) {
   extern __shared__ double cache[];
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   A = A + idx;
@@ -47,7 +47,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
     temp += temp *iteration;
     temp += temp *iteration;
     temp += temp *iteration;
-   
+
   }
   end = clock();
   *A += temp;
@@ -71,12 +71,12 @@ void test_2048(int block_size){
   double * A = new double[n];
   unsigned long long int * start = new unsigned long long int[n];
   unsigned long long int * end = new unsigned long long int[n];
-  //unsigned long long int * dStart;
-  //unsigned long long int * dEnd;
+  unsigned long long int * dStart;
+  unsigned long long int * dEnd;
   double * dA;
   cudaMalloc(&dA, (n) * sizeof(double));
-  //cudaMalloc((void**)&dStart, n * sizeof(unsigned long long int));
-  //cudaMalloc((void**)&dEnd, n * sizeof(unsigned long long int));
+  cudaMalloc((void**)&dStart, n * sizeof(unsigned long long int));
+  cudaMalloc((void**)&dEnd, n * sizeof(unsigned long long int));
 
   
 
@@ -86,7 +86,7 @@ void test_2048(int block_size){
 
   cudaEventRecord(t1);
   //clock_t t = clock();
-  global_memory_2048<<<total_block, block_size>>>(dA, iteration, access_per_iter);
+  global_memory_2048<<<total_block, block_size>>>(dA, iteration, access_per_iter, dStart);
   cudaEventRecord(t2);
 
   cudaEventSynchronize(t2);
@@ -109,8 +109,14 @@ void test_2048(int block_size){
     printf("<global_memory>Error: %s\n", cudaGetErrorString(err));
 
   cudaMemcpy(A, dA, n * sizeof(double), cudaMemcpyDeviceToHost);
+  cudaMemcpy(start, dStart, n * sizeof(double), cudaMemcpyDeviceToHost);
 
   cudaFree(dA);
+
+  for (int i = 0 ; i < block_per_sm * block_size ; i++) {
+    cout << "[" << i << "]: " << start[i];
+  }
+
   //cudaFree(dStart);
   //cudaFree(dEnd);
   delete [] A;
