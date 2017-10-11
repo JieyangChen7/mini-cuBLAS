@@ -48,7 +48,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
   for (int i = 0; i < iteration; i++) {
     //start = clock(); 
 
-    if (i < iteration - 1){
+   
     a_next1 = (double *)(unsigned long long int) *a_next1;
     a_next2 = (double *)(unsigned long long int) *a_next2;
     
@@ -64,7 +64,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
     a_next7 = (double *)(unsigned long long int) *a_next7;
     a_next8 = (double *)(unsigned long long int) *a_next8;
     //__syncthreads();
-    }
+    
     //end = clock(); 
   }
   
@@ -1011,7 +1011,7 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 
 void test_2048(int block_size){
   int iteration = 1000;
-  int access_per_iter = 4;
+  int access_per_iter = 8;
   //int SM = 24;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
