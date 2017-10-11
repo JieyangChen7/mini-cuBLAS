@@ -658,7 +658,7 @@ float test_kernel_prefetch3(int m, int n, int k,
             double * dC, int ldc,
             float base){
 
-    for (int T = 2; T <= min(m, 1024); T*=2) {
+    for (int T = 4; T <= min(m, 1024); T*=2) {
    
       int tt = 4;
       int blocksPerGrid = m / T;
