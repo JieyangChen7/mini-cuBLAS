@@ -553,14 +553,14 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
     for (int l = j; l < j + T; l += t){
       if (l + t < k) {
         nr0 = *A;
-        A += lda;
-        nr1 = *A;
-        A += lda;
+        //A += lda;
+        nr1 = *(A + lda);
+        //A += lda;
 
-        nr2 = *A;
-        A += lda;
-        nr3 = *A;
-        A += lda;
+        nr2 = *(A + lda * 2);
+        //A += lda;
+        nr3 = *(A + lda * 3);
+        A += lda * 4;
       }
 
       temp1 += cr0 * cacheB[l - j + 0 ];
