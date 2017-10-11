@@ -528,12 +528,12 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
      temp1 += cr3 * cacheB[l - j + 6];
      temp2 += cr3 * cacheB[l - j + 7];
 
-      if (l + t < k) {
+   //   if (l + t < k) {
         cr0 = nr0;
         cr1 = nr1;
         cr2 = nr2;
         cr3 = nr3;
-      }
+   //   }
     }
   }
   *C = temp1;
