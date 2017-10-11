@@ -580,7 +580,7 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, double * A, int lda, double *
       temp3 += cr1 * cacheB[(l - j) * 4 + 6];
       temp4 += cr1 * cacheB[(l - j) * 4 + 7];
  
-     temp1 += cr2 * cacheB[(l - j) * 4 + 8 ];
+      temp1 += cr2 * cacheB[(l - j) * 4 + 8 ];
       temp2 += cr2 * cacheB[(l - j) * 4 + 9];
       temp3 += cr2 * cacheB[(l - j) * 4+ 10];
       temp4 += cr2 * cacheB[(l - j) * 4 + 11];
