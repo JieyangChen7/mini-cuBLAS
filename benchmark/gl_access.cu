@@ -1009,7 +1009,7 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 
 
 void test_2048(int block_size){
-  int iteration = 100;
+  int iteration = 1000;
   int access_per_iter = 7;
   //int SM = 24;
   int block_per_sm = 2048/block_size;
