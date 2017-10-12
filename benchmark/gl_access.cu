@@ -121,7 +121,7 @@ void test_2048(int block_size){
   //cudaMalloc((void**)&dStart, n * sizeof(unsigned long long int));
   //cudaMalloc((void**)&dEnd, n * sizeof(unsigned long long int));
 
-  array_generator<<<total_block, block_size>>>(dA, iteration, access_per_iter);
+  array_generator<<<total_block, block_size, 59152 / block_per_sm>>>(dA, iteration, access_per_iter);
   cudaDeviceSynchronize();
   cudaError_t err = cudaGetLastError();
   if (err != cudaSuccess)
