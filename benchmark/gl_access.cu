@@ -215,7 +215,7 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
 # pragma unroll 1
   for (int i = 0; i < iteration; i++) {
     //start = clock();                                                                                                                      
-    a_next1 = (double *)(unsigned long long int) *a_next1;
+  //  a_next1 = (double *)(unsigned long long int) *a_next1;
     // a_next2 = (double *)(unsigned long long int) *a_next2; 
     // a_next3 = (double *)(unsigned long long int) *a_next3;
     // a_next4 = (double *)(unsigned long long int) *a_next4;
@@ -246,12 +246,12 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
       
 
     temp += temp * iteration;
-    temp += temp * iteration;
-     temp += temp * iteration;
-     temp += temp * iteration;
-     temp += temp * iteration;
-     temp += temp * iteration;
-     temp += temp * iteration;
+    // temp += temp * iteration;
+    //  temp += temp * iteration;
+    //  temp += temp * iteration;
+    //  temp += temp * iteration;
+    //  temp += temp * iteration;
+    //  temp += temp * iteration;
     // temp += temp * iteration;
     // temp += temp * iteration;
     // temp += temp * iteration;
@@ -294,7 +294,7 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
 void test_1024(int block_size){
   int iteration = 100;
   int access_per_iter = 1;
-   int compute_per_iter = 7;
+   int compute_per_iter = 1;
   //int SM = 15;
   int block_per_sm = 1024/block_size;
   int total_block = SM * block_per_sm;
