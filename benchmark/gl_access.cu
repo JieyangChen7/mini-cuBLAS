@@ -247,7 +247,7 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
 
     temp += temp * iteration;
     temp += temp * iteration;
-    // temp += temp * iteration;
+     temp += temp * iteration;
     // temp += temp * iteration;
     // temp += temp * iteration;
     // temp += temp * iteration;
@@ -294,7 +294,7 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
 void test_1024(int block_size){
   int iteration = 100;
   int access_per_iter = 1;
-   int compute_per_iter = 2;
+   int compute_per_iter = 3;
   //int SM = 15;
   int block_per_sm = 1024/block_size;
   int total_block = SM * block_per_sm;
