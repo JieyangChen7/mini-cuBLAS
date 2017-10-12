@@ -344,8 +344,9 @@ void test_1024(int block_size){
   if (err != cudaSuccess)
     printf("<global_memory>Error: %s\n", cudaGetErrorString(err));
 
-  long long total_ops = total_block * block_size * compute_per_iter * iteration;
+  long long total_ops = total_block * block_size * compute_per_iter;
   double perf = (double)total_ops/(real_time * 1e9);
+  perf *= iteration;
   cout <<"Perf: " << perf << " Gflop/s." << endl;
 
   cudaMemcpy(A, dA, n * sizeof(double), cudaMemcpyDeviceToHost);
