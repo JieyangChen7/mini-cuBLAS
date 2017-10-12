@@ -322,7 +322,7 @@ void test_1024(int block_size){
   cudaEventCreate(&t2);
 
   cudaEventRecord(t1);
-  global_memory_1024<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  global_memory_1024<<<total_block, block_size, 0>>>(dA, iteration, access_per_iter, dStart, dEnd);
   cudaEventRecord(t2);
 
   cudaEventSynchronize(t2);
