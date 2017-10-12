@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cuda_profiler_api.h>
 #define SM 24
-#define LL SM * 2048 
+#define LL SM * 1024 
 using namespace std;
 
 __global__ void array_generator(double * A, int iteration, int access_per_iter) {
@@ -103,7 +103,7 @@ __global__ void global_memory_2048(double * A, int iteration, int access_per_ite
 void test_2048(int block_size){
   int iteration = 1000;
   int access_per_iter = 1;
-  int compute_per_iter = 2;
+  int compute_per_iter = 1;
   //int SM = 24;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
@@ -277,6 +277,67 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
 }
 
 
+void test_1024(int block_size){
+  int iteration = 100;
+  int access_per_iter = 23;
+  //int SM = 15;
+  int block_per_sm = 1024/block_size;
+  int total_block = SM * block_per_sm;
+  //int block_size = 1024;
+  cout << "Total concurrent threads/SM: " << block_per_sm * block_size << endl;
+  int n = total_block * block_size * access_per_iter * (iteration + 1);
+  double * A = new double[n];
+  unsigned long long int * start = new unsigned long long int[n];
+  unsigned long long int * end = new unsigned long long int[n];
+  unsigned long long int * dStart;
+  unsigned long long int * dEnd;
+  double * dA;
+  cudaMalloc(&dA, (n) * sizeof(double));
+  cudaMalloc((void**)&dStart, n * sizeof(unsigned long long int));
+  cudaMalloc((void**)&dEnd, n * sizeof(unsigned long long int));
+
+  array_generator<<<total_block, block_size>>>(dA, iteration, access_per_iter);
+  cudaDeviceSynchronize();
+  cudaError_t err = cudaGetLastError();
+  if (err != cudaSuccess)
+    printf("<array_gene>Error: %s\n", cudaGetErrorString(err));
+
+  cudaEvent_t t1, t2;
+  cudaEventCreate(&t1);
+  cudaEventCreate(&t2);
+
+  cudaEventRecord(t1);
+  global_memory_1024<<<total_block, block_size, 49152 / block_per_sm>>>(dA, iteration, access_per_iter, dStart, dEnd);
+  cudaEventRecord(t2);
+
+  cudaEventSynchronize(t2);
+  //cudaDeviceSynchronize();
+  //t = clock() - t;
+
+  float milliseconds = 0;
+  cudaEventElapsedTime(&milliseconds, t1, t2);
+  double real_time = milliseconds/1000;
+
+  cout <<"Runing time: " << real_time << " s." << endl;
+  long long total_byte = total_block * block_size * sizeof(double) * access_per_iter;
+  double total_gb = total_byte/1e9;
+  total_gb *= iteration;
+  cout << "Total data requested:"<<total_gb << " GB."<< endl;
+  double throughput = total_gb/real_time;
+  cout <<"Throughput: " << throughput << " GB/s." << endl;
+  err = cudaGetLastError();
+  if (err != cudaSuccess)
+    printf("<global_memory>Error: %s\n", cudaGetErrorString(err));
+
+  cudaMemcpy(A, dA, n * sizeof(double), cudaMemcpyDeviceToHost);
+
+  cudaFree(dA);
+  cudaFree(dStart);
+  cudaFree(dEnd);
+  delete [] A;
+  delete [] start;
+  delete [] end;  
+}
 
 
 // Kernel for 1024 threads / sm
