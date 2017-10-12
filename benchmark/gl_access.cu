@@ -211,75 +211,81 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
   double * a_next22 = A + LL * 21;
   double * a_next23 = A + LL * 22;
    
+  register double temp = 0;
 # pragma unroll 1
   for (int i = 0; i < iteration; i++) {
     //start = clock();                                                                                                                      
     a_next1 = (double *)(unsigned long long int) *a_next1;
-    a_next2 = (double *)(unsigned long long int) *a_next2; 
-    a_next3 = (double *)(unsigned long long int) *a_next3;
-    a_next4 = (double *)(unsigned long long int) *a_next4;
+    // a_next2 = (double *)(unsigned long long int) *a_next2; 
+    // a_next3 = (double *)(unsigned long long int) *a_next3;
+    // a_next4 = (double *)(unsigned long long int) *a_next4;
     
-    a_next5 = (double *)(unsigned long long int) *a_next5;
-    a_next6 = (double *)(unsigned long long int) *a_next6;
-    a_next7 = (double *)(unsigned long long int) *a_next7;
-    a_next8 = (double *)(unsigned long long int) *a_next8;
+    // a_next5 = (double *)(unsigned long long int) *a_next5;
+    // a_next6 = (double *)(unsigned long long int) *a_next6;
+    // a_next7 = (double *)(unsigned long long int) *a_next7;
+    // a_next8 = (double *)(unsigned long long int) *a_next8;
     
-    a_next9 = (double *)(unsigned long long int) *a_next9;
-    a_next10 = (double *)(unsigned long long int) *a_next10;
-    a_next11 = (double *)(unsigned long long int) *a_next11;
-    a_next12 = (double *)(unsigned long long int) *a_next12;
+    // a_next9 = (double *)(unsigned long long int) *a_next9;
+    // a_next10 = (double *)(unsigned long long int) *a_next10;
+    // a_next11 = (double *)(unsigned long long int) *a_next11;
+    // a_next12 = (double *)(unsigned long long int) *a_next12;
     
-    a_next13 = (double *)(unsigned long long int) *a_next13;
-    a_next14 = (double *)(unsigned long long int) *a_next14;
-    a_next15 = (double *)(unsigned long long int) *a_next15;
-    a_next16 = (double *)(unsigned long long int) *a_next16;
+    // a_next13 = (double *)(unsigned long long int) *a_next13;
+    // a_next14 = (double *)(unsigned long long int) *a_next14;
+    // a_next15 = (double *)(unsigned long long int) *a_next15;
+    // a_next16 = (double *)(unsigned long long int) *a_next16;
     
-    a_next17 = (double *)(unsigned long long int) *a_next17;
-    a_next18 = (double *)(unsigned long long int) *a_next18;
-    a_next19 = (double *)(unsigned long long int) *a_next19;
-    a_next20 = (double *)(unsigned long long int) *a_next20;
+    // a_next17 = (double *)(unsigned long long int) *a_next17;
+    // a_next18 = (double *)(unsigned long long int) *a_next18;
+    // a_next19 = (double *)(unsigned long long int) *a_next19;
+    // a_next20 = (double *)(unsigned long long int) *a_next20;
     
-    a_next21 = (double *)(unsigned long long int) *a_next21;
-    a_next22 = (double *)(unsigned long long int) *a_next22;
-    a_next23 = (double *)(unsigned long long int) *a_next23;
-    
+    // a_next21 = (double *)(unsigned long long int) *a_next21;
+    // a_next22 = (double *)(unsigned long long int) *a_next22;
+    // a_next23 = (double *)(unsigned long long int) *a_next23;
+      
+
+   // temp += temp * iteration;
+
     //end = clock(); 
   }
   
   *A += (unsigned long long int)a_next1;
-  *A +=  (unsigned long long int)a_next2;
-  *A +=  (unsigned long long int)a_next3;
-  *A +=  (unsigned long long int)a_next4;
+  // *A +=  (unsigned long long int)a_next2;
+  // *A +=  (unsigned long long int)a_next3;
+  // *A +=  (unsigned long long int)a_next4;
     
-  *A +=  (unsigned long long int)a_next5;
-  *A +=  (unsigned long long int)a_next6;
-  *A +=  (unsigned long long int)a_next7;
-  *A +=  (unsigned long long int)a_next8;
+  // *A +=  (unsigned long long int)a_next5;
+  // *A +=  (unsigned long long int)a_next6;
+  // *A +=  (unsigned long long int)a_next7;
+  // *A +=  (unsigned long long int)a_next8;
   
-  *A +=  (unsigned long long int)a_next9;
-  *A +=  (unsigned long long int)a_next10;
-  *A +=  (unsigned long long int)a_next11;
-  *A +=  (unsigned long long int)a_next12;
+  // *A +=  (unsigned long long int)a_next9;
+  // *A +=  (unsigned long long int)a_next10;
+  // *A +=  (unsigned long long int)a_next11;
+  // *A +=  (unsigned long long int)a_next12;
 
-  *A +=  (unsigned long long int)a_next13;
-  *A +=  (unsigned long long int)a_next14;
-  *A +=  (unsigned long long int)a_next15;
-  *A +=  (unsigned long long int)a_next16;
+  // *A +=  (unsigned long long int)a_next13;
+  // *A +=  (unsigned long long int)a_next14;
+  // *A +=  (unsigned long long int)a_next15;
+  // *A +=  (unsigned long long int)a_next16;
 
-  *A +=  (unsigned long long int)a_next17;
-  *A +=  (unsigned long long int)a_next18;
-  *A +=  (unsigned long long int)a_next19;
-  *A +=  (unsigned long long int)a_next20;
+  // *A +=  (unsigned long long int)a_next17;
+  // *A +=  (unsigned long long int)a_next18;
+  // *A +=  (unsigned long long int)a_next19;
+  // *A +=  (unsigned long long int)a_next20;
 
-  *A +=  (unsigned long long int)a_next21;
-  *A +=  (unsigned long long int)a_next22;
-  *A +=  (unsigned long long int)a_next23;  
+  // *A +=  (unsigned long long int)a_next21;
+  // *A +=  (unsigned long long int)a_next22;
+  // *A +=  (unsigned long long int)a_next23;
+  *A += temp;  
 }
 
 
 void test_1024(int block_size){
   int iteration = 100;
-  int access_per_iter = 23;
+  int access_per_iter = 1;
+   int compute_per_iter = 0;
   //int SM = 15;
   int block_per_sm = 1024/block_size;
   int total_block = SM * block_per_sm;
@@ -328,6 +334,10 @@ void test_1024(int block_size){
   err = cudaGetLastError();
   if (err != cudaSuccess)
     printf("<global_memory>Error: %s\n", cudaGetErrorString(err));
+
+  long long total_ops = total_block * block_size * access_per_iter * compute_per_iter;
+  double perf = (double)total_ops/(real_time * 1e9);
+  cout <<"Perf: " << perf << " Gflop/s." << endl;
 
   cudaMemcpy(A, dA, n * sizeof(double), cudaMemcpyDeviceToHost);
 
