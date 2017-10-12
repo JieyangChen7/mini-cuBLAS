@@ -982,6 +982,7 @@ __global__ void global_memory_256(double * A, int iteration, int access_per_iter
 void test_2048(int block_size){
   int iteration = 1000;
   int access_per_iter = 1;
+  int compute_per_iter = 1;
   //int SM = 24;
   int block_per_sm = 2048/block_size;
   int total_block = SM * block_per_sm;
@@ -1032,6 +1033,11 @@ void test_2048(int block_size){
   err = cudaGetLastError();
   if (err != cudaSuccess)
     printf("<global_memory>Error: %s\n", cudaGetErrorString(err));
+
+  long long total_ops = total_block * block_size * access_per_iter * compute_per_iter;
+  double perf = (double)total_ops/(real_time * 1e9);
+  cout <<"Perf: " << perf << " Gflop/s." << endl;
+
 
   cudaMemcpy(A, dA, n * sizeof(double), cudaMemcpyDeviceToHost);
 
