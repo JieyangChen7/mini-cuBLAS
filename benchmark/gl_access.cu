@@ -253,7 +253,7 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
     temp += temp * iteration;
     temp += temp * iteration;
     temp += temp * iteration;
-    temp += temp * iteration
+    temp += temp * iteration;
     //end = clock(); 
   }
   
