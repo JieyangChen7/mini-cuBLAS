@@ -292,7 +292,7 @@ __global__ void global_memory_1024(double * A, int iteration, int access_per_ite
 
 
 void test_1024(int block_size){
-  int iteration = 10000;
+  int iteration = 1000;
   int access_per_iter = 1;
    int compute_per_iter = 1;
   //int SM = 15;
