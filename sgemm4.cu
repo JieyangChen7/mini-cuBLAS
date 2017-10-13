@@ -639,183 +639,183 @@ dgemm_kernel4_2(int m, int n, int k, int T, int t, float * A, int lda, float * B
 
 
 
-__global__ void
-dgemm_kernel4_23(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
-{
-  // store B (T * 2)                                                                                                                                                                                                                                                                       
-  extern __shared__ double cacheB[];
+// __global__ void
+// dgemm_kernel4_23(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
+// {
+//   // store B (T * 2)                                                                                                                                                                                                                                                                       
+//   extern __shared__ double cacheB[];
 
-  //determine the row to process                                                                                                                                                                                                                          
-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  A = A + idx;
-  C = C + idx;
-  register double temp1 = 0;
-  register double temp2 = 0;
-  register double temp3 = 0;
-  register double temp4 = 0;
+//   //determine the row to process                                                                                                                                                                                                                          
+//   int idx = blockIdx.x * blockDim.x + threadIdx.x;
+//   A = A + idx;
+//   C = C + idx;
+//   register double temp1 = 0;
+//   register double temp2 = 0;
+//   register double temp3 = 0;
+//   register double temp4 = 0;
 
-  register double nr0, nr1, nr2, nr3;
-  register double cr0, cr1, cr2, cr3;
+//   register double nr0, nr1, nr2, nr3;
+//   register double cr0, cr1, cr2, cr3;
 
-  //prefectch A 
-  cr0 = *A;
-  A += lda;
-  cr1 = *A;
-  A += lda;
+//   //prefectch A 
+//   cr0 = *A;
+//   A += lda;
+//   cr1 = *A;
+//   A += lda;
   
-  cr2 = *A;
-  A += lda;
-  cr3 = *A;
-  A += lda;
+//   cr2 = *A;
+//   A += lda;
+//   cr3 = *A;
+//   A += lda;
 
-  #pragma unroll 1
-  for (int j = 0; j < k; j += T){ 
+//   #pragma unroll 1
+//   for (int j = 0; j < k; j += T){ 
 
-    __syncthreads();
-    cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
-    cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
-    cacheB[threadIdx.x * 4 + 2] = *(B + threadIdx.x + ldb * 2);
-    cacheB[threadIdx.x * 4 + 3] = *(B + threadIdx.x + ldb * 3);
-    __syncthreads();
-    B += T;
+//     __syncthreads();
+//     cacheB[threadIdx.x * 4] = *(B + threadIdx.x);
+//     cacheB[threadIdx.x * 4 + 1] = *(B + threadIdx.x + ldb);
+//     cacheB[threadIdx.x * 4 + 2] = *(B + threadIdx.x + ldb * 2);
+//     cacheB[threadIdx.x * 4 + 3] = *(B + threadIdx.x + ldb * 3);
+//     __syncthreads();
+//     B += T;
 
-    #pragma unroll 1
-    for (int l = j; l < j + T; l += 4){
-      if (l + t < k) {
-        nr0 = *A;
-        A += lda;
-        nr1 = *(A);
-        A += lda;
-        nr2 = *(A);
-        A += lda;
-        nr3 = *(A );
-        A += lda ;
-      }
+//     #pragma unroll 1
+//     for (int l = j; l < j + T; l += 4){
+//       if (l + t < k) {
+//         nr0 = *A;
+//         A += lda;
+//         nr1 = *(A);
+//         A += lda;
+//         nr2 = *(A);
+//         A += lda;
+//         nr3 = *(A );
+//         A += lda ;
+//       }
 
-      temp1 += cr0 * cacheB[(l - j) * 4 + 0 ];
-      temp2 += cr0 * cacheB[(l - j) * 4 + 1];
-      temp3 += cr0 * cacheB[(l - j) * 4 + 2];
-      temp4 += cr0 * cacheB[(l - j) * 4 + 3];
+//       temp1 += cr0 * cacheB[(l - j) * 4 + 0 ];
+//       temp2 += cr0 * cacheB[(l - j) * 4 + 1];
+//       temp3 += cr0 * cacheB[(l - j) * 4 + 2];
+//       temp4 += cr0 * cacheB[(l - j) * 4 + 3];
 
-      temp1 += cr1 * cacheB[(l - j) * 4 + 4];
-      temp2 += cr1 * cacheB[(l - j) * 4 + 5];
-      temp3 += cr1 * cacheB[(l - j) * 4 + 6];
-      temp4 += cr1 * cacheB[(l - j) * 4 + 7];
+//       temp1 += cr1 * cacheB[(l - j) * 4 + 4];
+//       temp2 += cr1 * cacheB[(l - j) * 4 + 5];
+//       temp3 += cr1 * cacheB[(l - j) * 4 + 6];
+//       temp4 += cr1 * cacheB[(l - j) * 4 + 7];
 
-      temp1 += cr2 * cacheB[(l - j) * 4 + 8 ];
-      temp2 += cr2 * cacheB[(l - j) * 4 + 9];
-      temp3 += cr2 * cacheB[(l - j) * 4+ 10];
-      temp4 += cr2 * cacheB[(l - j) * 4 + 11];
+//       temp1 += cr2 * cacheB[(l - j) * 4 + 8 ];
+//       temp2 += cr2 * cacheB[(l - j) * 4 + 9];
+//       temp3 += cr2 * cacheB[(l - j) * 4+ 10];
+//       temp4 += cr2 * cacheB[(l - j) * 4 + 11];
 
-      temp1 += cr3 * cacheB[(l - j) * 4 + 12 ];
-      temp2 += cr3 * cacheB[(l - j) * 4 + 13];
-      temp3 += cr3 * cacheB[(l - j) * 4 + 14];
-      temp4 += cr3 * cacheB[(l - j) * 4 + 15];
+//       temp1 += cr3 * cacheB[(l - j) * 4 + 12 ];
+//       temp2 += cr3 * cacheB[(l - j) * 4 + 13];
+//       temp3 += cr3 * cacheB[(l - j) * 4 + 14];
+//       temp4 += cr3 * cacheB[(l - j) * 4 + 15];
 
-      if (l + t < k) {
-        cr0 = nr0;
-        cr1 = nr1;
-        cr2 = nr2;
-        cr3 = nr3;
-      }
-    }
-  }
-  *C = temp1;
-  *(C + ldc) = temp2;
-   *(C + ldc * 2) = temp3;
-   *(C + ldc * 3) = temp4;
+//       if (l + t < k) {
+//         cr0 = nr0;
+//         cr1 = nr1;
+//         cr2 = nr2;
+//         cr3 = nr3;
+//       }
+//     }
+//   }
+//   *C = temp1;
+//   *(C + ldc) = temp2;
+//    *(C + ldc * 2) = temp3;
+//    *(C + ldc * 3) = temp4;
     
-}
+// }
 
 
 
 
 
 
-__global__ void
-dgemm_kernel4_22(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
-{
-  // store B (T * 2)                                                                                                                                                                                                                                                                       
-  extern __shared__ double cacheB[];
+// __global__ void
+// dgemm_kernel4_22(int m, int n, int k, int T, int t, double * A, int lda, double * B, int ldb, double * C, int ldc)
+// {
+//   // store B (T * 2)                                                                                                                                                                                                                                                                       
+//   extern __shared__ double cacheB[];
 
-  //determine the row to process                                                                                                                                                                                                                          
-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  A = A + idx;
-  C = C + idx;
-  double * orgA = A;
-  double * ordB = B;
-  register double temp1;
-  register double temp2;
+//   //determine the row to process                                                                                                                                                                                                                          
+//   int idx = blockIdx.x * blockDim.x + threadIdx.x;
+//   A = A + idx;
+//   C = C + idx;
+//   double * orgA = A;
+//   double * ordB = B;
+//   register double temp1;
+//   register double temp2;
 
-  register double nr0, nr1, nr2, nr3;
-  register double cr0, cr1, cr2, cr3;
+//   register double nr0, nr1, nr2, nr3;
+//   register double cr0, cr1, cr2, cr3;
 
 
-  for (int p = 0; p < n; p+=2){
-  A = orgA;
-  B = ordB + ldb * p;
-  temp1 = 0;
-  temp2 = 0;
-  //prefectch A 
-  cr0 = *A;
-  A += lda;
-  cr1 = *A;
-  A += lda;
+//   for (int p = 0; p < n; p+=2){
+//   A = orgA;
+//   B = ordB + ldb * p;
+//   temp1 = 0;
+//   temp2 = 0;
+//   //prefectch A 
+//   cr0 = *A;
+//   A += lda;
+//   cr1 = *A;
+//   A += lda;
   
-  cr2 = *A;
-  A += lda;
-  cr3 = *A;
-  A += lda;
+//   cr2 = *A;
+//   A += lda;
+//   cr3 = *A;
+//   A += lda;
 
 
 
-  #pragma unroll 1
-  for (int j = 0; j < k; j += T){ 
+//   #pragma unroll 1
+//   for (int j = 0; j < k; j += T){ 
 
-    __syncthreads();
-    cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
-    cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
-    __syncthreads();
-    B += T;
+//     __syncthreads();
+//     cacheB[threadIdx.x * 2] = *(B + threadIdx.x);
+//     cacheB[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
+//     __syncthreads();
+//     B += T;
 
-    #pragma unroll 1
-    for (int l = j; l < j + T; l += 4){
-      if (l + t < k) {
-        nr0 = *A;
-        A += lda;
-        nr1 = *(A);
-        A += lda;
-        nr2 = *(A);
-        A += lda;
-        nr3 = *(A );
-        A += lda ;
-      }
+//     #pragma unroll 1
+//     for (int l = j; l < j + T; l += 4){
+//       if (l + t < k) {
+//         nr0 = *A;
+//         A += lda;
+//         nr1 = *(A);
+//         A += lda;
+//         nr2 = *(A);
+//         A += lda;
+//         nr3 = *(A );
+//         A += lda ;
+//       }
 
-      temp1 += cr0 * cacheB[(l - j) * 2 + 0 ];
-      temp2 += cr0 * cacheB[(l - j) * 2+ 1];
+//       temp1 += cr0 * cacheB[(l - j) * 2 + 0 ];
+//       temp2 += cr0 * cacheB[(l - j) * 2+ 1];
 
-      temp1 += cr1 * cacheB[(l - j) * 2 + 2];
-      temp2 += cr1 * cacheB[(l - j) * 2 + 3];
+//       temp1 += cr1 * cacheB[(l - j) * 2 + 2];
+//       temp2 += cr1 * cacheB[(l - j) * 2 + 3];
 
-      temp1 += cr2 * cacheB[(l - j) * 2 + 4 ];
-      temp2 += cr2 * cacheB[(l - j) * 2 + 5];
+//       temp1 += cr2 * cacheB[(l - j) * 2 + 4 ];
+//       temp2 += cr2 * cacheB[(l - j) * 2 + 5];
 
-      temp1 += cr3 * cacheB[(l - j) * 2 + 6];
-      temp2 += cr3 * cacheB[(l - j) * 2 + 7];
+//       temp1 += cr3 * cacheB[(l - j) * 2 + 6];
+//       temp2 += cr3 * cacheB[(l - j) * 2 + 7];
 
-      if (l + t < k) {
-        cr0 = nr0;
-        cr1 = nr1;
-        cr2 = nr2;
-        cr3 = nr3;
-      }
-    }
-  }
-  *(C + ldc * p)  = temp1;
-  *(C + ldc * p + 1) = temp2;  
+//       if (l + t < k) {
+//         cr0 = nr0;
+//         cr1 = nr1;
+//         cr2 = nr2;
+//         cr3 = nr3;
+//       }
+//     }
+//   }
+//   *(C + ldc * p)  = temp1;
+//   *(C + ldc * p + 1) = temp2;  
 
-  }
-}
+//   }
+// }
 
 
 
