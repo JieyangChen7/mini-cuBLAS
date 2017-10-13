@@ -471,7 +471,7 @@ __global__ void
 dgemm_kernel4_2(int m, int n, int k, int T, int t, float * A, int lda, float * B, int ldb, float * C, int ldc)
 {
   // store B (T * 2)                                                                                                                                                                                                                                                                       
-  extern __shared__ double cacheB[];
+  extern __shared__ float cacheB[];
 
   //determine the row to process                                                                                                                                                                                                                          
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
