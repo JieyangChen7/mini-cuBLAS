@@ -663,9 +663,9 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, double * A, int lda, double *
 
 
 float test_kernel_prefetch3(int m, int n, int k, 
-            double * dA, int lda, 
-            double * dB, int ldb, 
-            double * dC, int ldc,
+            float * dA, int lda, 
+            float * dB, int ldb, 
+            float * dC, int ldc,
             float base){
 
     for (int T = 4; T <= min(m, 1024); T*=2) {
@@ -680,7 +680,7 @@ float test_kernel_prefetch3(int m, int n, int k,
 
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(double)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, ((T * 2)) * sizeof(float)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
         check_cuda_error();
       }
       cudaEventRecord(stop);
