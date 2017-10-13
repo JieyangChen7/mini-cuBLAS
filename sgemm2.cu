@@ -15,7 +15,7 @@ void check_cuda_error(){
     printf("Error: %s\n", cudaGetErrorString(err));
 }
 
-void check_C(double * dC, int m, int n, double * checkC) {
+void check_C(float * dC, int m, int n, float * checkC) {
   for (int i = 0; i < m * n; i++){
     //cout << i << endl;
     if (fabs(dC[i] - checkC[i]) > ESP){
