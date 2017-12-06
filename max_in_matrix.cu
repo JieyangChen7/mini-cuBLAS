@@ -20,17 +20,17 @@ __global__ void find_max_abs_diff_kernel(int m, int n, float * A, float * B, flo
     	}
     }
 
-    __shared__ float shared_array[];
+    extern __shared__ float shared_array[];
     shared_array[threadIdx.x] = max_diff;
     for (int i = blockDim.x / 2; i >= 1; i /= 2)
     {
         if (threadIdx.x < i)
         {
-            shared_array[threadIdx.x] = fmaxf(shared_array[threadIdx.x], shared_array[threadIdx.x + i])
+            shared_array[threadIdx.x] = fmaxf(shared_array[threadIdx.x], shared_array[threadIdx.x + i]);
         }
         __syncthreads();
     }
-    result[blockIdx.x] = shared_array[0]
+    result[blockIdx.x] = shared_array[0];
 
 }
 
@@ -73,10 +73,10 @@ int main()
     }
 
 
-    double * dA;
+    float * dA;
     cudaMalloc(&dA, m * n * sizeof(float));
 
-    double * dB; 
+    float * dB; 
     cudaMalloc(&dB,  m * n * sizeof(float));
 
     cudaMemcpy(dA, A, m * n * sizeof(float), cudaMemcpyHostToDevice);
