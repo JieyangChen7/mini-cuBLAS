@@ -38,7 +38,7 @@ float find_max_abs_diff(int m, int n, float * dA, float * dB)
 {
    
     int threadsPerBlock = 128; // must be power of 2
-    int blocksPerGrid = ceil(n / threadsPerBlock);
+    int blocksPerGrid = ceil(n(float) / threadsPerBlock);
     cout << blocksPerGrid << endl;
 
     float * result = new float[blocksPerGrid];
