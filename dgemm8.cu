@@ -273,7 +273,7 @@ float test_kernel_shared(int m, int n, int k,
           double * dC, int ldc,
           float base){
 
-    for (int T = 16; T <= min(1024, m); T *= 2) {
+    for (int T = 16; T <= min(512, m); T *= 2) {
 
       //int T = 16;
       int blocksPerGrid = m / T;
@@ -285,7 +285,7 @@ float test_kernel_shared(int m, int n, int k,
 
       cudaEventRecord(start);
       for (int i = 0; i < TEST_RUN; i++)
-        dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double) * 4>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+        dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(double) * 8>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
         check_cuda_error();
       cudaEventRecord(stop);
 
