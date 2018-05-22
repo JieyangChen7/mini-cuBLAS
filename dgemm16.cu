@@ -1220,9 +1220,9 @@ void test(int m, int k){
     // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
     // check_C(C, m, n, checkC);
 
-    // test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
-    // check_C(C, m, n, checkC);
+    test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    check_C(C, m, n, checkC);
 
     //test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
