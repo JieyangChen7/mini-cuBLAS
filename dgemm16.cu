@@ -36,6 +36,7 @@ dgemm_kernel_naive1(int m, int n, int k, double * A, int lda, double * B, int ld
   A = A + idx;
   register double a = 0;
   register double b = 0;
+  register double temp = 0;
  
   for (int j = 0; j < n; j++) {
     #pragma unroll 1
@@ -44,8 +45,10 @@ dgemm_kernel_naive1(int m, int n, int k, double * A, int lda, double * B, int ld
       a = *(A + lda * i);
       b = *(B + ldb * j + i);
       //compute
-      *(C + j * ldc + idx) += a * b;
+      temp = a * b;
+      
     }
+    *(C + j * ldc + idx) = temp;
   }
   
 }
