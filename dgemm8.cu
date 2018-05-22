@@ -1087,14 +1087,18 @@ void test(int m, int k){
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
     cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
   
-    // test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
-    // check_C(C, m, n, checkC);
+    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    check_C(C, m, n, checkC);
 
 
-    // test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
-    // check_C(C, m, n, checkC);
+    test_kernel_reduce_gld(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    check_C(C, m, n, checkC);
+
+    test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    check_C(C, m, n, checkC);
 
     // test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
