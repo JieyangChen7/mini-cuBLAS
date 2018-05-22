@@ -351,7 +351,7 @@ float test_kernel_shared(int m, int n, int k,
           double * dC, int ldc,
           float base){
 
-    for (int T = 16; T <= min(1024, m); T *= 2) {
+    for (int T = 16; T <= min(256, m); T *= 2) { // T <= 256 limited by shared memory per thread block
 
       //int T = 16;
       int blocksPerGrid = m / T;
