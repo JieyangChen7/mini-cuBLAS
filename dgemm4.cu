@@ -27,8 +27,35 @@ void check_C(double * dC, int m, int n, double * checkC) {
 }
 
 /////////////////////////NAIVE/////////////////////////
+
 __global__ void
 dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
+{
+  //determine the row to process                                                        
+  register int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+  register double a = 0;
+  register double b = 0;
+  register double temp = 0;
+ 
+  for (int j = 0; j < n; j++) {
+    #pragma unroll 1
+    for (int i = 0; i < k; i+=1){
+      //load data
+      a = *(A + lda * i);
+      b = *(B + ldb * j + i);
+      //compute
+      temp += a * b;
+      
+    }
+    *(C + j * ldc + idx) = temp;
+    temp = 0;
+  }
+  
+}
+
+__global__ void
+dgemm_kernel_reduce_gld(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
   //determine the row to process                                                        
   register int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -37,28 +64,48 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   register double temp2 = 0;
   register double temp3 = 0;
   register double temp4 = 0;
+  register double temp5 = 0;
+  register double temp6 = 0;
+  register double temp7 = 0;
+  register double temp8 = 0;
+
   register double a = 0;
+
   register double b1 = 0;
   register double b2 = 0;
   register double b3 = 0;
   register double b4 = 0;
+  register double b5 = 0;
+  register double b6 = 0;
+  register double b7 = 0;
+  register double b8 = 0;
 
   #pragma unroll 1
   for (int i = 0; i < k; i+=1){
     //load data
     a = *A;
+
     b1 = *B;
     b2 = *(B + ldb);
     b3 = *(B + ldb * 2);
     b4 = *(B + ldb * 3);
+    b5 = *(B + ldb * 4);
+    b6 = *(B + ldb * 5);
+    b7 = *(B + ldb * 6);
+    b8 = *(B + ldb * 7);
+
     A += lda;
     B += 1;
 
     //compute
-    temp1 = temp1 + a * b1;
-    temp2 = temp2 + a * b2;
-    temp3 = temp3 + a * b3;
-    temp4 = temp4 + a * b4;
+    temp1 += a * b1;
+    temp2 += a * b2;
+    temp3 += a * b3;
+    temp4 += a * b4;
+    temp5 += a * b5;
+    temp6 += a * b6;
+    temp7 += a * b7;
+    temp8 += a * b8;
 
   }
 
@@ -66,6 +113,10 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   *(C + 1 * ldc + idx) = temp2;
   *(C + 2 * ldc + idx) = temp3;
   *(C + 3 * ldc + idx) = temp4;
+  *(C + 4 * ldc + idx) = temp5;
+  *(C + 5 * ldc + idx) = temp6;
+  *(C + 6 * ldc + idx) = temp7;
+  *(C + 7 * ldc + idx) = temp8;
   
 }
 
@@ -99,10 +150,50 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * 4 * (k / 32)) * sizeof(double);
+    long long total_bytes = (m * k + k * 8 * (k / 32)) * sizeof(double);
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
+         <<" ("  << base/real_time <<"x)."
+         <<" (" << total_gb <<"GB)"
+         <<" (" << total_gb/real_time <<"GB/s)"<<endl;
+  }
+
+}
+
+void test_kernel_reduce_gld(int m, int n, int k, 
+            double * dA, int lda, 
+            double * dB, int ldb, 
+            double * dC, int ldc,
+            float base){
+  
+
+for (int T = 16; T <= min(1024, m); T *= 2) {
+   // int T = 128;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
+
+
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++)
+      dgemm_kernel_reduce_gld<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
+                  dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
+    long long total_bytes = (m * k + k * 8 * (k / 32)) * sizeof(double);
+    double total_gb = (double)total_bytes / 1e9;
+    total_gb *= TEST_RUN;
+    cout <<"Runing time of dgemm_kernel_reduce_gld("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
          <<" ("  << base/real_time <<"x)."
          <<" (" << total_gb <<"GB)"
          <<" (" << total_gb/real_time <<"GB/s)"<<endl;
@@ -125,21 +216,37 @@ dgemm_kernel_shared(int m, int n, int k, int T, double * A, int lda, double * B,
   register double temp2 = 0;
   register double temp3 = 0;
   register double temp4 = 0;
+  register double temp5 = 0;
+  register double temp6 = 0;
+  register double temp7 = 0;
+  register double temp8 = 0;
+
   register double a = 0;
 
   for (int j = 0; j < k; j += T){
-    cache[threadIdx.x * 2] = *(B + threadIdx.x);
-    cache[threadIdx.x * 2 + 1] = *(B + threadIdx.x + ldb);
-    cache[threadIdx.x * 2 + 2] = *(B + threadIdx.x + ldb * 2);
-    cache[threadIdx.x * 2 + 3] = *(B + threadIdx.x + ldb * 3);
+    cache[threadIdx.x * 8 + 0] = *(B + threadIdx.x + ldb * 0);
+    cache[threadIdx.x * 8 + 1] = *(B + threadIdx.x + ldb * 1);
+    cache[threadIdx.x * 8 + 2] = *(B + threadIdx.x + ldb * 2);
+    cache[threadIdx.x * 8 + 3] = *(B + threadIdx.x + ldb * 3);
+    
+    cache[threadIdx.x * 8 + 4] = *(B + threadIdx.x + ldb * 4);
+    cache[threadIdx.x * 8 + 5] = *(B + threadIdx.x + ldb * 5);
+    cache[threadIdx.x * 8 + 6] = *(B + threadIdx.x + ldb * 6);
+    cache[threadIdx.x * 8 + 7] = *(B + threadIdx.x + ldb * 7);
+
     __syncthreads();
     B += T;
     for (int i = 0; i < T; i++) {
       a = *(A + (i + j) * lda);
-      temp1 += a * cache[i * 2];
-      temp2 += a * cache[i * 2 + 1];
-      temp3 += a * cache[i * 2 + 2];
-      temp4 += a * cache[i * 2 + 3];
+      temp1 += a * cache[i * 8 + 0];
+      temp2 += a * cache[i * 8 + 1];
+      temp3 += a * cache[i * 8 + 2];
+      temp4 += a * cache[i * 8 + 3];
+
+      temp5 += a * cache[i * 8 + 4];
+      temp6 += a * cache[i * 8 + 5];
+      temp7 += a * cache[i * 8 + 6];
+      temp8 += a * cache[i * 8 + 7];
     }
     __syncthreads();
 
@@ -148,6 +255,11 @@ dgemm_kernel_shared(int m, int n, int k, int T, double * A, int lda, double * B,
   *(C + 1 * ldc + idx) = temp2;
   *(C + 2 * ldc + idx) = temp3;
   *(C + 3 * ldc + idx) = temp4;
+
+  *(C + 4 * ldc + idx) = temp5;
+  *(C + 5 * ldc + idx) = temp6;
+  *(C + 6 * ldc + idx) = temp7;
+  *(C + 7 * ldc + idx) = temp8;
 
 }
 
@@ -179,7 +291,7 @@ float test_kernel_shared(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(double) ;
+      long long total_bytes = (m * k + k * 8 * (k / T)) * sizeof(double) ;
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -1137,14 +1249,17 @@ void test(int m, int k){
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
     cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
   
-    // test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
-    // check_C(C, m, n, checkC);
+    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    check_C(C, m, n, checkC);
 
+    test_kernel_reduce_gld(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    check_C(C, m, n, checkC);
 
-    // test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
-    // check_C(C, m, n, checkC);
+    test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    check_C(C, m, n, checkC);
 
     // test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
