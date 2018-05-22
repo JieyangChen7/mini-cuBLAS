@@ -1199,11 +1199,11 @@ void test(int m, int k){
     cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
 
 
-    test_kernel_naive1(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
     check_C(C, m, n, checkC);
   
-    test_kernel_naive2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_reduce_gld(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
     check_C(C, m, n, checkC);
 
