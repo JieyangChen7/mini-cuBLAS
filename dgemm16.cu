@@ -45,7 +45,7 @@ dgemm_kernel_naive1(int m, int n, int k, double * A, int lda, double * B, int ld
       a = *(A + lda * i);
       b = *(B + ldb * j + i);
       //compute
-      temp = a * b;
+      temp += a * b;
       
     }
     *(C + j * ldc + idx) = temp;
