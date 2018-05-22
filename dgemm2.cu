@@ -27,8 +27,36 @@ void check_C(double * dC, int m, int n, double * checkC) {
 }
 
 /////////////////////////NAIVE/////////////////////////
+
 __global__ void
 dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
+{
+  //determine the row to process                                                        
+  register int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+  register double a = 0;
+  register double b = 0;
+  register double temp = 0;
+ 
+  for (int j = 0; j < n; j++) {
+    #pragma unroll 1
+    for (int i = 0; i < k; i+=1){
+      //load data
+      a = *(A + lda * i);
+      b = *(B + ldb * j + i);
+      //compute
+      temp += a * b;
+      
+    }
+    *(C + j * ldc + idx) = temp;
+    temp = 0;
+  }
+  
+}
+
+
+__global__ void
+dgemm_kernel_reduce_gld(int m, int n, int k, double * A, int lda, double * B, int ldb, double * C, int ldc)
 {
   //determine the row to process                                                        
   register int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -93,6 +121,46 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
+         <<" ("  << base/real_time <<"x)."
+         <<" (" << total_gb <<"GB)"
+         <<" (" << total_gb/real_time <<"GB/s)"<<endl;
+  }
+
+}
+
+void test_kernel_reduce_gld(int m, int n, int k, 
+            double * dA, int lda, 
+            double * dB, int ldb, 
+            double * dC, int ldc,
+            float base){
+  
+
+for (int T = 16; T <= min(1024, m); T *= 2) {
+   // int T = 128;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
+
+
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++)
+      dgemm_kernel_reduce_gld<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
+                  dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
+    long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double);
+    double total_gb = (double)total_bytes / 1e9;
+    total_gb *= TEST_RUN;
+    cout <<"Runing time of dgemm_kernel_reduce_gld("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
          <<" ("  << base/real_time <<"x)."
          <<" (" << total_gb <<"GB)"
          <<" (" << total_gb/real_time <<"GB/s)"<<endl;
@@ -801,8 +869,9 @@ void test(int m, int k){
 
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
   
-    // test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_reduce_gld(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
