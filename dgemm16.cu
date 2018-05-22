@@ -37,28 +37,81 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   register double temp2 = 0;
   register double temp3 = 0;
   register double temp4 = 0;
+  register double temp5 = 0;
+  register double temp6 = 0;
+  register double temp7 = 0;
+  register double temp8 = 0;
+  register double temp9 = 0;
+  register double temp10 = 0;
+  register double temp11 = 0;
+  register double temp12 = 0;
+  register double temp13 = 0;
+  register double temp14 = 0;
+  register double temp15 = 0;
+  register double temp16 = 0;
+
   register double a = 0;
+
   register double b1 = 0;
   register double b2 = 0;
   register double b3 = 0;
   register double b4 = 0;
+  register double b5 = 0;
+  register double b6 = 0;
+  register double b7 = 0;
+  register double b8 = 0;
+  register double b9 = 0;
+  register double b10 = 0;
+  register double b11 = 0;
+  register double b12 = 0;
+  register double b13 = 0;
+  register double b14 = 0;
+  register double b15 = 0;
+  register double b16 = 0;
 
   #pragma unroll 1
   for (int i = 0; i < k; i+=1){
     //load data
     a = *A;
+    
     b1 = *B;
     b2 = *(B + ldb);
     b3 = *(B + ldb * 2);
     b4 = *(B + ldb * 3);
+    b5 = *(B + ldb * 4);
+    b6 = *(B + ldb * 5);
+    b7 = *(B + ldb * 6);
+    b8 = *(B + ldb * 7);
+    b9 = *(B + ldb * 8);
+    b10 = *(B + ldb * 9);
+    b11 = *(B + ldb * 10);
+    b12 = *(B + ldb * 11);
+    b13 = *(B + ldb * 12);
+    b14 = *(B + ldb * 13);
+    b15 = *(B + ldb * 14);
+    b16 = *(B + ldb * 15);
+
+
     A += lda;
     B += 1;
 
     //compute
-    temp1 = temp1 + a * b1;
-    temp2 = temp2 + a * b2;
-    temp3 = temp3 + a * b3;
-    temp4 = temp4 + a * b4;
+    temp1 += a * b1;
+    temp2 += a * b2;
+    temp3 += a * b3;
+    temp4 += a * b4;
+    temp5 += a * b5;
+    temp6 += a * b6;
+    temp7 += a * b7;
+    temp8 += a * b8;
+    temp9 += a * b9;
+    temp10 += a * b10;
+    temp11 += a * b11;
+    temp12 += a * b12;
+    temp13 += a * b13;
+    temp14 += a * b14;
+    temp15 += a * b15;
+    temp16 += a * b16;
 
   }
 
@@ -66,6 +119,18 @@ dgemm_kernel_naive(int m, int n, int k, double * A, int lda, double * B, int ldb
   *(C + 1 * ldc + idx) = temp2;
   *(C + 2 * ldc + idx) = temp3;
   *(C + 3 * ldc + idx) = temp4;
+  *(C + 4 * ldc + idx) = temp5;
+  *(C + 5 * ldc + idx) = temp6;
+  *(C + 6 * ldc + idx) = temp7;
+  *(C + 7 * ldc + idx) = temp8;
+  *(C + 8 * ldc + idx) = temp9;
+  *(C + 9 * ldc + idx) = temp10;
+  *(C + 10 * ldc + idx) = temp11;
+  *(C + 11 * ldc + idx) = temp12;
+  *(C + 12 * ldc + idx) = temp13;
+  *(C + 13 * ldc + idx) = temp14;
+  *(C + 14 * ldc + idx) = temp15;
+  *(C + 15 * ldc + idx) = temp16;
   
 }
 
