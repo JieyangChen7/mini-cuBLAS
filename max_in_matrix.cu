@@ -62,8 +62,8 @@ float find_max_abs_diff(int m, int n, float * dA, float * dB)
 
 int main()
 {
-    int m = 10000;
-    int n = 10000;
+    int m = 1000;
+    int n = 1000;
     float * A = new float[m * n];
     float * B = new float[m * n];
 
