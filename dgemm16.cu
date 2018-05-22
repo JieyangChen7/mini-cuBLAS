@@ -222,7 +222,7 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
 
     cudaEventRecord(start);
     for (int i = 0; i < TEST_RUN; i++)
-      dgemm_kernel_naive2<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
+      dgemm_kernel_reduce_gld<<<blocksPerGrid, threadsPerBlock>>>(m, n, k,
                   dA, lda, dB, ldb, dC, ldc);
       check_cuda_error();
     cudaEventRecord(stop);
