@@ -1159,7 +1159,7 @@ int main(){
 void test(int m, int k){
     cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
 
-    //int m = 20480;
+    m = 16;
     int n = 16;
     //int k = 20480;
     double * A = new double[m * k];
