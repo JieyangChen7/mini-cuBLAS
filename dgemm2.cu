@@ -27,7 +27,7 @@ void check_C(double * dC, int m, int n, double * checkC) {
   cout << "correct" << endl;
 }
 
-void output(int m, int n, int k, float min_time, int blocksPerGrid_min, int threadsPerBlock_min, string func) {
+void output(int m, int n, int k, float min_time, float base, int blocksPerGrid_min, int threadsPerBlock_min, string func) {
   // long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double);
   long long total_bytes = (m * k + k * n * blocksPerGrid_min) * sizeof(double);
   double total_gb = (double)total_bytes / 1e9;
@@ -137,7 +137,7 @@ void test_kernel_naive(int m, int n, int k,
       threadsPerBlock_min = threadsPerBlock;
     }
   }
-  output(m, n, k, min_time, blocksPerGrid_min, threadsPerBlock_min, "V0");
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V0");
 }
 
 void test_kernel_reduce_gld(int m, int n, int k, 
@@ -175,7 +175,7 @@ void test_kernel_reduce_gld(int m, int n, int k,
       threadsPerBlock_min = threadsPerBlock;
     }
   }
-  output(m, n, k, min_time, blocksPerGrid_min, threadsPerBlock_min, "V1");
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V1");
 
 }
 
@@ -248,7 +248,7 @@ float test_kernel_shared(int m, int n, int k,
       threadsPerBlock_min = threadsPerBlock;
     }
   }
-  output(m, n, k, min_time, blocksPerGrid_min, threadsPerBlock_min, "V2");
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V2");
 }
 
 ///////////////////////A PREFETCH(cache<->register)
@@ -438,7 +438,7 @@ void test_kernel_prefetch(int m, int n, int k,
       threadsPerBlock_min = threadsPerBlock;
     }
   }
-  output(m, n, k, min_time, blocksPerGrid_min, threadsPerBlock_min, "V3-1");
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V3-1");
 }
 
 
@@ -532,7 +532,7 @@ void test_kernel_prefetch2(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    output(m, n, k, real_time, blocksPerGrid, threadsPerBlock, "V3-2");
+    output(m, n, k, real_time, base, blocksPerGrid, threadsPerBlock, "V3-2");
 
 }
 
@@ -773,7 +773,7 @@ float test_kernel_prefetch3(int m, int n, int k,
       threadsPerBlock_min = threadsPerBlock;
     }
   }
-  output(m, n, k, min_time, blocksPerGrid_min, threadsPerBlock_min, "V3-3");
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V3-3");
 }
 
 
@@ -814,7 +814,7 @@ float test_kernel_prefetch4(int m, int n, int k,
       threadsPerBlock_min = threadsPerBlock;
     }
   }
-  output(m, n, k, min_time, blocksPerGrid_min, threadsPerBlock_min, "V3-4");
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V3-4");
 }
 
 
