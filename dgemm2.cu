@@ -117,7 +117,8 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double);
+    // long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double);
+    long long total_bytes = (m * k + k * n * blocksPerGrid) * sizeof(double);
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
@@ -157,7 +158,8 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double);
+    // long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double);
+    long long total_bytes = (m * k + k * n * blocksPerGrid) * sizeof(double);
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_reduce_gld("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
@@ -229,7 +231,8 @@ float test_kernel_shared(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * n * (k / T)) * sizeof(double) ;
+      // long long total_bytes = (m * k + k * n * (k / T)) * sizeof(double) ;
+      long long total_bytes = (m * k + k * n * blocksPerGrid) * sizeof(double);
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -418,7 +421,8 @@ void test_kernel_prefetch(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * n * (k / T)) * sizeof(double) ;
+      // long long total_bytes = (m * k + k * n * (k / T)) * sizeof(double) ;
+      long long total_bytes = (m * k + k * n * blocksPerGrid) * sizeof(double);
         double total_gb = (double)total_bytes / 1e9;
         total_gb *= TEST_RUN;
         cout <<"Runing time of dgemm_kernel_prefetch("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -519,7 +523,8 @@ void test_kernel_prefetch2(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * n * (m / T)) * sizeof(double) ;
+    // long long total_bytes = (m * k + k * n * (m / T)) * sizeof(double) ;
+    long long total_bytes = (m * k + k * n * blocksPerGrid) * sizeof(double);
     double total_gb = (double)total_bytes / 1e9;
     total_gb *= TEST_RUN;
     cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
@@ -758,7 +763,8 @@ float test_kernel_prefetch3(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * n * T) * sizeof(double) ;
+      // long long total_bytes = (m * k + k * n * T) * sizeof(double) ;
+      long long total_bytes = (m * k + k * n * blocksPerGrid) * sizeof(double);
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_prefetch3("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
@@ -798,7 +804,8 @@ float test_kernel_prefetch4(int m, int n, int k,
       cudaEventElapsedTime(&milliseconds, start, stop);
 
       float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double) ;
+      // long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double) ;
+      long long total_bytes = (m * k + k * n * blocksPerGrid) * sizeof(double);
       double total_gb = (double)total_bytes / 1e9;
       total_gb *= TEST_RUN;
       cout <<"Runing time of dgemm_kernel_prefetch4("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
