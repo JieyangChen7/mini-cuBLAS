@@ -32,7 +32,7 @@ void output(int m, int n, int k, float min_time, float base, int blocksPerGrid_m
   long long total_bytes = (m * k + k * n * blocksPerGrid_min) * sizeof(double);
   double total_gb = (double)total_bytes / 1e9;
   total_gb *= TEST_RUN;
-  cout <<func << "("<< blocksPerGrid_min << "*" << T << "): " << min_time << " s" 
+  cout <<func << "("<< blocksPerGrid_min << "*" << threadsPerBlock_min << "): " << min_time << " s" 
        <<" ("  << base/min_time <<"x)."
        <<" (" << total_gb <<"GB)"
        <<" (" << total_gb/min_time <<"GB/s)"<<endl;
