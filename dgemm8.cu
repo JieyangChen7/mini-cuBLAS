@@ -1145,7 +1145,7 @@ float test_cublas_mm(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
+    // cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
 
     return real_time;
 }
