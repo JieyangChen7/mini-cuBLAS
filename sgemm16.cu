@@ -4,6 +4,7 @@
 #include <cmath>
 #include <time.h>
 #include <stdio.h>
+#include <string>
 #define TEST_RUN 1 
 #define ESP 10e-10
 using namespace std;
@@ -24,6 +25,17 @@ void check_C(float * dC, int m, int n, float * checkC) {
     }
   }
   //cout << "correct" << endl;
+}
+
+void output(int m, int n, int k, float min_time, float base, int blocksPerGrid_min, int threadsPerBlock_min, string func) {
+  // long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double);
+  long long total_bytes = (m * k + k * n * blocksPerGrid_min) * sizeof(float);
+  double total_gb = (double)total_bytes / 1e9;
+  total_gb *= TEST_RUN;
+  cout <<func << "("<< blocksPerGrid_min << "*" << threadsPerBlock_min << "): " << min_time << " s" 
+       <<" ("  << base/min_time <<"x)."
+       <<" (" << total_gb <<"GB)"
+       <<" (" << total_gb/min_time <<"GB/s)"<<endl;
 }
 
 /////////////////////////NAIVE/////////////////////////
@@ -169,9 +181,10 @@ void test_kernel_naive(int m, int n, int k,
             float * dC, int ldc,
             float base){
   
-
-for (int T = 16; T <= min(1024, m); T *= 2) {
-   // int T = 128;
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 16; T <= min(1024, m); T *= 2) {
+    // int T = 128;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
@@ -192,14 +205,13 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(float);
-    float total_gb = (float)total_bytes / 1e9;
-    total_gb *= TEST_RUN;
-    cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
-         <<" ("  << base/real_time <<"x)."
-         <<" (" << total_gb <<"GB)"
-         <<" (" << total_gb/real_time <<"GB/s)"<<endl;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
   }
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V0");
 
 }
 
@@ -209,9 +221,10 @@ void test_kernel_reduce_gld(int m, int n, int k,
             float * dC, int ldc,
             float base){
   
-
-for (int T = 16; T <= min(1024, m); T *= 2) {
-   // int T = 128;
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 16; T <= min(1024, m); T *= 2) {
+    // int T = 128;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
@@ -232,15 +245,13 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(float);
-    float total_gb = (float)total_bytes / 1e9;
-    total_gb *= TEST_RUN;
-    cout <<"Runing time of dgemm_kernel_reduce_gld("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
-         <<" ("  << base/real_time <<"x)."
-         <<" (" << total_gb <<"GB)"
-         <<" (" << total_gb/real_time <<"GB/s)"<<endl;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
   }
-
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V1");
 }
 
 
@@ -351,35 +362,36 @@ float test_kernel_shared(int m, int n, int k,
           float * dC, int ldc,
           float base){
 
-    for (int T = 16; T <= min(256, m); T *= 2) { // T <= 256 limited by shared memory per thread block
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 16; T <= min(256, m); T *= 2) { // T <= 256 limited by shared memory per thread block
 
-      //int T = 16;
-      int blocksPerGrid = m / T;
-      int threadsPerBlock = T;
-      
-      cudaEvent_t start, stop;
-      cudaEventCreate(&start);
-      cudaEventCreate(&stop);
+    //int T = 16;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
+    
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-      cudaEventRecord(start);
-      for (int i = 0; i < TEST_RUN; i++)
-        dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(float) * 16>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-        check_cuda_error();
-      cudaEventRecord(stop);
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++)
+      dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(float) * 16>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
+    cudaEventRecord(stop);
 
-      cudaEventSynchronize(stop);
-      float milliseconds = 0;
-      cudaEventElapsedTime(&milliseconds, start, stop);
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
 
-      float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * n * (k / T)) * sizeof(float) ;
-      float total_gb = (float)total_bytes / 1e9;
-      total_gb *= TEST_RUN;
-      cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-           <<" ("  << base/real_time <<"x)."
-           <<" (" << total_gb <<"GB)"
-           <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    float real_time = milliseconds / 1000;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
     }
+  }
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V2");
 }
 
 ///////////////////////A PREFETCH(cache<->register)
@@ -553,38 +565,39 @@ void test_kernel_prefetch(int m, int n, int k,
             float * dC, int ldc,
             float base){
 
-    for (int T = 8; T <= 16; T *= 2) {
-    //int T = 16;
-      int blocksPerGrid = m / T;
-      int threadsPerBlock = T;
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 8; T <= 16; T *= 2) {
+  //int T = 16;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
 
-      cudaEvent_t start, stop;
-      cudaEventCreate(&start);
-      cudaEventCreate(&stop);
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-      cudaEventRecord(start);
-      for (int i = 0; i < TEST_RUN; i++) {
-        if (T == 16)
-          dgemm_kernel_prefetch_s2r_16<<<blocksPerGrid, threadsPerBlock, ((T * 4) + (T * T)) * sizeof(float)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-        else if (T == 8)
-          dgemm_kernel_prefetch_s2r_8<<<blocksPerGrid, threadsPerBlock, ((T * 4) + (T * T)) * sizeof(float)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-        check_cuda_error();
-      }
-      cudaEventRecord(stop);
-
-      cudaEventSynchronize(stop);
-      float milliseconds = 0;
-      cudaEventElapsedTime(&milliseconds, start, stop);
-
-      float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(float) ;
-        float total_gb = (float)total_bytes / 1e9;
-        total_gb *= TEST_RUN;
-        cout <<"Runing time of dgemm_kernel_prefetch("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-             <<" ("  << base/real_time <<"x)."
-             <<" (" << total_gb <<"GB)"
-             <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++) {
+      if (T == 16)
+        dgemm_kernel_prefetch_s2r_16<<<blocksPerGrid, threadsPerBlock, ((T * 4) + (T * T)) * sizeof(float)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+      else if (T == 8)
+        dgemm_kernel_prefetch_s2r_8<<<blocksPerGrid, threadsPerBlock, ((T * 4) + (T * T)) * sizeof(float)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
     }
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
+  }
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V3-1");
 }
 
 
@@ -686,13 +699,7 @@ void test_kernel_prefetch2(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(float) ;
-    float total_gb = (float)total_bytes / 1e9;
-    total_gb *= TEST_RUN;
-    cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-         <<" ("  << base/real_time <<"x)."
-         <<" (" << total_gb <<"GB)"
-         <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    output(m, n, k, real_time, base, blocksPerGrid, threadsPerBlock, "V3-2");
 
 }
 
@@ -1061,39 +1068,37 @@ float test_kernel_prefetch3(int m, int n, int k,
             float * dC, int ldc,
             float base){
 
-    for (int T = 16; T <= min(m, 256); T*=2) {
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 16; T <= min(m, 256); T*=2) {
     //int T = 128;
     int tt = 4;
-      int blocksPerGrid = m / T;
-      int threadsPerBlock = T;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
 
-      cudaEvent_t start, stop;
-      cudaEventCreate(&start);
-      cudaEventCreate(&stop);
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-      cudaEventRecord(start);
-      for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, (T * 16) * sizeof(float)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
-        check_cuda_error();
-      }
-      cudaEventRecord(stop);
-
-      cudaEventSynchronize(stop);
-      float milliseconds = 0;
-      cudaEventElapsedTime(&milliseconds, start, stop);
-
-      float real_time = milliseconds / 1000;
-      float read_a = ((m * k) / 1e9) * sizeof(float);
-      float read_b = ((k * 16 *  T) / 1e9) * sizeof(float);
-
-      float total_gb = read_a + read_b;
-      total_gb *= TEST_RUN;
-      cout <<"Runing time of dgemm_kernel_prefetch3("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
-           <<" ("  << base/real_time <<"x)."
-           <<" (" << total_gb <<"GB)"
-           <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++) {
+      dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, (T * 16) * sizeof(float)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
     }
+    cudaEventRecord(stop);
 
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
+  }
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V3-3");
 }
 
 
@@ -1104,37 +1109,37 @@ float test_kernel_prefetch4(int m, int n, int k,
             float * dC, int ldc,
             float base){
 
-    for (int T = 16; T <= min(m, 1024); T*=2) {
-    //int T = 128;
-    int tt = 2;
-      int blocksPerGrid = m / T;
-      int threadsPerBlock = T;
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 16; T <= min(m, 1024); T*=2) {
+  //int T = 128;
+  int tt = 2;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
 
-      cudaEvent_t start, stop;
-      cudaEventCreate(&start);
-      cudaEventCreate(&stop);
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-      cudaEventRecord(start);
-      for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel4_3<<<blocksPerGrid, threadsPerBlock>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
-        check_cuda_error();
-      }
-      cudaEventRecord(stop);
-
-      cudaEventSynchronize(stop);
-      float milliseconds = 0;
-      cudaEventElapsedTime(&milliseconds, start, stop);
-
-      float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(float) ;
-      float total_gb = (float)total_bytes / 1e9;
-      total_gb *= TEST_RUN;
-      cout <<"Runing time of dgemm_kernel_prefetch4("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-           <<" ("  << base/real_time <<"x)."
-           <<" (" << total_gb <<"GB)"
-           <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++) {
+      dgemm_kernel4_3<<<blocksPerGrid, threadsPerBlock>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
     }
+    cudaEventRecord(stop);
 
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
+  }
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V3-4");
 }
 
 
@@ -1150,7 +1155,7 @@ void test(int m, int k);
 
 int main(){
   //for (int i = 128; i <= 1024; i += 128){
-  for (int i = 10240; i <= 30720; i += 1024){
+  for (int i = 10240; i <= 30720; i += 5120){
   //  int i = 6144;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 16 << ")" << endl;
     test(i, i);

@@ -878,10 +878,10 @@ void test(int m, int k){
     test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_reduce_gld(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
    
     cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);

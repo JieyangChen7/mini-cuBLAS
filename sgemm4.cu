@@ -4,6 +4,7 @@
 #include <cmath>
 #include <time.h>
 #include <stdio.h>
+#include <string>
 #define TEST_RUN 10
 #define ESP 10e-10
 using namespace std;
@@ -24,6 +25,17 @@ void check_C(float * dC, int m, int n, float * checkC) {
     }
   }
   //cout << "correct" << endl;
+}
+
+void output(int m, int n, int k, float min_time, float base, int blocksPerGrid_min, int threadsPerBlock_min, string func) {
+  // long long total_bytes = (m * k + k * n * (k / 32)) * sizeof(double);
+  long long total_bytes = (m * k + k * n * blocksPerGrid_min) * sizeof(float);
+  double total_gb = (double)total_bytes / 1e9;
+  total_gb *= TEST_RUN;
+  cout <<func << "("<< blocksPerGrid_min << "*" << threadsPerBlock_min << "): " << min_time << " s" 
+       <<" ("  << base/min_time <<"x)."
+       <<" (" << total_gb <<"GB)"
+       <<" (" << total_gb/min_time <<"GB/s)"<<endl;
 }
 
 /////////////////////////NAIVE/////////////////////////
@@ -112,12 +124,12 @@ void test_kernel_naive(int m, int n, int k,
             float * dC, int ldc,
             float base){
   
-
-for (int T = 16; T <= min(1024, m); T *= 2) {
-   // int T = 128;
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 16; T <= min(1024, m); T *= 2) {
+    // int T = 128;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
-
 
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
@@ -135,15 +147,13 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * 4 * (k / 32)) * sizeof(float);
-    float total_gb = (float)total_bytes / 1e9;
-    total_gb *= TEST_RUN;
-    cout <<"Runing time of dgemm_kernel_naive("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
-         <<" ("  << base/real_time <<"x)."
-         <<" (" << total_gb <<"GB)"
-         <<" (" << total_gb/real_time <<"GB/s)"<<endl;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
   }
-
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V0");
 }
 
 void test_kernel_reduce_gld(int m, int n, int k, 
@@ -152,9 +162,11 @@ void test_kernel_reduce_gld(int m, int n, int k,
             float * dC, int ldc,
             float base){
   
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
 
-for (int T = 16; T <= min(1024, m); T *= 2) {
-   // int T = 128;
+  for (int T = 16; T <= min(1024, m); T *= 2) {
+    // int T = 128;
     int blocksPerGrid = m / T;
     int threadsPerBlock = T;
 
@@ -175,15 +187,13 @@ for (int T = 16; T <= min(1024, m); T *= 2) {
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * 4 * (k / 32)) * sizeof(float);
-    float total_gb = (float)total_bytes / 1e9;
-    total_gb *= TEST_RUN;
-    cout <<"Runing time of dgemm_kernel_reduce_gld("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
-         <<" ("  << base/real_time <<"x)."
-         <<" (" << total_gb <<"GB)"
-         <<" (" << total_gb/real_time <<"GB/s)"<<endl;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
   }
-
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V1");
 }
 
 
@@ -241,35 +251,35 @@ float test_kernel_shared(int m, int n, int k,
           float * dC, int ldc,
           float base){
 
-    for (int T = 16; T <= min(1024, m); T *= 2) {
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 16; T <= min(1024, m); T *= 2) {
+    //int T = 16;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
+    
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-      //int T = 16;
-      int blocksPerGrid = m / T;
-      int threadsPerBlock = T;
-      
-      cudaEvent_t start, stop;
-      cudaEventCreate(&start);
-      cudaEventCreate(&stop);
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++)
+      dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(float) * 4>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
+    cudaEventRecord(stop);
 
-      cudaEventRecord(start);
-      for (int i = 0; i < TEST_RUN; i++)
-        dgemm_kernel_shared<<<blocksPerGrid, threadsPerBlock,  T * sizeof(float) * 4>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-        check_cuda_error();
-      cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
 
-      cudaEventSynchronize(stop);
-      float milliseconds = 0;
-      cudaEventElapsedTime(&milliseconds, start, stop);
-
-      float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(float) ;
-      float total_gb = (float)total_bytes / 1e9;
-      total_gb *= TEST_RUN;
-      cout <<"Runing time of dgemm_kernel_shared("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-           <<" ("  << base/real_time <<"x)."
-           <<" (" << total_gb <<"GB)"
-           <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    float real_time = milliseconds / 1000;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
     }
+  }
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V2");
 }
 
 ///////////////////////A PREFETCH(cache<->register)
@@ -443,38 +453,40 @@ void test_kernel_prefetch(int m, int n, int k,
             float * dC, int ldc,
             float base){
 
-    for (int T = 8; T <= 16; T *= 2) {
-    //int T = 16;
-      int blocksPerGrid = m / T;
-      int threadsPerBlock = T;
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
 
-      cudaEvent_t start, stop;
-      cudaEventCreate(&start);
-      cudaEventCreate(&stop);
+  for (int T = 8; T <= 16; T *= 2) {
+  //int T = 16;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
 
-      cudaEventRecord(start);
-      for (int i = 0; i < TEST_RUN; i++) {
-        if (T == 16)
-          dgemm_kernel_prefetch_s2r_16<<<blocksPerGrid, threadsPerBlock, ((T * 4) + (T * T)) * sizeof(float)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-        else if (T == 8)
-          dgemm_kernel_prefetch_s2r_8<<<blocksPerGrid, threadsPerBlock, ((T * 4) + (T * T)) * sizeof(float)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
-        check_cuda_error();
-      }
-      cudaEventRecord(stop);
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-      cudaEventSynchronize(stop);
-      float milliseconds = 0;
-      cudaEventElapsedTime(&milliseconds, start, stop);
-
-      float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(float) ;
-        float total_gb = (float)total_bytes / 1e9;
-        total_gb *= TEST_RUN;
-        cout <<"Runing time of dgemm_kernel_prefetch("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-             <<" ("  << base/real_time <<"x)."
-             <<" (" << total_gb <<"GB)"
-             <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++) {
+      if (T == 16)
+        dgemm_kernel_prefetch_s2r_16<<<blocksPerGrid, threadsPerBlock, ((T * 4) + (T * T)) * sizeof(float)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+      else if (T == 8)
+        dgemm_kernel_prefetch_s2r_8<<<blocksPerGrid, threadsPerBlock, ((T * 4) + (T * T)) * sizeof(float)>>>(m, n, k, T, dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
     }
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
+  }
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V3-1");
 }
 
 
@@ -576,13 +588,7 @@ void test_kernel_prefetch2(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(float) ;
-    float total_gb = (float)total_bytes / 1e9;
-    total_gb *= TEST_RUN;
-    cout <<"Runing time of dgemm_kernel_prefetch2("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-         <<" ("  << base/real_time <<"x)."
-         <<" (" << total_gb <<"GB)"
-         <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    output(m, n, k, real_time, base, blocksPerGrid, threadsPerBlock, "V3-2");
 
 }
 
@@ -912,167 +918,167 @@ dgemm_kernel4_3(int m, int n, int k, int T, int t, float * A, int lda, float * B
 {
                                                                                                                                                                                                                 
   //determine the row to process                                                                                                                                                                                                                          
-  // int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  // A = A + idx;
-  // C = C + idx;
-  // register float temp1 = 0;
-  // register float temp2 = 0;
-  // register float temp3 = 0;
-  // register float temp4 = 0;
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  A = A + idx;
+  C = C + idx;
+  register float temp1 = 0;
+  register float temp2 = 0;
+  register float temp3 = 0;
+  register float temp4 = 0;
 
-  // register float nr0, nr1, nr2, nr3;
-  // register float cr0, cr1, cr2, cr3;
+  register float nr0, nr1, nr2, nr3;
+  register float cr0, cr1, cr2, cr3;
 
-  // register float nb00, nb01, nb02, nb03;//, nb10, nb11, nb12, nb13;
-  // register float cb00, cb01, cb02, cb03;//, cb10, cb11, cb12, cb13;
+  register float nb00, nb01, nb02, nb03;//, nb10, nb11, nb12, nb13;
+  register float cb00, cb01, cb02, cb03;//, cb10, cb11, cb12, cb13;
 
-  // //prefectch A 
-  // cr0 = *A;
-  // A += lda;
-  // cr1 = *A;
-  // A += lda;
+  //prefectch A 
+  cr0 = *A;
+  A += lda;
+  cr1 = *A;
+  A += lda;
   
-  // cr2 = *A;
-  // A += lda;
-  // cr3 = *A;
-  // A += lda;
+  cr2 = *A;
+  A += lda;
+  cr3 = *A;
+  A += lda;
 
-  // cb00 = *B;
-  // cb01 = *(B + ldb);
-  // cb02 = *(B + ldb * 2);
-  // cb03 = *(B + ldb * 3);
-  // B += 1;
-  // cb10 = *B;
-  // cb11 = *(B + ldb);
-  // cb12 = *(B + ldb * 2);
-  // cb13 = *(B + ldb * 3);
-  // B += 1;
-
-
-  // // #pragma unroll 1
-  // for (int i = 0; i < k; i += t){ 
-  //     if (i + t < k) {
-  //       nr0 = *A;
-  //       A += lda;
-  //       nr1 = *A;
-  //       A += lda;
-
-  //       nr2 = *A;
-  //       A += lda;
-  //       nr3 = *A;
-  //       A += lda;
-  //     }
-
-  //     nb00 = *B;
-  //     nb01 = *(B + ldb);
-  //     // nb02 = *(B + ldb * 2);
-  //     // nb03 = *(B + ldb * 3);
-  //     B += 1;
-  //     // nb10 = *B;
-  //     // nb11 = *(B + ldb);
-  //     // nb12 = *(B + ldb * 2);
-  //     // nb13 = *(B + ldb * 3);
-  //     // B += 1;
-
-  //     temp1 += cr0 * cb00;
-  //     temp2 += cr0 * cb01;
-  //     temp3 += cr0 * cb02;
-  //     temp4 += cr0 * cb03;
-
-  //     temp1 += cr1 * cb10;
-  //     temp2 += cr1 * cb11;
-  //     temp3 += cr1 * cb12;
-  //     temp4 += cr1 * cb13;
-
-  //     cb00 = nb00;
-  //     cb01 = nb01;
-  //     cb02 = nb02;
-  //     cb03 = nb03;
-
-  //     cb10 = nb10;
-  //     cb11 = nb11;
-  //     cb12 = nb12;
-  //     cb13 = nb13;
-
-  //     nb00 = *B;
-  //     nb01 = *(B + ldb);
-  //     nb02 = *(B + ldb * 2);
-  //     nb03 = *(B + ldb * 3);
-  //     B += 1;
-
-  //     temp1 += cr1 * cb00;
-  //     temp2 += cr1 * cb01;
-  //     temp3 += cr1 * cb02;
-  //     temp4 += cr1 * cb03;
-
-  //     cb00 = nb00;
-  //     cb01 = nb01;
-  //     cb02 = nb02;
-  //     cb03 = nb03;
+  cb00 = *B;
+  cb01 = *(B + ldb);
+  cb02 = *(B + ldb * 2);
+  cb03 = *(B + ldb * 3);
+  B += 1;
+  cb10 = *B;
+  cb11 = *(B + ldb);
+  cb12 = *(B + ldb * 2);
+  cb13 = *(B + ldb * 3);
+  B += 1;
 
 
+  // #pragma unroll 1
+  for (int i = 0; i < k; i += t){ 
+      if (i + t < k) {
+        nr0 = *A;
+        A += lda;
+        nr1 = *A;
+        A += lda;
 
-  //     nb00 = *B;
-  //     nb01 = *(B + ldb);
-  //     nb02 = *(B + ldb * 2);
-  //     nb03 = *(B + ldb * 3);
-  //     B += 1;
+        nr2 = *A;
+        A += lda;
+        nr3 = *A;
+        A += lda;
+      }
 
-  //     temp1 += cr2 * cb00;
-  //     temp2 += cr2 * cb01;
-  //     temp3 += cr2 * cb02;
-  //     temp4 += cr2 * cb03;
+      nb00 = *B;
+      nb01 = *(B + ldb);
+      // nb02 = *(B + ldb * 2);
+      // nb03 = *(B + ldb * 3);
+      B += 1;
+      // nb10 = *B;
+      // nb11 = *(B + ldb);
+      // nb12 = *(B + ldb * 2);
+      // nb13 = *(B + ldb * 3);
+      // B += 1;
 
-  //     cb00 = nb00;
-  //     cb01 = nb01;
-  //     cb02 = nb02;
-  //     cb03 = nb03;
+      temp1 += cr0 * cb00;
+      temp2 += cr0 * cb01;
+      temp3 += cr0 * cb02;
+      temp4 += cr0 * cb03;
+
+      temp1 += cr1 * cb10;
+      temp2 += cr1 * cb11;
+      temp3 += cr1 * cb12;
+      temp4 += cr1 * cb13;
+
+      cb00 = nb00;
+      cb01 = nb01;
+      cb02 = nb02;
+      cb03 = nb03;
+
+      cb10 = nb10;
+      cb11 = nb11;
+      cb12 = nb12;
+      cb13 = nb13;
+
+      nb00 = *B;
+      nb01 = *(B + ldb);
+      nb02 = *(B + ldb * 2);
+      nb03 = *(B + ldb * 3);
+      B += 1;
+
+      temp1 += cr1 * cb00;
+      temp2 += cr1 * cb01;
+      temp3 += cr1 * cb02;
+      temp4 += cr1 * cb03;
+
+      cb00 = nb00;
+      cb01 = nb01;
+      cb02 = nb02;
+      cb03 = nb03;
 
 
 
+      nb00 = *B;
+      nb01 = *(B + ldb);
+      nb02 = *(B + ldb * 2);
+      nb03 = *(B + ldb * 3);
+      B += 1;
 
-      // if (i + t < k) {
-      //   nb00 = *B;
-      //   nb01 = *(B + ldb);
-      //   nb02 = *(B + ldb * 2);
-      //   nb03 = *(B + ldb * 3);
-      //    B += 1;
-      //   // nb10 = *B;
-      //   // nb11 = *(B + ldb);
-      //   // nb12 = *(B + ldb * 2);
-      //   // nb13 = *(B + ldb * 3);
-      //   // B += 1;
-      // }
+      temp1 += cr2 * cb00;
+      temp2 += cr2 * cb01;
+      temp3 += cr2 * cb02;
+      temp4 += cr2 * cb03;
 
-      // temp1 += cr3 * cb00;
-      // temp2 += cr3 * cb01;
-      // temp3 += cr3 * cb02;
-      // temp4 += cr3 * cb03;
-      // // temp1 += cr4 * cb10;
-      // // temp2 += cr4 * cb11;
+      cb00 = nb00;
+      cb01 = nb01;
+      cb02 = nb02;
+      cb03 = nb03;
 
-      // cb00 = nb00;
-      // cb01 = nb01;
-      // cb02 = nb02;
-      // cb03 = nb03;
 
-      // // cb10 = nb10;
-      // // cb11 = nb11;
-      // // cb12 = nb12;
-      // // cb13 = nb13;
+
+
+      if (i + t < k) {
+        nb00 = *B;
+        nb01 = *(B + ldb);
+        nb02 = *(B + ldb * 2);
+        nb03 = *(B + ldb * 3);
+         B += 1;
+        // nb10 = *B;
+        // nb11 = *(B + ldb);
+        // nb12 = *(B + ldb * 2);
+        // nb13 = *(B + ldb * 3);
+        // B += 1;
+      }
+
+      temp1 += cr3 * cb00;
+      temp2 += cr3 * cb01;
+      temp3 += cr3 * cb02;
+      temp4 += cr3 * cb03;
+      // temp1 += cr4 * cb10;
+      // temp2 += cr4 * cb11;
+
+      cb00 = nb00;
+      cb01 = nb01;
+      cb02 = nb02;
+      cb03 = nb03;
+
+      // cb10 = nb10;
+      // cb11 = nb11;
+      // cb12 = nb12;
+      // cb13 = nb13;
     
 
-  //     if (i + t < k) {
-  //       cr0 = nr0;
-  //       cr1 = nr1;
-  //       // cr2 = nr2;
-  //       // cr3 = nr3;
-  //     }
-  // }
-  // *C = temp1;
-  // *(C + ldc) = temp2;
-  // *(C + ldc * 2) = temp3;
-  // *(C + ldc * 3) = temp4;
+      if (i + t < k) {
+        cr0 = nr0;
+        cr1 = nr1;
+        // cr2 = nr2;
+        // cr3 = nr3;
+      }
+  }
+  *C = temp1;
+  *(C + ldc) = temp2;
+  *(C + ldc * 2) = temp3;
+  *(C + ldc * 3) = temp4;
     
 }
 
@@ -1083,39 +1089,39 @@ float test_kernel_prefetch3(int m, int n, int k,
             float * dC, int ldc,
             float base){
 
-    for (int T = 16; T <= min(m, 1024); T*=2) {
-    //int T = 128;
-    int tt = 4;
-      int blocksPerGrid = m / T;
-      int threadsPerBlock = T;
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 16; T <= min(m, 1024); T*=2) {
+  //int T = 128;
+  int tt = 4;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
 
-      cudaEvent_t start, stop;
-      cudaEventCreate(&start);
-      cudaEventCreate(&stop);
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-      cudaEventRecord(start);
-      for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, (T * 4) * sizeof(float)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
-        //dgemm_kernel4_22<<<blocksPerGrid, threadsPerBlock, (T * 2) * sizeof(float)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++) {
+      dgemm_kernel4_2<<<blocksPerGrid, threadsPerBlock, (T * 4) * sizeof(float)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+      //dgemm_kernel4_22<<<blocksPerGrid, threadsPerBlock, (T * 2) * sizeof(float)>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
 
-        check_cuda_error();
-      }
-      cudaEventRecord(stop);
-
-      cudaEventSynchronize(stop);
-      float milliseconds = 0;
-      cudaEventElapsedTime(&milliseconds, start, stop);
-
-      float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k+ k * 4 * T) * sizeof(float) ;
-      float total_gb = (float)total_bytes / 1e9;
-      total_gb *= TEST_RUN;
-      cout <<"Runing time of dgemm_kernel_prefetch3("<< blocksPerGrid << "*" << T << "): " << real_time << " s" 
-           <<" ("  << base/real_time <<"x)."
-           <<" (" << total_gb <<"GB)"
-           <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+      check_cuda_error();
     }
+    cudaEventRecord(stop);
 
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
+  }
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V3-3");
 }
 
 
@@ -1126,37 +1132,37 @@ float test_kernel_prefetch4(int m, int n, int k,
             float * dC, int ldc,
             float base){
 
-    for (int T = 16; T <= min(m, 1024); T*=2) {
-    //int T = 128;
-    int tt = 2;
-      int blocksPerGrid = m / T;
-      int threadsPerBlock = T;
+  float min_time = 1000;
+  int blocksPerGrid_min, threadsPerBlock_min;
+  for (int T = 16; T <= min(m, 1024); T*=2) {
+  //int T = 128;
+  int tt = 2;
+    int blocksPerGrid = m / T;
+    int threadsPerBlock = T;
 
-      cudaEvent_t start, stop;
-      cudaEventCreate(&start);
-      cudaEventCreate(&stop);
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-      cudaEventRecord(start);
-      for (int i = 0; i < TEST_RUN; i++) {
-        dgemm_kernel4_3<<<blocksPerGrid, threadsPerBlock>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
-        check_cuda_error();
-      }
-      cudaEventRecord(stop);
-
-      cudaEventSynchronize(stop);
-      float milliseconds = 0;
-      cudaEventElapsedTime(&milliseconds, start, stop);
-
-      float real_time = milliseconds / 1000;
-      long long total_bytes = (m * k + k * 4 * (k / T)) * sizeof(float) ;
-      float total_gb = (float)total_bytes / 1e9;
-      total_gb *= TEST_RUN;
-      cout <<"Runing time of dgemm_kernel_prefetch4("<< blocksPerGrid << "*" << T << "): " << real_time << "s" 
-           <<" ("  << base/real_time <<"x)."
-           <<" (" << total_gb <<"GB)"
-           <<" (" << total_gb/real_time <<" GB/s)"<<endl;
+    cudaEventRecord(start);
+    for (int i = 0; i < TEST_RUN; i++) {
+      dgemm_kernel4_3<<<blocksPerGrid, threadsPerBlock>>>(m, n, k, T, tt, dA, lda, dB, ldb, dC, ldc);
+      check_cuda_error();
     }
+    cudaEventRecord(stop);
 
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    float real_time = milliseconds / 1000;
+    if (real_time < min_time) {
+      min_time = real_time; 
+      blocksPerGrid_min = blocksPerGrid;
+      threadsPerBlock_min = threadsPerBlock;
+    }
+  }
+  output(m, n, k, min_time, base, blocksPerGrid_min, threadsPerBlock_min, "V3-4");
 }
 
 
@@ -1171,7 +1177,7 @@ float test_cublas_mm(int m, int n, int k,
 void test(int m, int k);
 
 int main(){
-  for (int i = 10240; i <= 30720; i += 1024){
+  for (int i = 10240; i <= 30720; i += 5120){
   //  int i = 6144;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 4 << ")" << endl;
     test(i, i);
@@ -1244,8 +1250,9 @@ void test(int m, int k){
     cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
     check_C(C, m, n, checkC);
 
-    //test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    
+    // test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    // cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
+    // check_C(C, m, n, checkC);
    
     //cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
     
