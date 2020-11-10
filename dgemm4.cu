@@ -1181,7 +1181,7 @@ void test(int m, int k, int c);
 int main(int argc, char *argv[]){
   for (int i = 10240; i <= 30720; i += 1024){
   //  int i = 6144;
-    cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 4 << ")" << endl;
+    // cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 4 << ")" << endl;
     test(i, i, atoi(argv[1]));
   }
 }
