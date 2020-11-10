@@ -936,7 +936,7 @@ float test_cublas_mm(int m, int n, int k,
     float real_time = milliseconds / 1000;
 
     // cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
-    cout << real_time << endl;
+    // cout << real_time << endl;
 
     return real_time;
 }
