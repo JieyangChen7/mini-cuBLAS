@@ -5,8 +5,10 @@
 #include <time.h>
 #include <stdio.h>
 #include <string>
+#include <stdlib.h>
 #define TEST_RUN 10 
 #define ESP 10e-10
+#define PEAK_MEM 900
 using namespace std;
 
 
@@ -32,10 +34,11 @@ void output(int m, int n, int k, float min_time, float base, int blocksPerGrid_m
   long long total_bytes = (m * k + k * n * blocksPerGrid_min) * sizeof(float);
   double total_gb = (double)total_bytes / 1e9;
   total_gb *= TEST_RUN;
-  cout <<func << "("<< blocksPerGrid_min << "*" << threadsPerBlock_min << "): " << min_time << " s" 
-       <<" ("  << base/min_time <<"x)."
-       <<" (" << total_gb <<"GB)"
-       <<" (" << total_gb/min_time <<"GB/s)"<<endl;
+  // cout <<func << "("<< blocksPerGrid_min << "*" << threadsPerBlock_min << "): " << min_time << " s" 
+  //      <<" ("  << base/min_time <<"x)."
+  //      <<" (" << total_gb <<"GB)"
+  //      <<" (" << total_gb/min_time <<"GB/s)"<<endl;
+  cout << min_time << "," << base/min_time << "," << total_gb/min_time << "," << total_gb/min_time/PEAK_MEM << "\n";
 }
 
 /////////////////////////NAIVE/////////////////////////
@@ -1041,13 +1044,13 @@ float test_cublas_mm(int m, int n, int k,
             float * dC, int ldc);
 
 
-void test(int m, int k);
+void test(int m, int k, int c);
 
-int main(){
+int main(int argc, char *argv[]){
   for (int i = 10240; i <= 30720; i += 1024){
-  //  int i = 6144;
-    cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 8 << ")" << endl;
-    test(i, i);
+  //int i = 1024;
+    // cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 2 << ")" << endl;
+    test(i, i, atoi(argv[1]));
   }
 }
 
@@ -1091,43 +1094,15 @@ void test(int m, int k){
     float base;
 
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
-    cudaMemcpy(checkC, dcheckC, m * n * sizeof(float), cudaMemcpyDeviceToHost);
-  
-    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
-    check_C(C, m, n, checkC);
-
-
-    test_kernel_reduce_gld(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
-    check_C(C, m, n, checkC);
-
-    test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
-    check_C(C, m, n, checkC);
-
+    if (c == -1) cout << base << endl;
+    if (c == 0) test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    if (c == 1) test_kernel_reduce_gld(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    if (c == 2) test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
-    // check_C(C, m, n, checkC);
-
     // test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
-    // check_C(C, m, n, checkC);
-
-    test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
-    check_C(C, m, n, checkC);
-
+    if (c == 3) test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    // cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
-    // check_C(C, m, n, checkC);
-   
-    //cudaMemcpy(C, dC ,m * n * sizeof(float), cudaMemcpyDeviceToHost);
-    
-    //for (int i = 0; i < m * n; i++){
-    // cout<<C[i]<<" ";	
-    //}
-   // check_C(C, m, n, checkC);
+
 
     //free device memory
     cudaFree(dA);
@@ -1168,7 +1143,7 @@ float test_cublas_mm(int m, int n, int k,
     cudaEventElapsedTime(&milliseconds, start, stop);
 
     float real_time = milliseconds / 1000;
-    cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
+    // cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
 
     return real_time;
 }

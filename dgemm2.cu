@@ -5,8 +5,10 @@
 #include <time.h>
 #include <stdio.h>
 #include <string>
+#include <stdlib.h>
 #define TEST_RUN 10 
 #define ESP 10e-10
+#define PEAK_MEM 900
 using namespace std;
 
 
@@ -24,7 +26,7 @@ void check_C(double * dC, int m, int n, double * checkC) {
       return;
     }
   }
-  cout << "correct" << endl;
+  // cout << "correct" << endl;
 }
 
 void output(int m, int n, int k, float min_time, float base, int blocksPerGrid_min, int threadsPerBlock_min, string func) {
@@ -32,10 +34,11 @@ void output(int m, int n, int k, float min_time, float base, int blocksPerGrid_m
   long long total_bytes = (m * k + k * n * blocksPerGrid_min) * sizeof(double);
   double total_gb = (double)total_bytes / 1e9;
   total_gb *= TEST_RUN;
-  cout <<func << "("<< blocksPerGrid_min << "*" << threadsPerBlock_min << "): " << min_time << " s" 
-       <<" ("  << base/min_time <<"x)."
-       <<" (" << total_gb <<"GB)"
-       <<" (" << total_gb/min_time <<"GB/s)"<<endl;
+  // cout <<func << "("<< blocksPerGrid_min << "*" << threadsPerBlock_min << "): " << min_time << " s" 
+  //      <<" ("  << base/min_time <<"x)."
+  //      <<" (" << total_gb <<"GB)"
+  //      <<" (" << total_gb/min_time <<"GB/s)"<<endl;
+  cout << min_time << "," << base/min_time << "," << total_gb/min_time << "," << total_gb/min_time/PEAK_MEM << "\n";
 }
 
 /////////////////////////NAIVE/////////////////////////
@@ -824,17 +827,17 @@ float test_cublas_mm(int m, int n, int k,
             double * dC, int ldc);
 
 
-void test(int m, int k);
+void test(int m, int k, int c);
 
-int main(){
+int main(int argc, char *argv[]){
   for (int i = 10240; i <= 30720; i += 1024){
   //int i = 1024;
-    cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 2 << ")" << endl;
-    test(i, i);
+    // cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 2 << ")" << endl;
+    test(i, i, atoi(argv[1]));
   }
 }
 
-void test(int m, int k){
+void test(int m, int k, int c){
     cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
 
     //int m = 20480;
@@ -875,12 +878,13 @@ void test(int m, int k){
 
     base = test_cublas_mm(m, n, k,  dA, lda, dB, ldb, dcheckC, ldc);
   
-    test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_reduce_gld(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    if (c == -1) cout << base << endl;
+    if (c == 0) test_kernel_naive(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    if (c == 1) test_kernel_reduce_gld(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    if (c == 2) test_kernel_shared(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch2(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
-    test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
+    if (c == 3) test_kernel_prefetch3(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     // test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
    
@@ -931,7 +935,9 @@ float test_cublas_mm(int m, int n, int k,
 
     float real_time = milliseconds / 1000;
 
-    cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
+    // cout <<"Runing time of culasdgemm:" << real_time <<" s." << endl;
+    cout << real_time << endl;
+
     return real_time;
 }
 
