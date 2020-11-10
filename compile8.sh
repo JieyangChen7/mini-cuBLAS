@@ -1,2 +1,2 @@
 
-nvcc --ptxas-options=-v -arch=sm_35 dgemm8.cu -lcublas
+nvcc --ptxas-options=-v -arch=sm_70 dgemm8.cu -lcublas
