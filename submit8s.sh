@@ -2,7 +2,7 @@
 ### Begin BSUB Options 
 #BSUB -P csc143 
 #BSUB -J MG8s 
-#BSUB -W 00:10 
+#BSUB -W 01:00 
 #BSUB -nnodes 1 
 #BSUB -alloc_flags "smt1"
 
