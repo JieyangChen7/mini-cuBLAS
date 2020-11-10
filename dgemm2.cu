@@ -888,12 +888,12 @@ void test(int m, int k, int c){
     // test_kernel_prefetch4(m, n, k, dA, lda, dB, ldb, dC, ldc, base);
     
    
-    cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
-    cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    // cudaMemcpy(C, dC ,m * n * sizeof(double), cudaMemcpyDeviceToHost);
+    // cudaMemcpy(checkC, dcheckC, m * n * sizeof(double), cudaMemcpyDeviceToHost);
     //for (int i = 0; i < m * n; i++){
     // cout<<C[i]<<" ";	
     //}
-    check_C(C, m, n, checkC);
+    // check_C(C, m, n, checkC);
 
     //free device memory
     cudaFree(dA);
