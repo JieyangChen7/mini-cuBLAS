@@ -899,168 +899,168 @@ __global__ void
 dgemm_kernel4_3(int m, int n, int k, int T, int t, float * A, int lda, float * B, int ldb, float * C, int ldc)
 {
                                                                                                                                                                                                                 
-  //determine the row to process                                                                                                                                                                                                                          
-  int idx = blockIdx.x * blockDim.x + threadIdx.x;
-  A = A + idx;
-  C = C + idx;
-  register float temp1 = 0;
-  register float temp2 = 0;
-  register float temp3 = 0;
-  register float temp4 = 0;
+  // //determine the row to process                                                                                                                                                                                                                          
+  // int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  // A = A + idx;
+  // C = C + idx;
+  // register float temp1 = 0;
+  // register float temp2 = 0;
+  // register float temp3 = 0;
+  // register float temp4 = 0;
 
-  register float nr0, nr1;//, nr2, nr3;
-  register float cr0, cr1;//, cr2, cr3;
+  // register float nr0, nr1;//, nr2, nr3;
+  // register float cr0, cr1;//, cr2, cr3;
 
-  register float nb00, nb01, nb02, nb03;//, nb10, nb11, nb12, nb13;
-  register float cb00, cb01, cb02, cb03;//, cb10, cb11, cb12, cb13;
+  // register float nb00, nb01, nb02, nb03;//, nb10, nb11, nb12, nb13;
+  // register float cb00, cb01, cb02, cb03;//, cb10, cb11, cb12, cb13;
 
-  //prefectch A 
-  cr0 = *A;
-  A += lda;
-  cr1 = *A;
-  A += lda;
+  // //prefectch A 
+  // cr0 = *A;
+  // A += lda;
+  // cr1 = *A;
+  // A += lda;
   
-  // cr2 = *A;
-  // A += lda;
-  // cr3 = *A;
-  // A += lda;
+  // // cr2 = *A;
+  // // A += lda;
+  // // cr3 = *A;
+  // // A += lda;
 
-  cb00 = *B;
-  cb01 = *(B + ldb);
-  cb02 = *(B + ldb * 2);
-  cb03 = *(B + ldb * 3);
-  B += 1;
-  // cb10 = *B;
-  // cb11 = *(B + ldb);
-  // cb12 = *(B + ldb * 2);
-  // cb13 = *(B + ldb * 3);
+  // cb00 = *B;
+  // cb01 = *(B + ldb);
+  // cb02 = *(B + ldb * 2);
+  // cb03 = *(B + ldb * 3);
   // B += 1;
+  // // cb10 = *B;
+  // // cb11 = *(B + ldb);
+  // // cb12 = *(B + ldb * 2);
+  // // cb13 = *(B + ldb * 3);
+  // // B += 1;
 
 
-  #pragma unroll 1
-  for (int i = 0; i < k; i += t){ 
-      if (i + t < k) {
-        nr0 = *A;
-        A += lda;
-        nr1 = *A;
-        A += lda;
+  // #pragma unroll 1
+  // for (int i = 0; i < k; i += t){ 
+  //     if (i + t < k) {
+  //       nr0 = *A;
+  //       A += lda;
+  //       nr1 = *A;
+  //       A += lda;
 
-        // nr2 = *A;
-        // A += lda;
-        // nr3 = *A;
-        // A += lda;
-      }
+  //       // nr2 = *A;
+  //       // A += lda;
+  //       // nr3 = *A;
+  //       // A += lda;
+  //     }
 
-      nb00 = *B;
-      nb01 = *(B + ldb);
-      // nb02 = *(B + ldb * 2);
-      // nb03 = *(B + ldb * 3);
-      B += 1;
-      // nb10 = *B;
-      // nb11 = *(B + ldb);
-      // nb12 = *(B + ldb * 2);
-      // nb13 = *(B + ldb * 3);
-      // B += 1;
+  //     nb00 = *B;
+  //     nb01 = *(B + ldb);
+  //     // nb02 = *(B + ldb * 2);
+  //     // nb03 = *(B + ldb * 3);
+  //     B += 1;
+  //     // nb10 = *B;
+  //     // nb11 = *(B + ldb);
+  //     // nb12 = *(B + ldb * 2);
+  //     // nb13 = *(B + ldb * 3);
+  //     // B += 1;
 
-      temp1 += cr0 * cb00;
-      temp2 += cr0 * cb01;
-      temp3 += cr0 * cb02;
-      temp4 += cr0 * cb03;
+  //     temp1 += cr0 * cb00;
+  //     temp2 += cr0 * cb01;
+  //     temp3 += cr0 * cb02;
+  //     temp4 += cr0 * cb03;
 
-      // temp1 += cr1 * cb10;
-      // temp2 += cr1 * cb11;
-      // temp3 += cr1 * cb12;
-      // temp4 += cr1 * cb13;
+  //     // temp1 += cr1 * cb10;
+  //     // temp2 += cr1 * cb11;
+  //     // temp3 += cr1 * cb12;
+  //     // temp4 += cr1 * cb13;
 
-      cb00 = nb00;
-      cb01 = nb01;
-      cb02 = nb02;
-      cb03 = nb03;
+  //     cb00 = nb00;
+  //     cb01 = nb01;
+  //     cb02 = nb02;
+  //     cb03 = nb03;
 
-      // cb10 = nb10;
-      // cb11 = nb11;
-      // cb12 = nb12;
-      // cb13 = nb13;
+  //     // cb10 = nb10;
+  //     // cb11 = nb11;
+  //     // cb12 = nb12;
+  //     // cb13 = nb13;
 
-      nb00 = *B;
-      nb01 = *(B + ldb);
-      nb02 = *(B + ldb * 2);
-      nb03 = *(B + ldb * 3);
-      B += 1;
+  //     nb00 = *B;
+  //     nb01 = *(B + ldb);
+  //     nb02 = *(B + ldb * 2);
+  //     nb03 = *(B + ldb * 3);
+  //     B += 1;
 
-      temp1 += cr1 * cb00;
-      temp2 += cr1 * cb01;
-      temp3 += cr1 * cb02;
-      temp4 += cr1 * cb03;
+  //     temp1 += cr1 * cb00;
+  //     temp2 += cr1 * cb01;
+  //     temp3 += cr1 * cb02;
+  //     temp4 += cr1 * cb03;
 
-      cb00 = nb00;
-      cb01 = nb01;
-      cb02 = nb02;
-      cb03 = nb03;
-
-
-
-      // nb00 = *B;
-      // nb01 = *(B + ldb);
-      // nb02 = *(B + ldb * 2);
-      // nb03 = *(B + ldb * 3);
-      // B += 1;
-
-      // temp1 += cr2 * cb00;
-      // temp2 += cr2 * cb01;
-      // temp3 += cr2 * cb02;
-      // temp4 += cr2 * cb03;
-
-      // cb00 = nb00;
-      // cb01 = nb01;
-      // cb02 = nb02;
-      // cb03 = nb03;
+  //     cb00 = nb00;
+  //     cb01 = nb01;
+  //     cb02 = nb02;
+  //     cb03 = nb03;
 
 
 
+  //     // nb00 = *B;
+  //     // nb01 = *(B + ldb);
+  //     // nb02 = *(B + ldb * 2);
+  //     // nb03 = *(B + ldb * 3);
+  //     // B += 1;
 
-      // if (i + t < k) {
-      //   nb00 = *B;
-      //   nb01 = *(B + ldb);
-      //   nb02 = *(B + ldb * 2);
-      //   nb03 = *(B + ldb * 3);
-      //    B += 1;
-      //   // nb10 = *B;
-      //   // nb11 = *(B + ldb);
-      //   // nb12 = *(B + ldb * 2);
-      //   // nb13 = *(B + ldb * 3);
-      //   // B += 1;
-      // }
+  //     // temp1 += cr2 * cb00;
+  //     // temp2 += cr2 * cb01;
+  //     // temp3 += cr2 * cb02;
+  //     // temp4 += cr2 * cb03;
 
-      // temp1 += cr3 * cb00;
-      // temp2 += cr3 * cb01;
-      // temp3 += cr3 * cb02;
-      // temp4 += cr3 * cb03;
-      // // temp1 += cr4 * cb10;
-      // // temp2 += cr4 * cb11;
+  //     // cb00 = nb00;
+  //     // cb01 = nb01;
+  //     // cb02 = nb02;
+  //     // cb03 = nb03;
 
-      // cb00 = nb00;
-      // cb01 = nb01;
-      // cb02 = nb02;
-      // cb03 = nb03;
 
-      // // cb10 = nb10;
-      // // cb11 = nb11;
-      // // cb12 = nb12;
-      // // cb13 = nb13;
+
+
+  //     // if (i + t < k) {
+  //     //   nb00 = *B;
+  //     //   nb01 = *(B + ldb);
+  //     //   nb02 = *(B + ldb * 2);
+  //     //   nb03 = *(B + ldb * 3);
+  //     //    B += 1;
+  //     //   // nb10 = *B;
+  //     //   // nb11 = *(B + ldb);
+  //     //   // nb12 = *(B + ldb * 2);
+  //     //   // nb13 = *(B + ldb * 3);
+  //     //   // B += 1;
+  //     // }
+
+  //     // temp1 += cr3 * cb00;
+  //     // temp2 += cr3 * cb01;
+  //     // temp3 += cr3 * cb02;
+  //     // temp4 += cr3 * cb03;
+  //     // // temp1 += cr4 * cb10;
+  //     // // temp2 += cr4 * cb11;
+
+  //     // cb00 = nb00;
+  //     // cb01 = nb01;
+  //     // cb02 = nb02;
+  //     // cb03 = nb03;
+
+  //     // // cb10 = nb10;
+  //     // // cb11 = nb11;
+  //     // // cb12 = nb12;
+  //     // // cb13 = nb13;
     
 
-      if (i + t < k) {
-        cr0 = nr0;
-        cr1 = nr1;
-        // cr2 = nr2;
-        // cr3 = nr3;
-      }
-  }
-  *C = temp1;
-  *(C + ldc) = temp2;
-  *(C + ldc * 2) = temp3;
-  *(C + ldc * 3) = temp4;
+  //     if (i + t < k) {
+  //       cr0 = nr0;
+  //       cr1 = nr1;
+  //       // cr2 = nr2;
+  //       // cr3 = nr3;
+  //     }
+  // }
+  // *C = temp1;
+  // *(C + ldc) = temp2;
+  // *(C + ldc * 2) = temp3;
+  // *(C + ldc * 3) = temp4;
     
 }
 
