@@ -1155,7 +1155,7 @@ void test(int m, int k);
 
 int main(){
   //for (int i = 128; i <= 1024; i += 128){
-  for (int i = 10240; i <= 30720; i += 5120){
+  for (int i = 10240; i <= 30720; i += 1024){
   //  int i = 6144;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 16 << ")" << endl;
     test(i, i);

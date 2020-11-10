@@ -1044,7 +1044,7 @@ float test_cublas_mm(int m, int n, int k,
 void test(int m, int k);
 
 int main(){
-  for (int i = 10240; i <= 30720; i += 5120){
+  for (int i = 10240; i <= 30720; i += 1024){
   //  int i = 6144;
     cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 8 << ")" << endl;
     test(i, i);
