@@ -1049,7 +1049,7 @@ float test_cublas_mm(int m, int n, int k,
 
 void test(int m, int k, int c);
 
-int main(){
+int main(int argc, char *argv[]){
   for (int i = 10240; i <= 30720; i += 1024){
   //  int i = 6144;
     // cout << "Test on: A (" << i << " x " << i << ") by B (" << i << " x " << 8 << ")" << endl;
@@ -1057,7 +1057,7 @@ int main(){
   }
 }
 
-void test(int m, int k){
+void test(int m, int k, int c){
     cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
 
     //int m = 20480;
