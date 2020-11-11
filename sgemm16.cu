@@ -1164,7 +1164,7 @@ int main(int argc, char *argv[]){
   }
 }
 
-void test(int m, int k){
+void test(int m, int k, int c){
     cudaDeviceSetCacheConfig(cudaFuncCachePreferShared);
 
     //m = 16;
