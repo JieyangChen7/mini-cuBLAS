@@ -1,7 +1,8 @@
-#!/bin/bash 
-NVCC_FLAG='-gencode arch=compute_70,code=sm_70 \
-		   -gencode arch=compute_75,code=sm_75 \
-		   -gencode arch=compute_80,code=sm_80'
+#!/bin/bash
+VOLTA='-gencode arch=compute_70,code=sm_70 '
+TURING='-gencode arch=compute_75,code=sm_75 '
+AMP='-gencode arch=compute_80,code=sm_80 '
+NVCC_FLAG=$VOLTA$TURING$AMP
 
 nvcc --ptxas-options=-v $NVCC_FLAG dgemm2.cu -lcublas -o test2
 nvcc --ptxas-options=-v $NVCC_FLAG dgemm4.cu -lcublas -o test4
